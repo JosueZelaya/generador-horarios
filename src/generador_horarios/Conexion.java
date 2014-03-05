@@ -36,12 +36,8 @@ public class Conexion {
         this.url = "jdbc:postgresql://localhost/horarios_bd";
     }
     
-    public void conectar(){
-        try{
-            this.conn = DriverManager.getConnection(this.url, this.usuario, this.clave);
-        }catch(SQLException err){
-            System.out.println("Error " + err.getMessage());
-        }
+    public void conectar() throws SQLException {
+            this.conn = DriverManager.getConnection(this.url, this.usuario, this.clave);        
     }
     
     public void cierraConexion() throws SQLException {
