@@ -21,5 +21,61 @@ public class Aula {
     public Aula(){
         
     }
+
+    /**
+     * @return the disponible
+     */
+    public boolean estaDisponible() {
+        return disponible;
+    }
+
+    /**
+     * @param disponible the disponible to set
+     */
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
+    }
+
+    /**
+     * @return the nombre
+     */
+    public String getNombre() {
+        return nombre;
+    }
+
+    /**
+     * @param nombre the nombre to set
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    /**
+     * @return the capacidad
+     */
+    public int getCapacidad() {
+        return capacidad;
+    }
+
+    /**
+     * @param capacidad the capacidad to set
+     */
+    public void setCapacidad(int capacidad) {
+        this.capacidad = capacidad;
+    }
+
+    /**
+     * @return the materia
+     */
+    public Materia getMateria() {
+        return materia;
+    }
+
+    /**
+     * @param materia the materia to set
+     */
+    public void setMateria(Materia materia) {
+        this.materia = materia;
+    }
     
 }

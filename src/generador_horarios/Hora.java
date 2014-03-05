@@ -14,10 +14,24 @@ import java.util.ArrayList;
  */
 public class Hora {
     
-    public ArrayList<Aula> aulas;
+    private ArrayList<Aula> aulas;
     
     public Hora(){
         
+    }
+
+    /**
+     * @return the aulas
+     */
+    public ArrayList<Aula> getAulas() {
+        return aulas;
+    }
+
+    /**
+     * @param aulas the aulas to set
+     */
+    public void setAulas(ArrayList<Aula> aulas) {
+        this.aulas = aulas;
     }
     
 }

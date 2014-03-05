@@ -19,6 +19,20 @@ public class Semana {
     public Semana(){
         
     }
+
+    /**
+     * @return the dias
+     */
+    public ArrayList<Dia> getDias() {
+        return dias;
+    }
+
+    /**
+     * @param dias the dias to set
+     */
+    public void setDias(ArrayList<Dia> dias) {
+        this.dias = dias;
+    }
     
     
     

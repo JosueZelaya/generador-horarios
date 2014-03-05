@@ -14,10 +14,24 @@ import java.util.ArrayList;
  */
 public class Dia {
     
-    public ArrayList<Hora> horas;
+    private ArrayList<Hora> horas;
     
     public Dia(){
         
+    }
+
+    /**
+     * @return the horas
+     */
+    public ArrayList<Hora> getHoras() {
+        return horas;
+    }
+
+    /**
+     * @param horas the horas to set
+     */
+    public void setHoras(ArrayList<Hora> horas) {
+        this.horas = horas;
     }
     
 }
