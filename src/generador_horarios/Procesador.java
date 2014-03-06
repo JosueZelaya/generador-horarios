@@ -41,24 +41,28 @@ public class Procesador {
     }
     
     public void asignarMateria(Semana semana,Materia materia,Boolean cicloPar){
-        
+        Dia dia; 
+        Hora hora;
+        Aula aula;
+                
         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
         if((materia.getCiclo() % 2 == 0 && cicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !cicloPar)/*Impares*/){            
-            Dia dia = elegirDia(semana.getDias());          //Elegimos el día
-            ArrayList<Hora> horas = dia.getHoras();
-            Hora hora;
-            if(materia.getCiclo()<=5){
-                hora = elegirHora(horas,0,8);               //Elegimos la hora   
-            }else{
-                hora = elegirHora(horas,9,horas.size()-1);  //Elegimos la hora   
+            dia = elegirDia(semana.getDias());                      //Elegimos el día
+            ArrayList<Hora> horas = dia.getHoras();                 //Obtenemos las horas de ese día
+            
+            if(materia.getCiclo()<=5){                              //Si la materia sale entre el primer y quito ciclo
+                hora = elegirHora(horas,0,8);                       //Elegimos una hora entre la mañana y la tarde   
+                
+            }else{                                                  //Si la materia sale después del quito ciclo
+                hora = elegirHora(horas,9,horas.size()-1);          //Elegimos una hora entre la tarde y la noche   
             }            
-            Aula aula = elegirAula(hora.getAulas());        //Elegimos el aula
+            aula = elegirAula(hora.getAulas());                     //Elegimos el aula
         
-            if(aula.estaDisponible()){                      //Si el aula está disponible
+            if(aula.estaDisponible()){                              //Si el aula está disponible
                 aula.setMateria(materia);
                 aula.setDisponible(false);
-            }else{                                          //Si el aula no está disponible
-                asignarMateria(semana, materia,cicloPar);   //Volvemos a buscar otra aula
+            }else{                                                  //Si el aula no está disponible
+                asignarMateria(semana, materia,cicloPar);           //Volvemos a buscar otra aula
             }
         }           
         

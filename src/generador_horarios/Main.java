@@ -32,7 +32,7 @@ public class Main {
         }
         
         for (int i = 0; i < materias.size(); i++) {            
-            procesador.asignarMateria(semana, materias.get(i),true);
+            procesador.asignarMateria(semana, materias.get(i),false);
         }        
         
         //IMPRIMIR LA SEMANA
