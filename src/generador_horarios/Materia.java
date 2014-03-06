@@ -16,10 +16,14 @@ public class Materia {
     private int ciclo;
     private int unidadesValorativas;
     private String carrera;
-
+    
     public Materia() {
         nombre = "";
     }
+    
+    public Materia(String nombre){
+        this.nombre = nombre;
+    }    
 
     /**
      * @return the codigo

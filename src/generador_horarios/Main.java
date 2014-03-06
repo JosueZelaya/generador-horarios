@@ -20,13 +20,21 @@ public class Main {
     
     public static void main(String[] args){
         Semana semana = new Semana();
-        Materia materia = new Materia();
+        ArrayList<Materia> materias = new ArrayList<Materia>();
+        
+        for (int i = 0; i < 3936; i++) {
+            String nombreMateria = "Materia "+i;
+            materias.add(new Materia(nombreMateria));
+        }
+        
         Procesador procesador = new Procesador();
         
-        procesador.asignarMateria(semana, materia);
+        for (int i = 0; i < materias.size(); i++) {
+            procesador.asignarMateria(semana, materias.get(i));
+        }        
         
         //IMPRIMIR LA SEMANA
-        //imprimir(semana);
+        imprimir(semana);
     }
     
     public static void imprimir(Semana semana){
@@ -38,7 +46,7 @@ public class Main {
                 System.out.println("    Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin());
                 for (int k = 0; k < hora.getAulas().size(); k++) {
                     Aula aula = hora.getAulas().get(k);
-                    System.out.println("        Aula: "+aula.getNombre()+", Capacidad: "+aula.getCapacidad()+", Disponible: "+aula.estaDisponible());
+                    System.out.println("        Aula: "+aula.getNombre()+", Capacidad: "+aula.getCapacidad()+", Disponible: "+aula.estaDisponible() + ", Materia:"+aula.getMateria().getNombre());
                 }
             }
         }
