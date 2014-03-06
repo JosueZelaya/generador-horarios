@@ -15,6 +15,7 @@ public class Materia {
     private String nombre;
     private int ciclo;
     private int unidadesValorativas;
+    private String carrera;
 
     public Materia() {
 
@@ -74,6 +75,20 @@ public class Materia {
      */
     public void setUnidadesValorativas(int unidadesValorativas) {
         this.unidadesValorativas = unidadesValorativas;
+    }
+
+    /**
+     * @return the carrera
+     */
+    public String getCarrera() {
+        return carrera;
+    }
+
+    /**
+     * @param carrera the carrera to set
+     */
+    public void setCarrera(String carrera) {
+        this.carrera = carrera;
     }
 
 }
