@@ -41,6 +41,7 @@ public class Conexion {
     }
     
     public void cierraConexion() throws SQLException {
+        this.estancia.close();
         this.conn.close();
     }
     
