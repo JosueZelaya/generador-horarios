@@ -18,7 +18,7 @@ public class Materia {
     private String carrera;
 
     public Materia() {
-
+        nombre = "";
     }
 
     /**

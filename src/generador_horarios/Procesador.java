@@ -20,16 +20,34 @@ public class Procesador {
     }
     
      public Dia elegirDia(ArrayList<Dia> dias){
-        Dia elegido = new Dia();
         int desde = 0;
         int hasta = dias.size()-1;
         int dia = getNumeroAleatorio(desde, hasta);
-        elegido = dias.get(dia);
-        return elegido;
+        return dias.get(dia);
     }
      
-    public void asignarMateria(Materia materia){
+    public Hora elegirHora(ArrayList<Hora> horas){
+        int desde = 0;
+        int hasta = horas.size()-1;
+        int hora = getNumeroAleatorio(desde, hasta);
+        return horas.get(hora);
+    }
+    
+    public Aula elegirAula(ArrayList<Aula> aulas){
+        int desde = 0;
+        int hasta = aulas.size()-1;
+        int aula = getNumeroAleatorio(desde, hasta);
+        return aulas.get(aula);
+    }
+    
+    public void asignarMateria(Semana semana,Materia materia){
         
+        Dia dia = elegirDia(semana.getDias());
+        System.out.println("Dia elegido: "+dia.getNombre());
+        Hora hora = elegirHora(dia.getHoras());
+        System.out.println("Hora elegida: "+hora.getIdHora());
+        Aula aula = elegirAula(hora.getAulas());
+        System.out.println("Aula elegida: "+aula.getNombre());
     }
     
 }

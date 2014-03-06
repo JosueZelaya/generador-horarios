@@ -20,6 +20,16 @@ public class Main {
     
     public static void main(String[] args){
         Semana semana = new Semana();
+        Materia materia = new Materia();
+        Procesador procesador = new Procesador();
+        
+        procesador.asignarMateria(semana, materia);
+        
+        //IMPRIMIR LA SEMANA
+        //imprimir(semana);
+    }
+    
+    public static void imprimir(Semana semana){
         for (int i = 0; i < semana.getDias().size(); i++) {
             Dia dia = semana.getDias().get(i);
             System.out.println("Dia: "+dia.getNombre());
