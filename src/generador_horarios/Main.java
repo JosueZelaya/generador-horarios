@@ -22,14 +22,14 @@ public class Main {
         Semana semana = new Semana();
         ArrayList<Materia> materias = new ArrayList<Materia>();
         
-        for (int i = 0; i < 3936; i++) {
+        for (int i = 1; i <= 3936; i++) {
             String nombreMateria = "Materia "+i;
             materias.add(new Materia(nombreMateria));
         }
         
         Procesador procesador = new Procesador();
         
-        for (int i = 0; i < materias.size(); i++) {
+        for (int i = 0; i < materias.size(); i++) {            
             procesador.asignarMateria(semana, materias.get(i));
         }        
         

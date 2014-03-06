@@ -43,13 +43,13 @@ public class Procesador {
     public void asignarMateria(Semana semana,Materia materia){
         
         Dia dia = elegirDia(semana.getDias());
-        System.out.println("Dia elegido: "+dia.getNombre());
+        //System.out.println("Dia elegido: "+dia.getNombre());
         
         Hora hora = elegirHora(dia.getHoras());
-        System.out.println("Hora elegida: "+hora.getIdHora());
+        //System.out.println("Hora elegida: "+hora.getIdHora());
         
         Aula aula = elegirAula(hora.getAulas());
-        System.out.println("Aula elegida: "+aula.getNombre());
+        //System.out.println("Aula elegida: "+aula.getNombre());
         
         if(aula.estaDisponible()){
             aula.setMateria(materia);
