@@ -8,6 +8,7 @@ package generador_horarios;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,19 +19,11 @@ import java.util.logging.Logger;
 public class Main {
     
     public static void main(String[] args){
-        Conexion conexion = new Conexion();        
-        ResultSet resultadoConsulta;
-        try {
-            conexion.conectar();
-            resultadoConsulta = conexion.consulta("SELECT * FROM aulas");
-            while(resultadoConsulta.next()){
-                System.out.println("Aula: "+resultadoConsulta.getString("cod_aula")+" Capacidad: "+resultadoConsulta.getString("capacidad"));
-            }
-            conexion.cierraConexion();
-        } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }       
-        
+        ArrayList<Aula> aulas = new ArrayList<Aula>();
+        aulas = ManejadorAulas.getAulas();
+        for (int i = 0; i < aulas.size(); i++) {
+            System.out.println(i+ " Aula: "+aulas.get(i).getNombre()+" Capacidad: "+aulas.get(i).getCapacidad());
+        }
     }
     
 }

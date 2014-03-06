@@ -19,7 +19,7 @@ public class Aula {
     
     
     public Aula(){
-        
+        this.disponible = true;
     }
 
     /**

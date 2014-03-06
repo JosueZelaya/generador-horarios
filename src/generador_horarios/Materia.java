@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package generador_horarios;
 
 /**
@@ -11,14 +10,14 @@ package generador_horarios;
  * @author alexander
  */
 public class Materia {
-    
+
     private String codigo;
     private String nombre;
-    private String ciclo;
-    private String unidadesValorativas;
-    
-    public Materia(){
-        
+    private int ciclo;
+    private int unidadesValorativas;
+
+    public Materia() {
+
     }
 
     /**
@@ -52,29 +51,29 @@ public class Materia {
     /**
      * @return the ciclo
      */
-    public String getCiclo() {
+    public int getCiclo() {
         return ciclo;
     }
 
     /**
      * @param ciclo the ciclo to set
      */
-    public void setCiclo(String ciclo) {
+    public void setCiclo(int ciclo) {
         this.ciclo = ciclo;
     }
 
     /**
      * @return the unidadesValorativas
      */
-    public String getUnidadesValorativas() {
+    public int getUnidadesValorativas() {
         return unidadesValorativas;
     }
 
     /**
      * @param unidadesValorativas the unidadesValorativas to set
      */
-    public void setUnidadesValorativas(String unidadesValorativas) {
+    public void setUnidadesValorativas(int unidadesValorativas) {
         this.unidadesValorativas = unidadesValorativas;
     }
-    
+
 }
