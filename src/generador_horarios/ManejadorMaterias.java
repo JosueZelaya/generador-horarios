@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public abstract class ManejadorMaterias {
     
     
-    public static ArrayList<Materia> getMaterias(){
+    public static ArrayList<Materia> getTodasMaterias(){
         ArrayList<Materia> materias = new ArrayList<Materia>();
         
         Conexion conexion = new Conexion();        

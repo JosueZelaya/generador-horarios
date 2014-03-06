@@ -16,29 +16,25 @@ import java.util.logging.Logger;
  *
  * @author alexander
  */
-public abstract class ManejadorAulas {
+public abstract class ManejadorDias {
     
-    
-    
-    public static ArrayList<Aula> getTodasAulas(){
-        ArrayList<Aula> aulas = new ArrayList<Aula>();
-        
+    public static ArrayList<Dia> getTodosDias(){
+        ArrayList<Dia> dias = new ArrayList<Dia>();
         Conexion conexion = new Conexion();        
         ResultSet resultadoConsulta;
         try {
             conexion.conectar();
-            resultadoConsulta = conexion.consulta("SELECT * FROM aulas");
+            resultadoConsulta = conexion.consulta("SELECT * FROM dias");
             while(resultadoConsulta.next()){
-                Aula aula = new Aula();
-                aula.setNombre(resultadoConsulta.getString("cod_aula"));
-                aula.setCapacidad(resultadoConsulta.getInt("capacidad"));
-                aulas.add(aula);
+                Dia dia = new Dia(resultadoConsulta.getString("nombre_dia"));
+                dias.add(dia);
             }
             conexion.cierraConexion();
         } catch (SQLException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }        
-        return aulas;
+        }
+        
+        return dias;
     }
     
 }

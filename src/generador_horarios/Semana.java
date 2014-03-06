@@ -6,7 +6,11 @@
 
 package generador_horarios;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,13 +21,22 @@ public class Semana {
     private ArrayList<Dia> dias;
     
     public Semana(){
-        
+        //Inicializamos el arraylist de los días.
+        dias = ManejadorDias.getTodosDias();
+        for (int i = 0; i < dias.size(); i++) {
+            ArrayList<Hora> horas = ManejadorHoras.getTodasHoras();
+            for (int j = 0; j < horas.size(); j++) {
+                ArrayList<Aula> aulas = ManejadorAulas.getTodasAulas();
+                horas.get(j).setAulas(aulas);
+            }
+            dias.get(i).setHoras(horas);
+        }
     }
 
     /**
      * @return the dias
      */
-    public ArrayList<Dia> getDias() {
+    public ArrayList<Dia> getDias() {        
         return dias;
     }
 
