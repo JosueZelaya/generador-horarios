@@ -26,9 +26,9 @@ public class Procesador {
         return dias.get(dia);
     }
      
-    public Hora elegirHora(ArrayList<Hora> horas){
-        int desde = 0;
-        int hasta = horas.size()-1;
+    public Hora elegirHora(ArrayList<Hora> horas,int desde,int hasta){
+        //int desde = 0;
+        //int hasta = horas.size()-1;
         int hora = getNumeroAleatorio(desde, hasta);
         return horas.get(hora);
     }
@@ -44,8 +44,14 @@ public class Procesador {
         
         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
         if((materia.getCiclo() % 2 == 0 && cicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !cicloPar)/*Impares*/){            
-            Dia dia = elegirDia(semana.getDias());          //Elegimos el día      
-            Hora hora = elegirHora(dia.getHoras());         //Elegimos la hora   
+            Dia dia = elegirDia(semana.getDias());          //Elegimos el día
+            ArrayList<Hora> horas = dia.getHoras();
+            Hora hora;
+            if(materia.getCiclo()<=5){
+                hora = elegirHora(horas,0,8);               //Elegimos la hora   
+            }else{
+                hora = elegirHora(horas,9,horas.size()-1);  //Elegimos la hora   
+            }            
             Aula aula = elegirAula(hora.getAulas());        //Elegimos el aula
         
             if(aula.estaDisponible()){                      //Si el aula está disponible
