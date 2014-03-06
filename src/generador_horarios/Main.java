@@ -20,17 +20,19 @@ public class Main {
     
     public static void main(String[] args){
         Semana semana = new Semana();
-        ArrayList<Materia> materias = new ArrayList<Materia>();
+        ArrayList<Materia> materias = new ArrayList<>();        
+        Procesador procesador = new Procesador();
         
         for (int i = 1; i <= 3936; i++) {
             String nombreMateria = "Materia "+i;
-            materias.add(new Materia(nombreMateria));
+            int ciclo = procesador.getNumeroAleatorio(1, 10);
+            Materia materia = new Materia(nombreMateria);
+            materia.setCiclo(ciclo);
+            materias.add(materia);
         }
         
-        Procesador procesador = new Procesador();
-        
         for (int i = 0; i < materias.size(); i++) {            
-            procesador.asignarMateria(semana, materias.get(i));
+            procesador.asignarMateria(semana, materias.get(i),true);
         }        
         
         //IMPRIMIR LA SEMANA
@@ -46,7 +48,7 @@ public class Main {
                 System.out.println("    Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin());
                 for (int k = 0; k < hora.getAulas().size(); k++) {
                     Aula aula = hora.getAulas().get(k);
-                    System.out.println("        Aula: "+aula.getNombre()+", Capacidad: "+aula.getCapacidad()+", Disponible: "+aula.estaDisponible() + ", Materia:"+aula.getMateria().getNombre());
+                    System.out.println("        Aula: "+aula.getNombre()+", Capacidad: "+aula.getCapacidad()+", Disponible: "+aula.estaDisponible() + ", Materia:"+aula.getMateria().getNombre()+", Ciclo: "+aula.getMateria().getCiclo());
                 }
             }
         }

@@ -40,23 +40,22 @@ public class Procesador {
         return aulas.get(aula);
     }
     
-    public void asignarMateria(Semana semana,Materia materia){
+    public void asignarMateria(Semana semana,Materia materia,Boolean cicloPar){
         
-        Dia dia = elegirDia(semana.getDias());
-        //System.out.println("Dia elegido: "+dia.getNombre());
+        //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
+        if((materia.getCiclo() % 2 == 0 && cicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !cicloPar)/*Impares*/){            
+            Dia dia = elegirDia(semana.getDias());          //Elegimos el día      
+            Hora hora = elegirHora(dia.getHoras());         //Elegimos la hora   
+            Aula aula = elegirAula(hora.getAulas());        //Elegimos el aula
         
-        Hora hora = elegirHora(dia.getHoras());
-        //System.out.println("Hora elegida: "+hora.getIdHora());
+            if(aula.estaDisponible()){                      //Si el aula está disponible
+                aula.setMateria(materia);
+                aula.setDisponible(false);
+            }else{                                          //Si el aula no está disponible
+                asignarMateria(semana, materia,cicloPar);   //Volvemos a buscar otra aula
+            }
+        }           
         
-        Aula aula = elegirAula(hora.getAulas());
-        //System.out.println("Aula elegida: "+aula.getNombre());
-        
-        if(aula.estaDisponible()){
-            aula.setMateria(materia);
-            aula.setDisponible(false);
-        }else{
-            asignarMateria(semana, materia);
-        }
         
     }
     
