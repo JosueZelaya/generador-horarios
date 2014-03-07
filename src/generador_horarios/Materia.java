@@ -15,7 +15,7 @@ public class Materia {
     private String nombre;
     private int ciclo;
     private int unidadesValorativas;
-    private String carrera;
+    private String departamento;
     
     public Materia() {
         nombre = "";
@@ -83,17 +83,17 @@ public class Materia {
     }
 
     /**
-     * @return the carrera
+     * @return the departamento
      */
-    public String getCarrera() {
-        return carrera;
+    public String getDepartamento() {
+        return departamento;
     }
 
     /**
-     * @param carrera the carrera to set
+     * @param departamento the departamento to set
      */
-    public void setCarrera(String carrera) {
-        this.carrera = carrera;
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
     }
 
 }
