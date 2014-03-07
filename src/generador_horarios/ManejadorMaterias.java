@@ -20,7 +20,7 @@ public abstract class ManejadorMaterias {
     
     
     public static ArrayList<Materia> getTodasMaterias(){
-        ArrayList<Materia> materias = new ArrayList<>();
+        ArrayList<Materia> materias = new ArrayList();
         
         Conexion conexion = new Conexion();        
         ResultSet resultadoConsulta;
