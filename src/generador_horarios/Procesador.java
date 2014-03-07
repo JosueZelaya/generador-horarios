@@ -42,14 +42,17 @@ public class Procesador {
         Hora hora;        
         
         for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
-            Boolean hayDisponibles=false;                               
-            if(horas.get(i).estaDisponible()){
-                hayDisponibles = true;                          
-                for (int j = i; j < i+cantidadHoras; j++) {
-                    if(!horas.get(j).estaDisponible()){
-                        hayDisponibles=false;
-                    }
-                }
+            Boolean hayDisponibles=false;
+            /*
+             * REVISAR LA SIGUIENTE LÍNEA
+             */
+            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<horas.size()-cantidadHoras+1){ //Si hay una hora verifico...
+                hayDisponibles = true;                
+                    for (int j = i; j < i+cantidadHoras; j++) {
+                        if(!horas.get(j).estaDisponible()){
+                            hayDisponibles=false;
+                        }
+                    }                                
             }
             //Si hay horas consecutivas disponibles agrego la primera de ellas al array de horas posibles
             if(hayDisponibles){
@@ -97,7 +100,7 @@ public class Procesador {
                 desde = 8;
             }
             
-            horasDisponibles = elegirHorasDisponibles(horas, 2,desde,hasta);
+            horasDisponibles = elegirHorasDisponibles(horas, 3,desde,hasta);
             if(horasDisponibles != null){
                 for (int i = 0; i < horasDisponibles.size(); i++) {
                     horasDisponibles.get(i).setMateria(materia);
