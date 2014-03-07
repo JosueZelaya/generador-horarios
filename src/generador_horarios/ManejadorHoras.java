@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public abstract class ManejadorHoras {
     
     public static ArrayList<Hora> getTodasHoras(){
-        ArrayList<Hora> horas = new ArrayList<Hora>();        
+        ArrayList<Hora> horas = new ArrayList();        
         Conexion conexion = new Conexion();        
         ResultSet resultadoConsulta;
         try {
