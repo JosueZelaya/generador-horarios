@@ -36,18 +36,39 @@ public class Procesador {
     /*
      * Elige horas disponibles dentro del array y que sean consecutivas
      */
-    public Hora[] elegirHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde, int hasta){
-        Hora horasDisponibles[] =new Hora[cantidadHoras];
+    public ArrayList<Hora> elegirHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde, int hasta){
+        ArrayList<Hora> horasPosibles =new ArrayList();
+        ArrayList<Hora> horasDisponibles =new ArrayList();
+        Hora hora;        
         
-        for (int i = desde; i < hasta; i++) {
-            
+        for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
+            Boolean hayDisponibles=false;                               
+            if(horas.get(i).estaDisponible()){
+                hayDisponibles = true;                          
+                for (int j = i; j < i+cantidadHoras; j++) {
+                    if(!horas.get(j).estaDisponible()){
+                        hayDisponibles=false;
+                    }
+                }
+            }
+            //Si hay horas consecutivas disponibles agrego la primera de ellas al array de horas posibles
+            if(hayDisponibles){
+                horasPosibles.add(horas.get(i));
+            }
         }
       
-        
-        int hora = getNumeroAleatorio(desde, hasta);
-        
-        
-        return horasDisponibles;
+        if(horasPosibles.size()>0){
+            //Elijo una hora de las horas posibles que he agregado
+            int indice = getNumeroAleatorio(0,horasPosibles.size()-1);
+            hora = horasPosibles.get(indice);
+            int indice2 = horas.indexOf(hora);
+            
+            for (int i = indice2; i < indice2+cantidadHoras; i++) {
+                horasDisponibles.add(horas.get(i));
+            }
+            return horasDisponibles;
+        }       
+        return null;
     }
     
     public Aula elegirAula(ArrayList<Aula> aulas){
@@ -59,9 +80,9 @@ public class Procesador {
     
     public void asignarMateria(Semana semana,Materia materia,Boolean cicloPar){
         int desde=0;
-        int hasta=0;
+        int hasta=15;
         Dia dia; 
-        Hora horasDisponibles[];
+        ArrayList<Hora> horasDisponibles;
         Aula aula;
                 
         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
@@ -75,14 +96,15 @@ public class Procesador {
             }else{
                 desde = 8;
             }
-            horasDisponibles = elegirHorasDisponibles(horas, 2,desde,hasta);
             
-            /*if(hora.estaDisponible()){                              //Si el aula está disponible
-                hora.setMateria(materia);
-                hora.setDisponible(false);
-            }else{                                                  //Si el aula no está disponible
-                asignarMateria(semana, materia,cicloPar);           //Volvemos a buscar otra aula
-            }*/
+            horasDisponibles = elegirHorasDisponibles(horas, 2,desde,hasta);
+            if(horasDisponibles != null){
+                for (int i = 0; i < horasDisponibles.size(); i++) {
+                    horasDisponibles.get(i).setMateria(materia);
+                    horasDisponibles.get(i).setDisponible(false);
+                }
+            }
+            
         }           
         
         
