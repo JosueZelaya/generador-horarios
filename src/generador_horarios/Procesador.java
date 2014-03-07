@@ -33,6 +33,23 @@ public class Procesador {
         return horas.get(hora);
     }
     
+    /*
+     * Elige horas disponibles dentro del array y que sean consecutivas
+     */
+    public Hora[] elegirHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde, int hasta){
+        Hora horasDisponibles[] =new Hora[cantidadHoras];
+        
+        for (int i = desde; i < hasta; i++) {
+            
+        }
+      
+        
+        int hora = getNumeroAleatorio(desde, hasta);
+        
+        
+        return horasDisponibles;
+    }
+    
     public Aula elegirAula(ArrayList<Aula> aulas){
         int desde = 0;
         int hasta = aulas.size()-1;
@@ -41,8 +58,10 @@ public class Procesador {
     }
     
     public void asignarMateria(Semana semana,Materia materia,Boolean cicloPar){
+        int desde=0;
+        int hasta=0;
         Dia dia; 
-        Hora hora;
+        Hora horasDisponibles[];
         Aula aula;
                 
         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
@@ -51,20 +70,19 @@ public class Procesador {
             ArrayList<Aula> aulas = dia.getAulas();                 //Obtenemos las aulas de ese día                        
             aula = elegirAula(aulas);                               //Elegimos el aula
             ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
-            
-            if (materia.getCiclo() <= 5) {                          //Si la materia sale entre el primer y quito ciclo
-                hora = elegirHora(horas, 0, 8);                     //Elegimos una hora entre la mañana y la tarde   
-
-            } else {                                                //Si la materia sale después del quito ciclo
-                hora = elegirHora(horas, 9, horas.size() - 1);      //Elegimos una hora entre la tarde y la noche   
+            if(materia.getCiclo()<=5){
+                hasta = 8;
+            }else{
+                desde = 8;
             }
-        
-            if(hora.estaDisponible()){                              //Si el aula está disponible
+            horasDisponibles = elegirHorasDisponibles(horas, 2,desde,hasta);
+            
+            /*if(hora.estaDisponible()){                              //Si el aula está disponible
                 hora.setMateria(materia);
                 hora.setDisponible(false);
             }else{                                                  //Si el aula no está disponible
                 asignarMateria(semana, materia,cicloPar);           //Volvemos a buscar otra aula
-            }
+            }*/
         }           
         
         

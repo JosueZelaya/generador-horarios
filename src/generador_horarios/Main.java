@@ -44,7 +44,7 @@ public class Main {
                 System.out.println("        Aula: "+aula.getNombre()+", Capacidad: "+aula.getCapacidad());                
                 for (int k = 0; k < aula.getHoras().size(); k++) {
                     Hora hora = aula.getHoras().get(k);
-                    System.out.println("    Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin()+", Disponible: "+aula.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());                    
+                    System.out.println("            Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin()+", Disponible: "+aula.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());                    
                 }
             }
         }
