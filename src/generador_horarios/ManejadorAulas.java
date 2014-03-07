@@ -21,7 +21,7 @@ public abstract class ManejadorAulas {
     
     
     public static ArrayList<Aula> getTodasAulas(){
-        ArrayList<Aula> aulas = new ArrayList<Aula>();
+        ArrayList<Aula> aulas = new ArrayList<>();
         
         Conexion conexion = new Conexion();        
         ResultSet resultadoConsulta;

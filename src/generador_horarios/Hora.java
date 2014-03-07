@@ -21,7 +21,8 @@ public class Hora {
     private int idHora;
     private String inicio;
     private String fin;
-    private ArrayList<Aula> aulas;
+    private Materia materia;
+    private boolean disponible;
     
     public Hora(){
         
@@ -29,21 +30,13 @@ public class Hora {
     
     public Hora(int id){
         this.idHora = id;
+        disponible = true;
+        materia = new Materia();
     }
 
     /**
      * @return the aulas
      */
-    public ArrayList<Aula> getAulas() {
-        return aulas;
-    }
-
-    /**
-     * @param aulas the aulas to set
-     */
-    public void setAulas(ArrayList<Aula> aulas) {
-        this.aulas = aulas;
-    }
 
     /**
      * @return the idHora
@@ -85,6 +78,34 @@ public class Hora {
      */
     public void setFin(String fin) {
         this.fin = fin;
+    }
+
+    /**
+     * @return the disponible
+     */
+    public boolean estaDisponible() {
+        return disponible;
+    }
+
+    /**
+     * @param disponible the disponible to set
+     */
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
+    }
+
+    /**
+     * @return the materia
+     */
+    public Materia getMateria() {
+        return materia;
+    }
+
+    /**
+     * @param materia the materia to set
+     */
+    public void setMateria(Materia materia) {
+        this.materia = materia;
     }
     
 }
