@@ -6,21 +6,22 @@
 
 package generador_horarios;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author alexander
  */
 public class Aula {
     
-    private boolean disponible;
     private String nombre;
     private int capacidad;
-    private Materia materia;
+    private boolean disponible;
+    private ArrayList<Hora> horas;
     
     
     public Aula(){
         this.disponible = true;
-        materia = new Materia();
     }
 
     /**
@@ -66,17 +67,17 @@ public class Aula {
     }
 
     /**
-     * @return the materia
+     * @return the horas
      */
-    public Materia getMateria() {
-        return materia;
+    public ArrayList<Hora> getHoras() {
+        return horas;
     }
 
     /**
-     * @param materia the materia to set
+     * @param horas the horas to set
      */
-    public void setMateria(Materia materia) {
-        this.materia = materia;
+    public void setHoras(ArrayList<Hora> horas) {
+        this.horas = horas;
     }
     
 }

@@ -48,19 +48,20 @@ public class Procesador {
         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
         if((materia.getCiclo() % 2 == 0 && cicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !cicloPar)/*Impares*/){            
             dia = elegirDia(semana.getDias());                      //Elegimos el día
-            ArrayList<Hora> horas = dia.getHoras();                 //Obtenemos las horas de ese día
+            ArrayList<Aula> aulas = dia.getAulas();                 //Obtenemos las aulas de ese día                        
+            aula = elegirAula(aulas);                               //Elegimos el aula
+            ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
             
-            if(materia.getCiclo()<=5){                              //Si la materia sale entre el primer y quito ciclo
-                hora = elegirHora(horas,0,8);                       //Elegimos una hora entre la mañana y la tarde   
-                
-            }else{                                                  //Si la materia sale después del quito ciclo
-                hora = elegirHora(horas,9,horas.size()-1);          //Elegimos una hora entre la tarde y la noche   
-            }            
-            aula = elegirAula(hora.getAulas());                     //Elegimos el aula
+            if (materia.getCiclo() <= 5) {                          //Si la materia sale entre el primer y quito ciclo
+                hora = elegirHora(horas, 0, 8);                     //Elegimos una hora entre la mañana y la tarde   
+
+            } else {                                                //Si la materia sale después del quito ciclo
+                hora = elegirHora(horas, 9, horas.size() - 1);      //Elegimos una hora entre la tarde y la noche   
+            }
         
-            if(aula.estaDisponible()){                              //Si el aula está disponible
-                aula.setMateria(materia);
-                aula.setDisponible(false);
+            if(hora.estaDisponible()){                              //Si el aula está disponible
+                hora.setMateria(materia);
+                hora.setDisponible(false);
             }else{                                                  //Si el aula no está disponible
                 asignarMateria(semana, materia,cicloPar);           //Volvemos a buscar otra aula
             }

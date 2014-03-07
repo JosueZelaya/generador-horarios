@@ -20,12 +20,12 @@ public class Semana {
         //Inicializamos el arraylist de los días.
         dias = ManejadorDias.getTodosDias();
         for (int i = 0; i < dias.size(); i++) {
-            ArrayList<Hora> horas = ManejadorHoras.getTodasHoras();
-            for (int j = 0; j < horas.size(); j++) {
-                ArrayList<Aula> aulas = ManejadorAulas.getTodasAulas();
-                horas.get(j).setAulas(aulas);
+            ArrayList<Aula> aulas = ManejadorAulas.getTodasAulas();            
+            for (int j = 0; j < aulas.size(); j++) {
+                ArrayList<Hora> horas = ManejadorHoras.getTodasHoras();
+                aulas.get(j).setHoras(horas);
             }
-            dias.get(i).setHoras(horas);
+            dias.get(i).setAulas(aulas);
         }
     }
 

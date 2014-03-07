@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class Dia {
     
     private String nombre;
-    private ArrayList<Hora> horas;
+    private ArrayList<Aula> aulas;
     
     public Dia(){
         
@@ -27,21 +27,7 @@ public class Dia {
     
     public Dia(String nombre){
         this.nombre = nombre;
-        horas = new ArrayList<Hora>();
-    }
-
-    /**
-     * @return the horas
-     */
-    public ArrayList<Hora> getHoras() {        
-        return horas;
-    }
-
-    /**
-     * @param horas the horas to set
-     */
-    public void setHoras(ArrayList<Hora> horas) {
-        this.horas = horas;
+        aulas = new ArrayList<>();
     }
 
     /**
@@ -56,6 +42,20 @@ public class Dia {
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    /**
+     * @return the aulas
+     */
+    public ArrayList<Aula> getAulas() {
+        return aulas;
+    }
+
+    /**
+     * @param aulas the aulas to set
+     */
+    public void setAulas(ArrayList<Aula> aulas) {
+        this.aulas = aulas;
     }
     
 }
