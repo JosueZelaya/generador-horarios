@@ -19,7 +19,9 @@ import java.util.logging.Logger;
 public abstract class ManejadorDias {
     
     public static ArrayList<Dia> getTodosDias(){
-        ArrayList<Dia> dias = new ArrayList<>();
+
+        ArrayList<Dia> dias = new ArrayList();
+
         Conexion conexion = new Conexion();        
         ResultSet resultadoConsulta;
         try {
