@@ -93,6 +93,9 @@ public class Procesador {
             //Las horas se asignan dependiendo de sus unidades valorativas.
             while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){                
                 dia = elegirDia(semana.getDias());                      //Elegimos el día
+                
+                
+                
                 ArrayList<Aula> aulas = dia.getAulas();                 //Obtenemos las aulas de ese día                        
                 aula = elegirAula(aulas);                               //Elegimos el aula
                 ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
