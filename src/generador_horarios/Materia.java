@@ -16,6 +16,7 @@ public class Materia {
     private int ciclo;
     private int unidadesValorativas;
     private String departamento;
+    private int horasAsignadas;
     
     public Materia() {
         nombre = "";
@@ -24,6 +25,7 @@ public class Materia {
     public Materia(String nombre){
         this.nombre = nombre;
         ciclo = 0;
+        unidadesValorativas=0;
     }    
 
     /**
@@ -94,6 +96,32 @@ public class Materia {
      */
     public void setDepartamento(String departamento) {
         this.departamento = departamento;
+    }
+
+    /**
+     * @return the horasAsignadas
+     */
+    public int getHorasAsignadas() {
+        return horasAsignadas;
+    }
+
+    /**
+     * @param horasAsignadas the horasAsignadas to set
+     */
+    public void setHorasAsignadas(int horasAsignadas) {
+        this.horasAsignadas = horasAsignadas;
+    }
+    
+    //Calcula el total de horas que debe tener esta materia en base a sus unidades valorativas...
+    public int getTotalHorasRequeridas(){
+        switch(unidadesValorativas){
+            case 0:
+                return 0;                
+            case 16:
+                return 5;
+            default:
+                return 5;
+        }
     }
 
 }

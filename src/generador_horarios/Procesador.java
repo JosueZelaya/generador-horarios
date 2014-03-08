@@ -83,27 +83,44 @@ public class Procesador {
         int hasta=15;
         Dia dia; 
         ArrayList<Hora> horasDisponibles;
+        ArrayList<Dia> diasElegidos = new ArrayList();
+        int numHorasContinuas = 2;
         Aula aula;
                 
         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
         if((materia.getCiclo() % 2 == 0 && cicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !cicloPar)/*Impares*/){            
-            dia = elegirDia(semana.getDias());                      //Elegimos el día
-            ArrayList<Aula> aulas = dia.getAulas();                 //Obtenemos las aulas de ese día                        
-            aula = elegirAula(aulas);                               //Elegimos el aula
-            ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
-            if(materia.getCiclo()<=5){
-                hasta = 8;
-            }else{
-                desde = 8;
+            
+            //Las horas se asignan dependiendo de sus unidades valorativas.
+            while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){                
+                dia = elegirDia(semana.getDias());                      //Elegimos el día
+                ArrayList<Aula> aulas = dia.getAulas();                 //Obtenemos las aulas de ese día                        
+                aula = elegirAula(aulas);                               //Elegimos el aula
+                ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
+                if(materia.getCiclo()<=5){
+                    hasta = 8;
+                }else{
+                    desde = 8;
+                }                    
+                
+                horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta);
+                if(horasDisponibles != null){
+                    for (int j = 0; j < horasDisponibles.size(); j++) {
+                        horasDisponibles.get(j).setMateria(materia);
+                        horasDisponibles.get(j).setDisponible(false);                        
+                    }
+                    diasElegidos.add(dia);
+                    materia.setHorasAsignadas(materia.getHorasAsignadas()+numHorasContinuas);
+                    if(materia.getTotalHorasRequeridas()-materia.getHorasAsignadas()==3){
+                        numHorasContinuas = 3;
+                    }                    
+                }else{
+                    asignarMateria(semana, materia, cicloPar);
+                }
+                
             }
             
-            horasDisponibles = elegirHorasDisponibles(horas, 3,desde,hasta);
-            if(horasDisponibles != null){
-                for (int i = 0; i < horasDisponibles.size(); i++) {
-                    horasDisponibles.get(i).setMateria(materia);
-                    horasDisponibles.get(i).setDisponible(false);
-                }
-            }
+            
+                        
             
         }           
         

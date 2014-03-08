@@ -19,12 +19,14 @@ public class Main {
         ArrayList<Materia> materias = new ArrayList<>();        
         Procesador procesador = new Procesador();
         
-        for (int i = 1; i <= 3936; i++) {
+        //3936
+        for (int i = 1; i <= 3; i++) {
             String nombreMateria = "Materia "+i;
             int ciclo = procesador.getNumeroAleatorio(1, 10);
             Materia materia = new Materia(nombreMateria);
             materia.setCiclo(ciclo);
             materias.add(materia);
+            materia.setUnidadesValorativas(16);
         }
         
         for (int i = 0; i < materias.size(); i++) {            
