@@ -6,6 +6,7 @@
 
 package generador_horarios;
 
+import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,6 +40,13 @@ public abstract class ManejadorAulas {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }        
         return aulas;
+    }
+    
+    public static Aula elegirAula(ArrayList<Aula> aulas){
+        int desde = 0;
+        int hasta = aulas.size()-1;
+        int aula = getNumeroAleatorio(desde, hasta);
+        return aulas.get(aula);
     }
     
 }

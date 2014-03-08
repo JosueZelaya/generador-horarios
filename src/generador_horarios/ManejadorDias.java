@@ -6,6 +6,7 @@
 
 package generador_horarios;
 
+import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,6 +36,24 @@ public abstract class ManejadorDias {
         }
         
         return dias;
+    }
+    
+    public static Dia elegirDia(ArrayList<Dia> dias){
+        int desde = 0;
+        int hasta = dias.size()-1;
+        int dia = getNumeroAleatorio(desde, hasta);
+        return dias.get(dia);
+    }
+    
+    //Devuelve un día que no aparezca en el array de días ya elegidos
+    public static Dia elegirDiaDiferente(ArrayList<Dia> dias,ArrayList<Dia> diasUsados){
+        Dia elegido = elegirDia(dias);
+        for (int i = 0; i < diasUsados.size(); i++) {
+            if (elegido.equals(diasUsados.get(i))) {
+                elegirDiaDiferente(dias, diasUsados);
+            }            
+        }
+        return elegido;
     }
     
 }
