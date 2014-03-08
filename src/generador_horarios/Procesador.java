@@ -35,22 +35,32 @@ public class Procesador {
          return (materia.getCiclo() % 2 == 0 && esCicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !esCicloPar)/*Impares*/;         
      }
     
+     public int calcularHorasContinuasRequeridas(Materia materia){
+         int numHorasContinuas;
+        if(materia.getTotalHorasRequeridas()==3 || materia.getTotalHorasRequeridas()==1){
+            numHorasContinuas = materia.getTotalHorasRequeridas();
+        }else if(materia.getTotalHorasRequeridas()-materia.getHorasAsignadas()==3){
+            numHorasContinuas = 3;
+        }else{
+            numHorasContinuas = 2;
+        }
+        return numHorasContinuas;
+     }
+     
     public void procesarMateria(Semana semana,Materia materia,boolean esCicloPar){
         int desde=0;
         int hasta=15;
         Dia dia; 
         ArrayList<Hora> horasDisponibles;
-        ArrayList<Dia> diasUsados = new ArrayList();
-        int numHorasContinuas = 2;
-        if(materia.getTotalHorasRequeridas()==3 || materia.getTotalHorasRequeridas()==1){
-            numHorasContinuas = materia.getTotalHorasRequeridas();
-        }
+        ArrayList<Dia> diasUsados = new ArrayList();        
         Aula aula;
                 
         if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo             
             
             //Las horas se asignan dependiendo de sus unidades valorativas.
             while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
+                //Calculamos el número de horas continuas que necesita la materia
+                int numHorasContinuas = calcularHorasContinuasRequeridas(materia);
                 //Elegimos el día que sea diferente a los días que ya elegimos para esta materia
                 dia = elegirDiaDiferente(semana.getDias(), diasUsados);                      
                    
@@ -68,10 +78,7 @@ public class Procesador {
                 horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta);
                 if(horasDisponibles != null){ //Si hay horas disponibles
                     asignar(materia, horasDisponibles); //Asignamos la materia
-                    diasUsados.add(dia);
-                    if(materia.getTotalHorasRequeridas()-materia.getHorasAsignadas()==3){
-                        numHorasContinuas = 3;
-                    }                    
+                    diasUsados.add(dia);                                                            
                 }
                 
             }                       
