@@ -30,7 +30,7 @@ public class Main {
         }
         
         for (int i = 0; i < materias.size(); i++) {            
-            procesador.asignarMateria(semana, materias.get(i),false);
+            procesador.procesarMateria(semana, materias.get(i),false);
         }        
         
         //IMPRIMIR LA SEMANA
@@ -46,7 +46,8 @@ public class Main {
                 System.out.println("        Aula: "+aula.getNombre()+", Capacidad: "+aula.getCapacidad());                
                 for (int k = 0; k < aula.getHoras().size(); k++) {
                     Hora hora = aula.getHoras().get(k);
-                    System.out.println("            Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());                    
+                    //System.out.println("            Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());
+                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());                    
                 }
             }
         }

@@ -21,9 +21,16 @@ public class Procesador {
         return aleatorio;
     } 
     
+     public void asignar(Materia materia,ArrayList<Hora> horasDisponibles){
+         for (int j = 0; j < horasDisponibles.size(); j++) {
+            horasDisponibles.get(j).setMateria(materia);
+            horasDisponibles.get(j).setDisponible(false);
+            materia.setHorasAsignadas(materia.getHorasAsignadas()+1);
+        }
+     }
      
     
-    public void asignarMateria(Semana semana,Materia materia,Boolean cicloPar){
+    public void procesarMateria(Semana semana,Materia materia,Boolean cicloPar){
         int desde=0;
         int hasta=15;
         Dia dia; 
@@ -44,7 +51,8 @@ public class Procesador {
                 dia = ManejadorDias.elegirDiaDiferente(semana.getDias(), diasUsados);                      
                    
                 
-                ArrayList<Aula> aulas = dia.getAulas();                 //Obtenemos las aulas de ese día                        
+                ArrayList<Aula> aulas;                 //Obtenemos las aulas de ese día                        
+                aulas = dia.getAulas();
                 aula = elegirAula(aulas);                               //Elegimos el aula
                 ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
                 if(materia.getCiclo()<=5){
@@ -55,11 +63,7 @@ public class Procesador {
                 
                 horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta);
                 if(horasDisponibles != null){ //Si hay horas disponibles
-                    for (int j = 0; j < horasDisponibles.size(); j++) {
-                        horasDisponibles.get(j).setMateria(materia);
-                        horasDisponibles.get(j).setDisponible(false);
-                        materia.setHorasAsignadas(materia.getHorasAsignadas()+1);
-                    }
+                    asignar(materia, horasDisponibles); //Asignamos la materia
                     diasUsados.add(dia);
                     if(materia.getTotalHorasRequeridas()-materia.getHorasAsignadas()==3){
                         numHorasContinuas = 3;
