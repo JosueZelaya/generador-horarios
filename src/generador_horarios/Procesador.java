@@ -31,6 +31,7 @@ public class Procesador {
      }
      
      public boolean materiaEsDeEsteCiclo(Materia materia,boolean esCicloPar){
+         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
          return (materia.getCiclo() % 2 == 0 && esCicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !esCicloPar)/*Impares*/;         
      }
     
@@ -46,8 +47,7 @@ public class Procesador {
         }
         Aula aula;
                 
-        //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
-        if((materia.getCiclo() % 2 == 0 && esCicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !esCicloPar)/*Impares*/){            
+        if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo             
             
             //Las horas se asignan dependiendo de sus unidades valorativas.
             while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
