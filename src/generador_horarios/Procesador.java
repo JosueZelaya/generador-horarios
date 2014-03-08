@@ -27,8 +27,6 @@ public class Procesador {
     }
      
     public Hora elegirHora(ArrayList<Hora> horas,int desde,int hasta){
-        //int desde = 0;
-        //int hasta = horas.size()-1;
         int hora = getNumeroAleatorio(desde, hasta);
         return horas.get(hora);
     }
@@ -43,10 +41,9 @@ public class Procesador {
         
         for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
             Boolean hayDisponibles=false;
-            /*
-             * REVISAR LA SIGUIENTE LÍNEA
-             */
-            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<horas.size()-cantidadHoras+1){ //Si hay una hora verifico...
+            
+            //Si hay una hora disponible debe verificarse que su indice no sea tal que desborde el array al preguntar por las siguientes
+            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=horas.size()-cantidadHoras+1){
                 hayDisponibles = true;                
                     for (int j = i; j < i+cantidadHoras; j++) {
                         if(!horas.get(j).estaDisponible()){
