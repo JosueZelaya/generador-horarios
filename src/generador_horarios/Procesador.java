@@ -8,6 +8,7 @@ package generador_horarios;
 
 import static generador_horarios.ManejadorHoras.elegirHorasDisponibles;
 import static generador_horarios.ManejadorAulas.elegirAula;
+import static generador_horarios.ManejadorDias.elegirDiaDiferente;
 import java.util.ArrayList;
 
 /**
@@ -29,8 +30,11 @@ public class Procesador {
         }
      }
      
+     public boolean materiaEsDeEsteCiclo(Materia materia,boolean esCicloPar){
+         return (materia.getCiclo() % 2 == 0 && esCicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !esCicloPar)/*Impares*/;         
+     }
     
-    public void procesarMateria(Semana semana,Materia materia,Boolean cicloPar){
+    public void procesarMateria(Semana semana,Materia materia,boolean esCicloPar){
         int desde=0;
         int hasta=15;
         Dia dia; 
@@ -43,12 +47,12 @@ public class Procesador {
         Aula aula;
                 
         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
-        if((materia.getCiclo() % 2 == 0 && cicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !cicloPar)/*Impares*/){            
+        if((materia.getCiclo() % 2 == 0 && esCicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !esCicloPar)/*Impares*/){            
             
             //Las horas se asignan dependiendo de sus unidades valorativas.
             while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
                 //Elegimos el día que sea diferente a los días que ya elegimos para esta materia
-                dia = ManejadorDias.elegirDiaDiferente(semana.getDias(), diasUsados);                      
+                dia = elegirDiaDiferente(semana.getDias(), diasUsados);                      
                    
                 
                 ArrayList<Aula> aulas;                 //Obtenemos las aulas de ese día                        

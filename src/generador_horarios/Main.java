@@ -22,7 +22,7 @@ public class Main {
         //3936
         for (int i = 1; i <= 1000; i++) {
             String nombreMateria = "Materia "+i;
-            int ciclo = procesador.getNumeroAleatorio(1, 10);
+            int ciclo = Procesador.getNumeroAleatorio(1, 10);
             Materia materia = new Materia(nombreMateria);
             materia.setCiclo(ciclo);
             materias.add(materia);
