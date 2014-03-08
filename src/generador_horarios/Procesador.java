@@ -26,6 +26,17 @@ public class Procesador {
         return dias.get(dia);
     }
      
+    //Devuelve un día que no aparezca en el array de días ya elegidos
+    public Dia elegirDiaDiferente(ArrayList<Dia> dias,ArrayList<Dia> diasUsados){
+        Dia elegido = elegirDia(dias);
+        for (int i = 0; i < diasUsados.size(); i++) {
+            if (elegido.equals(diasUsados.get(i))) {
+                elegirDiaDiferente(dias, diasUsados);
+            }            
+        }
+        return elegido;
+    }
+     
     public Hora elegirHora(ArrayList<Hora> horas,int desde,int hasta){
         int hora = getNumeroAleatorio(desde, hasta);
         return horas.get(hora);
@@ -83,18 +94,21 @@ public class Procesador {
         int hasta=15;
         Dia dia; 
         ArrayList<Hora> horasDisponibles;
-        ArrayList<Dia> diasElegidos = new ArrayList();
+        ArrayList<Dia> diasUsados = new ArrayList();
         int numHorasContinuas = 2;
+        if(materia.getTotalHorasRequeridas()==3 || materia.getTotalHorasRequeridas()==1){
+            numHorasContinuas = materia.getTotalHorasRequeridas();
+        }
         Aula aula;
                 
         //Si el ciclo es par solo elegimos las materias pares, de lo contrario elegimos las impares
         if((materia.getCiclo() % 2 == 0 && cicloPar) /*Pares*/ || (materia.getCiclo() % 2 != 0 && !cicloPar)/*Impares*/){            
             
             //Las horas se asignan dependiendo de sus unidades valorativas.
-            while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){                
-                dia = elegirDia(semana.getDias());                      //Elegimos el día
-                
-                
+            while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
+                //Elegimos el día que sea diferente a los días que ya elegimos para esta materia
+                dia = elegirDiaDiferente(semana.getDias(), diasUsados);                      
+                   
                 
                 ArrayList<Aula> aulas = dia.getAulas();                 //Obtenemos las aulas de ese día                        
                 aula = elegirAula(aulas);                               //Elegimos el aula
@@ -106,18 +120,16 @@ public class Procesador {
                 }                    
                 
                 horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta);
-                if(horasDisponibles != null){
+                if(horasDisponibles != null){ //Si hay horas disponibles
                     for (int j = 0; j < horasDisponibles.size(); j++) {
                         horasDisponibles.get(j).setMateria(materia);
-                        horasDisponibles.get(j).setDisponible(false);                        
+                        horasDisponibles.get(j).setDisponible(false);
+                        materia.setHorasAsignadas(materia.getHorasAsignadas()+1);
                     }
-                    diasElegidos.add(dia);
-                    materia.setHorasAsignadas(materia.getHorasAsignadas()+numHorasContinuas);
+                    diasUsados.add(dia);
                     if(materia.getTotalHorasRequeridas()-materia.getHorasAsignadas()==3){
                         numHorasContinuas = 3;
                     }                    
-                }else{
-                    asignarMateria(semana, materia, cicloPar);
                 }
                 
             }
