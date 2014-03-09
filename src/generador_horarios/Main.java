@@ -16,7 +16,7 @@ public class Main {
     
     public static void main(String[] args){
         Semana semana = new Semana();
-        ArrayList<Materia> materias = new ArrayList<>();        
+        ArrayList<Materia> materias = new ArrayList();        
         Procesador procesador = new Procesador();
         
         //3936
