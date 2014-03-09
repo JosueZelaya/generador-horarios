@@ -62,7 +62,7 @@ public class Procesador {
                 //Calculamos el número de horas continuas que necesita la materia
                 int numHorasContinuas = calcularHorasContinuasRequeridas(materia);
                 //Elegimos el día que sea diferente a los días que ya elegimos para esta materia
-                dia = elegirDiaDiferente(semana.getDias(), diasUsados,materia);                      
+                dia = elegirDiaDiferente(semana.getDias(), diasUsados);                      
                    
                 
                 ArrayList<Aula> aulas;                 //Obtenemos las aulas de ese día                        
