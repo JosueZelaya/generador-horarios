@@ -23,7 +23,7 @@ public class Dia {
     
     public Dia(String nombre){
         this.nombre = nombre;
-        aulas = new ArrayList<>();
+        aulas = new ArrayList();
     }
 
     /**
