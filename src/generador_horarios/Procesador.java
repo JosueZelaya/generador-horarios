@@ -36,7 +36,7 @@ public class Procesador {
      }
     
      public int calcularHorasContinuasRequeridas(Materia materia){
-         int numHorasContinuas;
+        int numHorasContinuas;
         if(materia.getTotalHorasRequeridas()==3 || materia.getTotalHorasRequeridas()==1){
             numHorasContinuas = materia.getTotalHorasRequeridas();
         }else if(materia.getTotalHorasRequeridas()-materia.getHorasAsignadas()==3){
