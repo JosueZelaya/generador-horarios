@@ -5,6 +5,8 @@
  */
 package generador_horarios;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author alexander
@@ -17,15 +19,18 @@ public class Materia {
     private int unidadesValorativas;
     private String departamento;
     private int horasAsignadas;
+    private ArrayList<Grupo> grupos;
     
     public Materia() {
         nombre = "";
+        grupos = new ArrayList();
     }
     
     public Materia(String nombre){
         this.nombre = nombre;
         ciclo = 0;
         unidadesValorativas=0;
+        grupos = new ArrayList();
     }    
 
     /**
@@ -119,6 +124,20 @@ public class Materia {
             total = 6;
         
         return total;
+    }
+
+    /**
+     * @return the grupos
+     */
+    public ArrayList<Grupo> getGrupos() {
+        return grupos;
+    }
+
+    /**
+     * @param grupos the grupos to set
+     */
+    public void setGrupos(ArrayList<Grupo> grupos) {
+        this.grupos = grupos;
     }
 
 }

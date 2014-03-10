@@ -16,7 +16,8 @@ public class Hora {
     private String inicio;
     private String fin;
     private Materia materia;
-    private boolean disponible;
+    private Grupo grupo;
+    private boolean disponible;    
     
     public Hora(){
         
@@ -100,6 +101,20 @@ public class Hora {
      */
     public void setMateria(Materia materia) {
         this.materia = materia;
+    }
+
+    /**
+     * @return the grupo
+     */
+    public Grupo getGrupo() {
+        return grupo;
+    }
+
+    /**
+     * @param grupo the grupo to set
+     */
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
     }
     
 }

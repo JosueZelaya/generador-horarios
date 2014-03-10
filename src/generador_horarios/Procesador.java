@@ -22,9 +22,10 @@ public class Procesador {
         return aleatorio;
     } 
     
-     public void asignar(Materia materia,ArrayList<Hora> horasDisponibles){
+     public void asignar(Materia materia,Grupo grupo,ArrayList<Hora> horasDisponibles){
          for (int j = 0; j < horasDisponibles.size(); j++) {
             horasDisponibles.get(j).setMateria(materia);
+            horasDisponibles.get(j).setGrupo(grupo);
             horasDisponibles.get(j).setDisponible(false);
             materia.setHorasAsignadas(materia.getHorasAsignadas()+1);
         }
@@ -56,32 +57,38 @@ public class Procesador {
         Aula aula;
                 
         if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo             
+            ArrayList<Grupo> grupos;
+            grupos = materia.getGrupos();
             
-            //Las horas se asignan dependiendo de sus unidades valorativas.
-            while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
-                //Calculamos el número de horas continuas que necesita la materia
-                int numHorasContinuas = calcularHorasContinuasRequeridas(materia);
-                //Elegimos el día que sea diferente a los días que ya elegimos para esta materia
-                dia = elegirDiaDiferente(semana.getDias(), diasUsados);                      
-                   
-                
-                ArrayList<Aula> aulas;                 //Obtenemos las aulas de ese día                        
-                aulas = dia.getAulas();
-                aula = elegirAula(aulas);                               //Elegimos el aula
-                ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
-                if(materia.getCiclo()<=5){
-                    hasta = 8;
-                }else{
-                    desde = 8;
-                }                    
-                
-                horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta);
-                if(horasDisponibles != null){ //Si hay horas disponibles
-                    asignar(materia, horasDisponibles); //Asignamos la materia
-                    diasUsados.add(dia);                                                            
+            for (int i = 0; i < grupos.size(); i++) {
+                Grupo grupo = grupos.get(i);
+                //Las horas se asignan dependiendo de sus unidades valorativas.
+                while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
+                    //Calculamos el número de horas continuas que necesita la materia
+                    int numHorasContinuas = calcularHorasContinuasRequeridas(materia);
+                    //Elegimos el día que sea diferente a los días que ya elegimos para esta materia
+                    dia = elegirDiaDiferente(semana.getDias(), diasUsados);                      
+
+
+                    ArrayList<Aula> aulas;                 //Obtenemos las aulas de ese día                        
+                    aulas = dia.getAulas();
+                    aula = elegirAula(aulas);                               //Elegimos el aula
+                    ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
+                    if(materia.getCiclo()<=5){
+                        hasta = 8;
+                    }else{
+                        desde = 8;
+                    }                    
+
+                    horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta);
+                    if(horasDisponibles != null){ //Si hay horas disponibles
+                        asignar(materia, grupo,horasDisponibles); //Asignamos la materia
+                        diasUsados.add(dia);                                                            
+                    }
+
                 }
-                
-            }                       
+                materia.setHorasAsignadas(0);
+            }                                   
             
         }        
         

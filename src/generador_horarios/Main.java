@@ -6,6 +6,8 @@
 
 package generador_horarios;
 
+import static generador_horarios.ManejadorMaterias.getTodasMaterias;
+import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.util.ArrayList;
 
 /**
@@ -19,10 +21,20 @@ public class Main {
         ArrayList<Materia> materias;        
         Procesador procesador = new Procesador();
         
-        materias = ManejadorMaterias.getTodasMaterias();
+        materias = getTodasMaterias();
         
         for (int i = 0; i < materias.size(); i++) {            
-            procesador.procesarMateria(semana, materias.get(i),false);
+            Materia materia = materias.get(i);
+            ArrayList<Grupo> grupos;
+            grupos = new ArrayList();
+            int numGrupos = getNumeroAleatorio(1, 12);
+            for (int j = 0; j < numGrupos; j++) {
+                int numEstudiantes = getNumeroAleatorio(1, 100);            
+                Grupo grupo = new Grupo(j,numEstudiantes);
+                grupos.add(grupo);
+            } 
+            materia.setGrupos(grupos);
+            procesador.procesarMateria(semana, materia,false);
         }        
         
         //IMPRIMIR LA SEMANA
@@ -39,7 +51,7 @@ public class Main {
                 for (int k = 0; k < aula.getHoras().size(); k++) {
                     Hora hora = aula.getHoras().get(k);
                     //System.out.println("            Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());
-                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());                    
+                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+" Grupo: "+hora.getGrupo().getId()+"Ciclo: "+hora.getMateria().getCiclo());                    
                 }
             }
         }
