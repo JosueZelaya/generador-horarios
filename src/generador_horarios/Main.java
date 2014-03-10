@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] args){
         Campus campus = new Campus();
         ArrayList<Materia> materias;        
-        nProcesador procesador = new nProcesador();
+        Procesador procesador = new Procesador();
         
         materias = ManejadorMaterias.getTodasMaterias();
         
