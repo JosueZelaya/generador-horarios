@@ -17,25 +17,13 @@ public class Aula {
     private String nombre;
     private int capacidad;
     private boolean disponible;
-    private ArrayList<Hora> horas;
-    
-    
-    public Aula(){
+    private ArrayList<Dia> dias;
+
+    public Aula() {
+        this.nombre = "";
+        this.capacidad = 0;
         this.disponible = true;
-    }
-
-    /**
-     * @return the disponible
-     */
-    public boolean estaDisponible() {
-        return disponible;
-    }
-
-    /**
-     * @param disponible the disponible to set
-     */
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
+        this.dias = new ArrayList();
     }
 
     /**
@@ -67,17 +55,33 @@ public class Aula {
     }
 
     /**
-     * @return the horas
+     * @return the disponible
      */
-    public ArrayList<Hora> getHoras() {
-        return horas;
+    public boolean isDisponible() {
+        return disponible;
     }
 
     /**
-     * @param horas the horas to set
+     * @param disponible the disponible to set
      */
-    public void setHoras(ArrayList<Hora> horas) {
-        this.horas = horas;
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
     }
+
+    /**
+     * @return the dias
+     */
+    public ArrayList<Dia> getDias() {
+        return dias;
+    }
+
+    /**
+     * @param dias the dias to set
+     */
+    public void setDias(ArrayList<Dia> dias) {
+        this.dias = dias;
+    }
+    
+    
     
 }

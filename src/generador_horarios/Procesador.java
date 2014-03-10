@@ -47,44 +47,44 @@ public class Procesador {
          return numHorasContinuas;
      }
      
-    public void procesarMateria(Semana semana,Materia materia,boolean esCicloPar){
-        int desde=0;
-        int hasta=15;
-        Dia dia; 
-        ArrayList<Hora> horasDisponibles;
-        ArrayList<Dia> diasUsados = new ArrayList();        
-        Aula aula;
-                
-        if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo             
-            
-            //Las horas se asignan dependiendo de sus unidades valorativas.
-            while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
-                //Calculamos el número de horas continuas que necesita la materia
-                int numHorasContinuas = calcularHorasContinuasRequeridas(materia);
-                //Elegimos el día que sea diferente a los días que ya elegimos para esta materia
-                dia = elegirDiaDiferente(semana.getDias(), diasUsados);                      
-                   
-                
-                ArrayList<Aula> aulas;                 //Obtenemos las aulas de ese día                        
-                aulas = dia.getAulas();
-                aula = elegirAula(aulas);                               //Elegimos el aula
-                ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
-                if(materia.getCiclo()<=5){
-                    hasta = 8;
-                }else{
-                    desde = 8;
-                }                    
-                
-                horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta);
-                if(horasDisponibles != null){ //Si hay horas disponibles
-                    asignar(materia, horasDisponibles); //Asignamos la materia
-                    diasUsados.add(dia);                                                            
-                }
-                
-            }                       
-            
-        }        
-        
-    }
+//    public void procesarMateria(Semana semana,Materia materia,boolean esCicloPar){
+//        int desde=0;
+//        int hasta=15;
+//        Dia dia; 
+//        ArrayList<Hora> horasDisponibles;
+//        ArrayList<Dia> diasUsados = new ArrayList();        
+//        Aula aula;
+//                
+//        if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo             
+//            
+//            //Las horas se asignan dependiendo de sus unidades valorativas.
+//            while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
+//                //Calculamos el número de horas continuas que necesita la materia
+//                int numHorasContinuas = calcularHorasContinuasRequeridas(materia);
+//                //Elegimos el día que sea diferente a los días que ya elegimos para esta materia
+//                dia = elegirDiaDiferente(semana.getDias(), diasUsados);                      
+//                   
+//                
+//                ArrayList<Aula> aulas;                 //Obtenemos las aulas de ese día                        
+//                aulas = dia.getAulas();
+//                aula = elegirAula(aulas);                               //Elegimos el aula
+//                ArrayList<Hora> horas = aula.getHoras();                //Obtenemos las horas de esa aula
+//                if(materia.getCiclo()<=5){
+//                    hasta = 8;
+//                }else{
+//                    desde = 8;
+//                }                    
+//                
+//                horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta);
+//                if(horasDisponibles != null){ //Si hay horas disponibles
+//                    asignar(materia, horasDisponibles); //Asignamos la materia
+//                    diasUsados.add(dia);                                                            
+//                }
+//                
+//            }                       
+//            
+//        }        
+//        
+//    }
     
 }

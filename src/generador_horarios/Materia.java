@@ -3,7 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package generador_horarios;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -15,18 +18,19 @@ public class Materia {
     private String nombre;
     private int ciclo;
     private int unidadesValorativas;
-    private String departamento;
     private int horasAsignadas;
+    private String departamento;
+    private ArrayList<String> carreras;
     
-    public Materia() {
+    public Materia(){
+        codigo = "";
         nombre = "";
-    }
-    
-    public Materia(String nombre){
-        this.nombre = nombre;
         ciclo = 0;
         unidadesValorativas=0;
-    }    
+        departamento="";
+        carreras = new ArrayList();
+    }
+    
 
     /**
      * @return the codigo
@@ -99,6 +103,27 @@ public class Materia {
     }
 
     /**
+     * @return the carreras
+     */
+    public ArrayList<String> getCarreras() {
+        return carreras;
+    }
+
+    /**
+     * @param carreras the carreras to set
+     */
+    public void setCarreras(ArrayList<String> carreras) {
+        this.carreras = carreras;
+    }
+    
+    public int getTotalHorasRequeridas(){
+        int total = Math.round((this.unidadesValorativas*20)/16);
+        if(total>5)
+            total = 6;
+        return total;
+    }
+
+    /**
      * @return the horasAsignadas
      */
     public int getHorasAsignadas() {
@@ -112,13 +137,4 @@ public class Materia {
         this.horasAsignadas = horasAsignadas;
     }
     
-    //Calcula el total de horas que debe tener esta materia en base a sus unidades valorativas...
-    public int getTotalHorasRequeridas(){
-        int total = Math.round((this.unidadesValorativas * 20) / 16);
-        if(total > 5)
-            total = 6;
-        
-        return total;
-    }
-
 }

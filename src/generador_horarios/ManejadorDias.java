@@ -49,7 +49,7 @@ public abstract class ManejadorDias {
     public static Dia elegirDiaDiferente(ArrayList<Dia> dias,ArrayList<Dia> diasUsados){
         Dia elegido = elegirDia(dias);
         for (int i = 0; i < diasUsados.size(); i++) {
-            if (elegido.equals(diasUsados.get(i))) {                
+            if (elegido.getNombre().equals(diasUsados.get(i).getNombre())) {                
                 elegido = elegirDiaDiferente(dias, diasUsados);
             }            
         }

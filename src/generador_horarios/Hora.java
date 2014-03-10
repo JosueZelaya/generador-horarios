@@ -18,19 +18,21 @@ public class Hora {
     private Materia materia;
     private boolean disponible;
     
-    public Hora(){
-        
-    }
-    
-    public Hora(int id){
+    public Hora(int id) {
         this.idHora = id;
-        disponible = true;
-        materia = new Materia();
+        this.inicio = "";
+        this.fin = "";
+        this.materia = new Materia();
+        this.disponible = true;
     }
 
-    /**
-     * @return the aulas
-     */
+    public Hora() {
+        this.idHora = 0;
+        this.inicio = "";
+        this.fin = "";
+        this.materia = new Materia();
+        this.disponible = true;
+    }
 
     /**
      * @return the idHora
@@ -75,20 +77,6 @@ public class Hora {
     }
 
     /**
-     * @return the disponible
-     */
-    public boolean estaDisponible() {
-        return disponible;
-    }
-
-    /**
-     * @param disponible the disponible to set
-     */
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
-    }
-
-    /**
      * @return the materia
      */
     public Materia getMateria() {
@@ -101,5 +89,21 @@ public class Hora {
     public void setMateria(Materia materia) {
         this.materia = materia;
     }
+
+    /**
+     * @return the disponible
+     */
+    public boolean estaDisponible() {
+        return disponible;
+    }
+
+    /**
+     * @param disponible the disponible to set
+     */
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
+    }
+    
+    
     
 }

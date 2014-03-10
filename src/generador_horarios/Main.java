@@ -15,32 +15,39 @@ import java.util.ArrayList;
 public class Main {
     
     public static void main(String[] args){
-        Semana semana = new Semana();
+        Campus campus = new Campus();
         ArrayList<Materia> materias;        
-        Procesador procesador = new Procesador();
+        nProcesador procesador = new nProcesador();
         
         materias = ManejadorMaterias.getTodasMaterias();
         
         for (int i = 0; i < materias.size(); i++) {            
-            procesador.procesarMateria(semana, materias.get(i),false);
+            procesador.procesarMateria(campus, materias.get(i),false);
         }        
         
         //IMPRIMIR LA SEMANA
-        imprimir(semana);
+        imprimir(campus);
     }
     
-    public static void imprimir(Semana semana){
-        for (int i = 0; i < semana.getDias().size(); i++) {
-            Dia dia = semana.getDias().get(i);
-            System.out.println("Dia: "+dia.getNombre());
-            for (int j = 0; j < dia.getAulas().size(); j++) {
-                Aula aula = dia.getAulas().get(j);
-                System.out.println("        Aula: "+aula.getNombre()+", Capacidad: "+aula.getCapacidad());                
-                for (int k = 0; k < aula.getHoras().size(); k++) {
-                    Hora hora = aula.getHoras().get(k);
-                    //System.out.println("            Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());
+    public static void imprimir(Campus campus){
+        ArrayList<Aula> aulas;
+        aulas = campus.getAulas();
+        ArrayList<Dia> dias;
+        ArrayList<Hora> horas;
+        
+        for (int i = 0; i < aulas.size(); i++) {
+            Aula aula = aulas.get(i);
+            System.out.println("Aula: "+aula.getNombre());
+            dias = aula.getDias();
+            for (int j = 0; j < dias.size(); j++) {
+                Dia dia = dias.get(j);
+                System.out.println("        Nombre: "+dia.getNombre());
+                horas = dia.getHoras();
+                for (int k = 0; k < horas.size(); k++) {
+                    Hora hora = horas.get(k);
                     System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());                    
                 }
+                
             }
         }
     }
