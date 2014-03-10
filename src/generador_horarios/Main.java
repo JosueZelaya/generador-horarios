@@ -16,18 +16,10 @@ public class Main {
     
     public static void main(String[] args){
         Semana semana = new Semana();
-        ArrayList<Materia> materias = new ArrayList<>();        
+        ArrayList<Materia> materias;        
         Procesador procesador = new Procesador();
         
-        //3936
-        for (int i = 1; i <= 1000; i++) {
-            String nombreMateria = "Materia "+i;
-            int ciclo = Procesador.getNumeroAleatorio(1, 10);
-            Materia materia = new Materia(nombreMateria);
-            materia.setCiclo(ciclo);
-            materias.add(materia);
-            materia.setUnidadesValorativas(16);
-        }
+        materias = ManejadorMaterias.getTodasMaterias();
         
         for (int i = 0; i < materias.size(); i++) {            
             procesador.procesarMateria(semana, materias.get(i),false);

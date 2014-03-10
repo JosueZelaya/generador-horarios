@@ -114,14 +114,11 @@ public class Materia {
     
     //Calcula el total de horas que debe tener esta materia en base a sus unidades valorativas...
     public int getTotalHorasRequeridas(){
-        switch(unidadesValorativas){
-            case 0:
-                return 0;                
-            case 16:
-                return 5;
-            default:
-                return 5;
-        }
+        int total = Math.round((this.unidadesValorativas * 20) / 16);
+        if(total > 5)
+            total = 6;
+        
+        return total;
     }
 
 }

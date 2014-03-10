@@ -42,9 +42,9 @@ public class Procesador {
         }else if(materia.getTotalHorasRequeridas()-materia.getHorasAsignadas()==3){
             numHorasContinuas = 3;
         }else{
-            numHorasContinuas = 2;
+             numHorasContinuas = 2;
         }
-        return numHorasContinuas;
+         return numHorasContinuas;
      }
      
     public void procesarMateria(Semana semana,Materia materia,boolean esCicloPar){
