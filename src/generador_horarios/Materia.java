@@ -20,6 +20,8 @@ public class Materia {
     private int unidadesValorativas;
     private int horasAsignadas;
     private String departamento;
+    private int grupo;
+    private int capacidad;
     private ArrayList<String> carreras;
     
     public Materia(){
