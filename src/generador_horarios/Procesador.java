@@ -73,37 +73,55 @@ public class Procesador {
         }
      }
     
+    public void asignarAula(Materia materia,Campus campus){
+         ArrayList<Aula> aulas;
+         Aula aulaElegida;
+         aulas = campus.getAulas();                                      //Obtenemos todas las aulas
+         aulaElegida = elegirAula(aulas);                                //Elegimos una aula entre todas
+         ArrayList<Dia> dias;
+         dias = aulaElegida.getDias();
+         if(!asignarDias(materia, dias)){
+             asignarAula(materia, campus);
+         }         
+    }
+    
+    public boolean asignarDias(Materia materia,ArrayList<Dia> dias){
+       Dia diaElegido;
+       ArrayList<Dia> diasUsados = new ArrayList();
+       ArrayList<Dia> diasDescartados = new ArrayList();
+       //Se debe elegir un día diferente para cada clase
+       while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
+            diaElegido = elegirDiaDiferente(dias, diasUsados); //Elegimos un día entre todos
+            if(diaElegido != null){
+                ArrayList<Hora> horas;       
+                horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día                
+                asignarHoras(materia, horas);
+                diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
+            }else{
+                return false;
+            }            
+       }
+       return true;
+    }
+    
+    public void asignarHoras(Materia materia,ArrayList<Hora> horas){
+        ArrayList<Hora> horasDisponibles;
+        int numHorasContinuas = calcularHorasContinuasRequeridas(materia);  //Calculamos el numero de horas continuas para la clase        
+        horasDisponibles = ManejadorHoras.buscarhorasDisponibles(horas, numHorasContinuas, desde, hasta); //elige las primeras horas disponibles que encuentre ese día
+        
+        if(horasDisponibles != null){                                   //Si hay horas disponibles
+            asignar(materia, horasDisponibles);                         //Asignamos la materia            
+        }
+    }
+    
     //Realiza el procesamiento necesario para generar el horario de una materia.
     public void procesarMateria(Campus campus,Materia materia,boolean esCicloPar){
-       ArrayList<Aula> aulas;
-       ArrayList<Dia> dias;
-       ArrayList<Dia> diasUsados = new ArrayList(); 
-       ArrayList<Hora> horas;
-       ArrayList<Hora> horasDisponibles;
-       Aula aulaElegida;
-       Dia diaElegido;
-       int numHorasContinuas;
        
                
-       if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo
-           //Las horas se asignan dependiendo de sus unidades valorativas.
-            while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
-                numHorasContinuas = calcularHorasContinuasRequeridas(materia);  //Calculamos el numero de horas continuas para la clase
-                establecerTurno(materia);                                       //Se establece el turno
-                aulas = campus.getAulas();                                      //Obtenemos todas las aulas
-                aulaElegida = elegirAula(aulas);                                //Elegimos una aula entre todas
-                dias = aulaElegida.getDias();                                   //Obtenemos todos los días que está disponible esa aula
-                diaElegido = elegirDiaDiferente(dias, diasUsados);              //Elegimos un día entre todos
-                horas = diaElegido.getHoras();                                  //Obtenemos todas las horas en que pueden haber clases ese día                
-                horasDisponibles = elegirHorasDisponibles(horas,numHorasContinuas,desde,hasta); //Elegimos las horas continuas que se encuentren disponibles en ese turno
-                if(horasDisponibles != null){                                   //Si hay horas disponibles
-                    asignar(materia, horasDisponibles);                         //Asignamos la materia
-                    diasUsados.add(diaElegido);                                 //Guardamos el día para no elegirno de nuevo para esta materia                           
-                }else{
-                    procesarMateria(campus, materia, esCicloPar);
-                }
-                    
-            }        
+       if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo            
+            establecerTurno(materia);                                       //Se establece el turno
+            asignarAula(materia, campus);
+                   
         }
        
        

@@ -53,6 +53,32 @@ public abstract class ManejadorHoras {
         return horas.get(hora);
     }
     
+    //Devuelve las primeras horas disponibles consecutivas que encuentre
+    public static ArrayList<Hora> buscarhorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta){
+        ArrayList<Hora> horasDisponibles = new ArrayList();
+        for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
+            Boolean hayBloquesDisponibles=false;
+            
+            //Si hay una hora disponible debe verificarse que su indice no sea tal que se desborde el array al preguntar por las siguientes
+            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=horas.size()-cantidadHoras+1){
+                hayBloquesDisponibles = true;
+                    for (int j = i; j < i+cantidadHoras; j++) {
+                        if(!horas.get(j).estaDisponible()){                            
+                            hayBloquesDisponibles=false;
+                        }
+                    }
+                    
+            }
+            //Si hay horas consecutivas disponibles las agrego al array
+            if(hayBloquesDisponibles){
+                for (int j = i; j < i+cantidadHoras; j++) {
+                    horasDisponibles.add(horas.get(j));
+                }
+                return horasDisponibles;
+            }
+        }
+        return null;
+    }
     
     /**
      *

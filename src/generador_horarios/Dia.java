@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class Dia {
  
     private String nombre;
-    private ArrayList<Hora> horas;
+    private ArrayList<Hora> horas;    
 
     public Dia(String nombre) {
         this.nombre = nombre;

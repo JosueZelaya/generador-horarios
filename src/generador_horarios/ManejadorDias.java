@@ -48,10 +48,15 @@ public abstract class ManejadorDias {
     
     //Devuelve un día que no aparezca en el array de días ya elegidos
     public static Dia elegirDiaDiferente(ArrayList<Dia> dias,ArrayList<Dia> diasUsados){
+        //Si ya se usaron todos los días entonces no seguimos buscando y devolvemos null
+        if(dias.size() == diasUsados.size()){
+            return null;
+        }        
+        
         Dia elegido = elegirDia(dias);
         for (int i = 0; i < diasUsados.size(); i++) {
             if (elegido.getNombre().equals(diasUsados.get(i).getNombre())) {                
-                elegido = elegirDiaDiferente(dias, diasUsados);
+                elegido = elegirDiaDiferente(dias,diasUsados);
             }            
         }
         return elegido;
