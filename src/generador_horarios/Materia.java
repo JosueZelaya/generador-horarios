@@ -20,6 +20,7 @@ public class Materia {
     private int unidadesValorativas;
     private int horasAsignadas;
     private String departamento;
+    private boolean incompleta;
     private int grupo;
     private int capacidad;
     private ArrayList<String> carreras;
@@ -31,6 +32,7 @@ public class Materia {
         unidadesValorativas=0;
         departamento="";
         carreras = new ArrayList();
+        incompleta = false; //Cambiará a true si no se puede asignar o se asigna parcialmente.
     }
     
 
@@ -137,6 +139,20 @@ public class Materia {
      */
     public void setHorasAsignadas(int horasAsignadas) {
         this.horasAsignadas = horasAsignadas;
+    }
+
+    /**
+     * @return the incompleta
+     */
+    public boolean quedoIncompleta() {
+        return incompleta;
+    }
+
+    /**
+     * @param incompleta the incompleta to set
+     */
+    public void setIncompleta(boolean incompleta) {
+        this.incompleta = incompleta;
     }
     
 }

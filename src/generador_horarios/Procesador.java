@@ -6,9 +6,10 @@
 
 package generador_horarios;
 
-import static generador_horarios.ManejadorAulas.elegirAula;
+
 import static generador_horarios.ManejadorDias.elegirDiaDiferente;
-import static generador_horarios.ManejadorHoras.elegirHorasDisponibles;
+import static generador_horarios.ManejadorHoras.buscarhorasDisponibles;
+
 import java.util.ArrayList;
 
 /**
@@ -73,22 +74,36 @@ public class Procesador {
         }
      }
     
-    public void asignarAula(Materia materia,Campus campus){
-         ArrayList<Aula> aulas;
-         Aula aulaElegida;
-         aulas = campus.getAulas();                                      //Obtenemos todas las aulas
-         aulaElegida = elegirAula(aulas);                                //Elegimos una aula entre todas
-         ArrayList<Dia> dias;
-         dias = aulaElegida.getDias();
-         if(!asignarDias(materia, dias)){
-             asignarAula(materia, campus);
-         }         
+    public void asignarAula(Materia materia, Campus campus){         
+         ArrayList<Aula> aulasUsadas = new ArrayList();
+         boolean sePudoAsignar=false;         
+         while(!sePudoAsignar){
+             Aula aula = ManejadorAulas.elegirAulaDiferente(campus.getAulas(), aulasUsadas);
+             if(aula!=null){
+                aulasUsadas.add(aula);
+                ArrayList<Dia> dias;
+                dias = aula.getDias();
+                if(asignarDias(materia, dias)){                 
+                    sePudoAsignar = true;
+                }
+             }else{
+                 //Si ya no hay aulas
+                 materia.setIncompleta(true); //La materia no se pudo asignar o se asigno parcialmente
+                 sePudoAsignar=true; //Indicamos que se pudo asignar para romper el bucle
+             }
+                          
+         }        
     }
+    
+//    public boolean asignarAula(Materia materia,Aula aula){                                                  //Elegimos una aula entre todas
+//         ArrayList<Dia> dias;
+//         dias = aula.getDias();
+//         return asignarDias(materia, dias);
+//    }
     
     public boolean asignarDias(Materia materia,ArrayList<Dia> dias){
        Dia diaElegido;
-       ArrayList<Dia> diasUsados = new ArrayList();
-       ArrayList<Dia> diasDescartados = new ArrayList();
+       ArrayList<Dia> diasUsados = new ArrayList();       
        //Se debe elegir un día diferente para cada clase
        while(materia.getTotalHorasRequeridas() > materia.getHorasAsignadas()){
             diaElegido = elegirDiaDiferente(dias, diasUsados); //Elegimos un día entre todos
@@ -107,7 +122,7 @@ public class Procesador {
     public void asignarHoras(Materia materia,ArrayList<Hora> horas){
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia);  //Calculamos el numero de horas continuas para la clase        
-        horasDisponibles = ManejadorHoras.buscarhorasDisponibles(horas, numHorasContinuas, desde, hasta); //elige las primeras horas disponibles que encuentre ese día
+        horasDisponibles = buscarhorasDisponibles(horas, numHorasContinuas, desde, hasta); //elige las primeras horas disponibles que encuentre ese día
         
         if(horasDisponibles != null){                                   //Si hay horas disponibles
             asignar(materia, horasDisponibles);                         //Asignamos la materia            
