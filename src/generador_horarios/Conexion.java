@@ -8,6 +8,7 @@ package generador_horarios;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,22 +19,27 @@ import java.sql.Statement;
  */
 public class Conexion {
     
-    private String usuario;
-    private String clave;
-    private String url;
-    private Connection conn = null;
-    private Statement estancia;
+    private final String usuario;
+    private final String clave;
+    private final String url;
+    private Connection conn;
+    private Statement declaracion;
+    private PreparedStatement ps;
     
     public Conexion(String usuario, String clave, String url) {
         this.usuario = usuario;
         this.clave = clave;
         this.url = url;
+        conn = null;
+        ps = null;
     }
     
     public Conexion(){
         this.usuario = "postgres";
         this.clave = "password";
         this.url = "jdbc:postgresql://localhost/horarios_bd";
+        conn = null;
+        ps = null;
     }
     
     public void conectar() throws SQLException {
@@ -41,28 +47,50 @@ public class Conexion {
     }
     
     public void cierraConexion() throws SQLException {
-        this.estancia.close();
+        if(this.declaracion == null || this.declaracion.isClosed())
+            this.ps.close();
+        else
+            this.declaracion.close();
+        
         this.conn.close();
     }
     
     public ResultSet consulta(String consulta) throws SQLException {
-        this.estancia = (Statement) conn.createStatement();
-        return this.estancia.executeQuery(consulta);
+        this.declaracion = (Statement) conn.createStatement();
+        return this.declaracion.executeQuery(consulta);
     }
  
     public void actualizar(String actualiza) throws SQLException {
-        this.estancia = (Statement) conn.createStatement();
-        estancia.executeUpdate(actualiza);
+        this.declaracion = (Statement) conn.createStatement();
+        declaracion.executeUpdate(actualiza);
     }
  
     public ResultSet borrar(String borra) throws SQLException {
-        Statement st = (Statement) this.conn.createStatement();
-        return (ResultSet) st.executeQuery(borra);
+        this.declaracion = (Statement) this.conn.createStatement();
+        return (ResultSet) this.declaracion.executeQuery(borra);
     }
  
     public int insertar(String inserta) throws SQLException {
-        Statement st = (Statement) this.conn.createStatement();
-        return st.executeUpdate(inserta);
+        this.declaracion = (Statement) this.conn.createStatement();
+        return this.declaracion.executeUpdate(inserta);
+    }
+    
+    public ResultSet consultaPrep(String consulta, boolean param) throws SQLException {
+        this.ps = this.conn.prepareStatement(consulta);
+        if(param){
+            this.ps.setInt(1, 2);
+            this.ps.setInt(2, 4);
+            this.ps.setInt(3, 6);
+            this.ps.setInt(4, 8);
+            this.ps.setInt(5, 10);
+        } else{
+            this.ps.setInt(1, 1);
+            this.ps.setInt(2, 3);
+            this.ps.setInt(3, 5);
+            this.ps.setInt(4, 7);
+            this.ps.setInt(5, 9);
+        }
+        return this.ps.executeQuery();
     }
 }
 
