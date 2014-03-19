@@ -28,9 +28,14 @@ public abstract class ManejadorMaterias {
             conexion.conectar();
             //resultadoConsulta = conexion.consulta("SELECT * FROM materias");
             resultadoConsulta = conexion.consulta("SELECT materias.cod_materia,materias.nombre_materia,materias.unidades_valorativas,carreras_materias.ciclo,carreras_materias.num_grupos,carreras_materias.num_alumnos_grupo FROM carreras_materias INNER JOIN materias ON materias.cod_materia=carreras_materias.materias_cod_materia ORDER BY carreras_materias.num_alumnos_grupo DESC;");
+            int cont=0;
             while(resultadoConsulta.next()){
                 int numeroGrupos = resultadoConsulta.getInt("num_grupos");
+                cont++;
+                System.out.println("materias: "+cont);
                 for (int i = 1; i <= numeroGrupos; i++) {
+                    cont++;
+                    System.out.println("materias: "+cont);                    
                     Materia materia = new Materia();
                     materia.setCodigo(resultadoConsulta.getString("cod_materia"));
                     materia.setNombre(resultadoConsulta.getString("nombre_materia"));
