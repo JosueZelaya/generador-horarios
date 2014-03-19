@@ -95,11 +95,26 @@ public class Procesador {
          }        
     }
     
-//    public boolean asignarAula(Materia materia,Aula aula){                                                  //Elegimos una aula entre todas
-//         ArrayList<Dia> dias;
-//         dias = aula.getDias();
-//         return asignarDias(materia, dias);
-//    }
+    public void asignarAulaPorCapacidad(Materia materia,Campus campus){
+        ArrayList<Aula> aulas = campus.getAulas();
+        int cantidadAlumnos = materia.getCantidadAlumnos();        
+        int numAulas = campus.getAulas().size();
+        
+        
+        for (int i = 0; i < numAulas; i++) {
+            Aula aula = aulas.get(i);
+            int capacidad = aula.getCapacidad();
+            if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
+                ArrayList<Dia> dias;
+                dias = aula.getDias();
+                if(asignarDias(materia, dias)){                 
+                   break; 
+                }                
+            }
+        }
+               
+         
+    }
     
     public boolean asignarDias(Materia materia,ArrayList<Dia> dias){
        Dia diaElegido;
@@ -131,14 +146,12 @@ public class Procesador {
     
     //Realiza el procesamiento necesario para generar el horario de una materia.
     public void procesarMateria(Campus campus,Materia materia,boolean esCicloPar){
-       
-               
+              
        if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo            
             establecerTurno(materia);                                       //Se establece el turno
-            asignarAula(materia, campus);
-                   
+            //asignarAula(materia, campus);
+            asignarAulaPorCapacidad(materia, campus);
         }
-       
        
     }
     

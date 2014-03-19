@@ -26,7 +26,7 @@ public abstract class ManejadorAulas {
         ResultSet resultadoConsulta;
         try {
             conexion.conectar();
-            resultadoConsulta = conexion.consulta("SELECT * FROM aulas");
+            resultadoConsulta = conexion.consulta("SELECT * FROM aulas ORDER BY capacidad ASC");
             while(resultadoConsulta.next()){
                 Aula aula = new Aula();
                 aula.setNombre(resultadoConsulta.getString("cod_aula"));

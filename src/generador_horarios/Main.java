@@ -45,7 +45,7 @@ public class Main {
                 horas = dia.getHoras();
                 for (int k = 0; k < horas.size(); k++) {
                     Hora hora = horas.get(k);
-                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());                    
+                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo()+", grupo: "+hora.getMateria().getGrupoID());                    
                 }
                 
             }
