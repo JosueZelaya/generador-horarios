@@ -145,13 +145,11 @@ public class Procesador {
     }
     
     //Realiza el procesamiento necesario para generar el horario de una materia.
-    public void procesarMateria(Campus campus,Materia materia,boolean esCicloPar){
+    public void procesarMateria(Campus campus,Materia materia){
               
-       if(materiaEsDeEsteCiclo(materia, esCicloPar)){//Verificamos que la materia corresponda a este ciclo            
-            establecerTurno(materia);                                       //Se establece el turno
+            establecerTurno(materia);                         //Se establece el turno
             //asignarAula(materia, campus);
             asignarAulaPorCapacidad(materia, campus);
-        }
        
     }
     

@@ -21,12 +21,12 @@ public class Main {
         
         materias = ManejadorMaterias.getTodasMaterias(true);
         
-        //for (int i = 0; i < materias.size(); i++) {            
-        //    procesador.procesarMateria(campus, materias.get(i),false);
-        //}        
+        for (int i = 0; i < materias.size(); i++) {            
+            procesador.procesarMateria(campus, materias.get(i));
+        }        
         
         //IMPRIMIR LA SEMANA
-        //imprimir(campus);
+        imprimir(campus);
     }
     
     public static void imprimir(Campus campus){
