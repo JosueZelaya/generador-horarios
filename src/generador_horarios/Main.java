@@ -18,15 +18,16 @@ public class Main {
         Campus campus = new Campus();
         ArrayList<Materia> materias;        
         Procesador procesador = new Procesador();
+        boolean cicloPar = true;
         
-        materias = ManejadorMaterias.getTodasMaterias(true);
+        materias = ManejadorMaterias.getTodasMaterias(cicloPar);
         
-        //for (int i = 0; i < materias.size(); i++) {            
-        //    procesador.procesarMateria(campus, materias.get(i),false);
-        //}        
+        for (int i = 0; i < materias.size(); i++) {            
+            procesador.procesarMateria(campus, materias.get(i),cicloPar);
+        }        
         
         //IMPRIMIR LA SEMANA
-        //imprimir(campus);
+        imprimir(campus);
     }
     
     public static void imprimir(Campus campus){
