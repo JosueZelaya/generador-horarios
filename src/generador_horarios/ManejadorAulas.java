@@ -35,8 +35,7 @@ public abstract class ManejadorAulas {
             }
             conexion.cierraConexion();
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());            
         }        
         return aulas;
     }
