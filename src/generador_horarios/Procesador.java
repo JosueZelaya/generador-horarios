@@ -118,14 +118,14 @@ public class Procesador {
                    if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
                        Dia dia = aula.getDia("Sabado");
                        ArrayList<Hora> horas = dia.getHoras();
-                       ArrayList<Hora>horasDisponibles = buscarhorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta); //elige las primeras horas disponibles que encuentre ese día
+                       ArrayList<Hora> horasDisponibles = buscarhorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta); //elige las primeras horas disponibles que encuentre ese día
                        if(horasDisponibles != null){                                   //Si hay horas disponibles
                             asignar(grupo, horasDisponibles);                         //Asignamos la materia            
                             break;
                        }
                    }
                    if(i==aulas.size()-1){
-                       throw new Exception("¡Ya no hay aulas disponibles!");
+                       throw new Exception("¡Ya no hay aulas disponibles para el grupo "+grupo.getId_grupo()+" Materia: "+grupo.getCod_materia()+" Departamento: "+grupo.getId_depar());
                    }
                }           
         }        

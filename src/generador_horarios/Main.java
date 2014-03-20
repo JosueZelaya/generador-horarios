@@ -32,9 +32,7 @@ public class Main {
                     procesador.procesarMateria(campus, materias.get(i));
                 } catch (Exception ex) {
                     //Se produce cuando ya no hay aulas disponibles
-                    System.out.println(ex.getMessage());
-                    break;
-                    //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println(ex.getMessage());                                        
                 }
                 agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
                 //System.out.println("Grupo Asignado: "+agrup.getNumGruposAsignados()+" materia: "+agrup.getPropietario());
