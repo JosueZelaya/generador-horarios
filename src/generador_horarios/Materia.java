@@ -6,8 +6,6 @@
 
 package generador_horarios;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author alexander
@@ -17,22 +15,16 @@ public class Materia {
     private String codigo;
     private String nombre;
     private int ciclo;
-    private int grupoID;
     private int unidadesValorativas;
-    private int horasAsignadas;
-    private String departamento;
+    private int departamento;
     private boolean incompleta;
-    private int cantidadAlumnos;
-        
-    private ArrayList<String> carreras;
     
     public Materia(){
         codigo = "";
         nombre = "";
         ciclo = 0;
         unidadesValorativas=0;
-        departamento="";
-        carreras = new ArrayList();
+        departamento=0;
         incompleta = false; //Cambiará a true si no se puede asignar o se asigna parcialmente.
     }
     
@@ -96,50 +88,21 @@ public class Materia {
     /**
      * @return the departamento
      */
-    public String getDepartamento() {
+    public int getDepartamento() {
         return departamento;
     }
 
     /**
      * @param departamento the departamento to set
      */
-    public void setDepartamento(String departamento) {
+    public void setDepartamento(int departamento) {
         this.departamento = departamento;
-    }
-
-    /**
-     * @return the carreras
-     */
-    public ArrayList<String> getCarreras() {
-        return carreras;
-    }
-
-    /**
-     * @param carreras the carreras to set
-     */
-    public void setCarreras(ArrayList<String> carreras) {
-        this.carreras = carreras;
     }
     
     public int getTotalHorasRequeridas(){
         int total = Math.round((this.unidadesValorativas*20)/16);
-        if(total>5)
-            total = 6;
+        
         return total;
-    }
-
-    /**
-     * @return the horasAsignadas
-     */
-    public int getHorasAsignadas() {
-        return horasAsignadas;
-    }
-
-    /**
-     * @param horasAsignadas the horasAsignadas to set
-     */
-    public void setHorasAsignadas(int horasAsignadas) {
-        this.horasAsignadas = horasAsignadas;
     }
 
     /**
@@ -155,33 +118,4 @@ public class Materia {
     public void setIncompleta(boolean incompleta) {
         this.incompleta = incompleta;
     }
-
-    /**
-     * @return the grupoID
-     */
-    public int getGrupoID() {
-        return grupoID;
-    }
-
-    /**
-     * @param grupoID the grupoID to set
-     */
-    public void setGrupoID(int grupoID) {
-        this.grupoID = grupoID;
-    }
-
-    /**
-     * @return the cantidadAlumnos
-     */
-    public int getCantidadAlumnos() {
-        return cantidadAlumnos;
-    }
-
-    /**
-     * @param cantidadAlumnos the cantidadAlumnos to set
-     */
-    public void setCantidadAlumnos(int cantidadAlumnos) {
-        this.cantidadAlumnos = cantidadAlumnos;
-    }
-    
 }
