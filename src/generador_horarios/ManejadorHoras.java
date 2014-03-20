@@ -25,7 +25,7 @@ public abstract class ManejadorHoras {
         ResultSet resultadoConsulta;
         try {
             conexion.conectar();
-            resultadoConsulta = conexion.consulta("SELECT * FROM horas");
+            resultadoConsulta = conexion.consulta("SELECT * FROM horas ORDER BY id_hora");
             while(resultadoConsulta.next()){
                 Hora hora = new Hora(resultadoConsulta.getInt("id_hora"));
                 hora.setInicio(resultadoConsulta.getString("inicio"));
@@ -61,6 +61,7 @@ public abstract class ManejadorHoras {
             
             //Si hay una hora disponible debe verificarse que su indice no sea tal que se desborde el array al preguntar por las siguientes
             if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=horas.size()-cantidadHoras+1){
+                
                 hayBloquesDisponibles = true;
                     for (int j = i; j < i+cantidadHoras; j++) {
                         if(!horas.get(j).estaDisponible()){                            

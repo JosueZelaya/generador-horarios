@@ -16,14 +16,14 @@ public class Agrupacion{
     private int departamento;
     private int num_grupos;
     private int num_alumnos;
-    private int num_asignados;
+    private int numGruposAsignados;
     
     public Agrupacion(String propietario,int departamento,int num_grupos, int num_alumnos){
         this.propietario = propietario;
         this.departamento = departamento;
         this.num_grupos = num_grupos;
         this.num_alumnos = num_alumnos;
-        this.num_asignados = 0;
+        this.numGruposAsignados = 0;
     }
 
     public String getPropietario() {
@@ -58,12 +58,12 @@ public class Agrupacion{
         this.num_alumnos = num_alumnos;
     }
 
-    public int getNum_asignados() {
-        return num_asignados;
+    public int getNumGruposAsignados() {
+        return numGruposAsignados;
     }
 
-    public void setNum_asignados(int num_asignados) {
-        this.num_asignados = num_asignados;
+    public void setNumGruposAsignados(int numGruposAsignados) {
+        this.numGruposAsignados = numGruposAsignados;
     }
     
     

@@ -33,13 +33,7 @@ public abstract class ManejadorMaterias {
                 materia.setUnidadesValorativas(resultadoConsulta.getInt("unidades_valorativas"));
                 materia.setDepartamento(resultadoConsulta.getInt("agrupacion_id_depar"));
                 materias.add(materia);
-            }
-            
-            for (int i = 0; i < materias.size(); i++) {
-                Materia materia = materias.get(i);
-                System.out.println("materia: "+materia.getNombre()+" grupo: "+materia.getGrupoID()+" ciclo: "+materia.getCiclo());
-            }
-            
+            }            
             
             conexion.cierraConexion();
         } catch (SQLException ex) {

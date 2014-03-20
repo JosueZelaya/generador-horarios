@@ -25,14 +25,19 @@ public class Main {
         
         for (int i = 0; i < materias.size(); i++) {
             Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),campus.getAgrupaciones());
-            while(agrup.getNum_asignados() < agrup.getNum_grupos()){
+            while(agrup.getNumGruposAsignados() < agrup.getNum_grupos()){
                 procesador.procesarMateria(campus, materias.get(i));
-                agrup.setNum_asignados(agrup.getNum_asignados()+1);
+                agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
+                //System.out.println("Grupo Asignado: "+agrup.getNumGruposAsignados()+" materia: "+agrup.getPropietario());
             }
         }        
         
         //IMPRIMIR LA SEMANA
         imprimir(campus);
+        
+//        int num= Procesador.getNumeroAleatorio(0,1);
+//        System.out.println("numero: "+num);
+        
     }
     
     public static void imprimir(Campus campus){

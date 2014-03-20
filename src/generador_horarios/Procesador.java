@@ -59,15 +59,14 @@ public class Procesador {
     }
     
     //Asigna la materia en las horas correspondientes
-    public void asignar(Grupo grupo, ArrayList<Hora> horasDisponibles, Agrupacion agrupacion){
+    public void asignar(Grupo grupo, ArrayList<Hora> horasDisponibles){
          Hora hora;
          for (int j = 0; j < horasDisponibles.size(); j++) {
             hora = horasDisponibles.get(j);
             hora.setGrupo(grupo);
             hora.setDisponible(false);
             grupo.setHorasAsignadas(grupo.getHorasAsignadas()+1);
-         }
-         System.out.println(grupo.getCod_materia()+" "+grupo.getId_grupo());
+         }         
      }
     
 //    public void asignarAula(Materia materia, Campus campus){         
@@ -97,7 +96,7 @@ public class Procesador {
         ArrayList<Aula> aulas = campus.getAulas();
         int cantidadAlumnos = agrupacion.getNum_alumnos();
         int numAulas = campus.getAulas().size();
-        Grupo grupo = new Grupo(agrupacion.getPropietario(),agrupacion.getDepartamento(),agrupacion.getNum_asignados()+1);
+        Grupo grupo = new Grupo(agrupacion.getPropietario(),agrupacion.getDepartamento(),agrupacion.getNumGruposAsignados()+1);
 
         for (int i = 0; i < numAulas; i++) {
             Aula aula = aulas.get(i);
@@ -105,14 +104,14 @@ public class Procesador {
             if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
                 ArrayList<Dia> dias;
                 dias = aula.getDias();
-                if(asignarDias(materia, grupo, dias, agrupacion)){                 
+                if(asignarDias(materia, grupo, dias)){                 
                    break; 
                 }                
             }
         }
     }
     
-    public boolean asignarDias(Materia materia, Grupo grupo,ArrayList<Dia> dias, Agrupacion agrupacion){
+    public boolean asignarDias(Materia materia, Grupo grupo,ArrayList<Dia> dias){
        Dia diaElegido;
        ArrayList<Dia> diasUsados = new ArrayList();       
        //Se debe elegir un día diferente para cada clase
@@ -121,7 +120,7 @@ public class Procesador {
             if(diaElegido != null){
                 ArrayList<Hora> horas;       
                 horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día                
-                asignarHoras(materia, grupo, horas, agrupacion);
+                asignarHoras(materia, grupo, horas);
                 diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
             }else{
                 return false;
@@ -130,13 +129,13 @@ public class Procesador {
        return true;
     }
     
-    public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas, Agrupacion agrupacion){
+    public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas){
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase        
         horasDisponibles = buscarhorasDisponibles(horas, numHorasContinuas, desde, hasta); //elige las primeras horas disponibles que encuentre ese día
         
         if(horasDisponibles != null){                                   //Si hay horas disponibles
-            asignar(grupo, horasDisponibles, agrupacion);                         //Asignamos la materia            
+            asignar(grupo, horasDisponibles);                         //Asignamos la materia            
         }
     }
     

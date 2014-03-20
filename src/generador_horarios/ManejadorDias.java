@@ -39,8 +39,9 @@ public abstract class ManejadorDias {
     
     public static Dia elegirDia(ArrayList<Dia> dias){
         int desde = 0;
-        int hasta = dias.size()-1;
-        int dia = getNumeroAleatorio(desde, hasta);
+        int hasta = dias.size()-2; //Le restamos dos para que no tome encuenta el sábado
+        System.out.println("desde "+desde+" hasta: "+hasta);
+        int dia = getNumeroAleatorio(desde, hasta);                    
         return dias.get(dia);
     }
     
@@ -50,14 +51,25 @@ public abstract class ManejadorDias {
         if(dias.size() == diasUsados.size()){
             return null;
         }        
+        Dia elegido;
+        do {            
+            elegido = elegirDia(dias);
+        } while (!sonDiferentes(elegido, diasUsados));
         
-        Dia elegido = elegirDia(dias);
-        for (int i = 0; i < diasUsados.size(); i++) {
-            if (elegido.getNombre().equals(diasUsados.get(i).getNombre())) {                
-                elegido = elegirDiaDiferente(dias,diasUsados);
-            }            
-        }
         return elegido;
+    }
+    
+    public static boolean sonDiferentes(Dia elegido,ArrayList<Dia> dias){
+        boolean respuesta = true;
+        for (int i = 0; i < dias.size(); i++) {
+            if(!esDiferente(elegido, dias.get(i)))
+                respuesta = false;
+        }
+        return respuesta;
+    }
+    
+    public static boolean esDiferente(Dia dia1,Dia dia2){
+        return dia1.getNombre().equals(dia2.getNombre());
     }
     
 }
