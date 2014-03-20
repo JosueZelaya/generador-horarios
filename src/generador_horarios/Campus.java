@@ -21,7 +21,7 @@ public class Campus {
         this.aulas = new ArrayList();        
         aulas = ManejadorAulas.getTodasAulas();
         for (int i = 0; i < aulas.size(); i++) {
-            ArrayList<Dia> dias = ManejadorDias.getTodosDias();
+            ArrayList<Dia> dias = ManejadorDias.getDias();
             for(int j=0; j < dias.size(); j++){
                 ArrayList<Hora> horas = ManejadorHoras.getTodasHoras();
                 dias.get(j).setHoras(horas);

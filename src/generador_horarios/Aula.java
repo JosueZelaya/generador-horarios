@@ -67,6 +67,19 @@ public class Aula {
     public void setDisponible(boolean disponible) {
         this.disponible = disponible;
     }
+    
+    /*
+     * Devuelve el día que le indiquemos por medio del nombre
+     * Si no lo encuentra devuelve null
+     */
+    public Dia getDia(String nombre_dia){
+        for (int i = 0; i < dias.size(); i++) {
+            Dia dia = dias.get(i);
+            if(dia.getNombre().equals(nombre_dia))
+                return dia;
+        }
+        return null;
+    }
 
     /**
      * @return the dias
@@ -81,7 +94,5 @@ public class Aula {
     public void setDias(ArrayList<Dia> dias) {
         this.dias = dias;
     }
-    
-    
     
 }

@@ -8,6 +8,8 @@ package generador_horarios;
 
 import java.util.ArrayList;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,7 +28,14 @@ public class Main {
         for (int i = 0; i < materias.size(); i++) {
             Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),campus.getAgrupaciones());
             while(agrup.getNumGruposAsignados() < agrup.getNum_grupos()){
-                procesador.procesarMateria(campus, materias.get(i));
+                try {
+                    procesador.procesarMateria(campus, materias.get(i));
+                } catch (Exception ex) {
+                    //Se produce cuando ya no hay aulas disponibles
+                    System.out.println(ex.getMessage());
+                    break;
+                    //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
                 //System.out.println("Grupo Asignado: "+agrup.getNumGruposAsignados()+" materia: "+agrup.getPropietario());
             }
@@ -56,7 +65,7 @@ public class Main {
                 horas = dia.getHoras();
                 for (int k = 0; k < horas.size(); k++) {
                     Hora hora = horas.get(k);
-                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getGrupo().getCod_materia()+", Grupo: "+hora.getGrupo().getId_grupo());                    
+                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getGrupo().getCod_materia()+", Grupo: "+hora.getGrupo().getId_grupo()+", Departamento"+hora.getGrupo().getId_depar());                    
                 }
                 
             }
