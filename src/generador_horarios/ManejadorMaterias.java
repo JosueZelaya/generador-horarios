@@ -24,19 +24,15 @@ public abstract class ManejadorMaterias {
         ResultSet resultadoConsulta;
         try {
             conexion.conectar();
-            resultadoConsulta = conexion.consultaPrep("SELECT b.cod_materia,b.nombre_materia,b.unidades_valorativas,a.ciclo,a.num_grupos,a.num_alumnos_grupo FROM carreras_materias AS a INNER JOIN materias AS b ON (b.cod_materia=a.materias_cod_materia) WHERE a.ciclo IN (?,?,?,?,?) ORDER BY a.num_alumnos_grupo DESC;",cicloPar);
+            resultadoConsulta = conexion.consultaPrep("SELECT b.cod_materia,b.nombre_materia,b.unidades_valorativas,a.ciclo,a.agrupacion_id_depar FROM carreras_materias AS a INNER JOIN materias AS b ON (b.cod_materia=a.materias_cod_materia) WHERE a.ciclo IN (?,?,?,?,?);",cicloPar);
             while(resultadoConsulta.next()){
-                int numeroGrupos = resultadoConsulta.getInt("num_grupos");
-                for (int i = 1; i <= numeroGrupos; i++) {
-                    Materia materia = new Materia();
-                    materia.setCodigo(resultadoConsulta.getString("cod_materia"));
-                    materia.setNombre(resultadoConsulta.getString("nombre_materia"));
-                    materia.setCiclo(resultadoConsulta.getInt("ciclo"));
-                    materia.setUnidadesValorativas(resultadoConsulta.getInt("unidades_valorativas"));
-                    materia.setCantidadAlumnos(resultadoConsulta.getInt("num_alumnos_grupo"));
-                    materia.setGrupoID(i);
-                    materias.add(materia);                    
-                }
+                Materia materia = new Materia();
+                materia.setCodigo(resultadoConsulta.getString("cod_materia"));
+                materia.setNombre(resultadoConsulta.getString("nombre_materia"));
+                materia.setCiclo(resultadoConsulta.getInt("ciclo"));
+                materia.setUnidadesValorativas(resultadoConsulta.getInt("unidades_valorativas"));
+                materia.setDepartamento(resultadoConsulta.getInt("agrupacion_id_depar"));
+                materias.add(materia);
             }
             conexion.cierraConexion();
         } catch (SQLException ex) {

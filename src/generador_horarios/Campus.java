@@ -15,8 +15,9 @@ import java.util.ArrayList;
 public class Campus {
     
     private ArrayList<Aula> aulas;
+    private ArrayList<Agrupacion> agrupaciones;
 
-    public Campus() {
+    public Campus(ArrayList<Agrupacion> agrupaciones) {
         this.aulas = new ArrayList();        
         aulas = ManejadorAulas.getTodasAulas();
         for (int i = 0; i < aulas.size(); i++) {
@@ -27,6 +28,8 @@ public class Campus {
             }
             aulas.get(i).setDias(dias);
         }
+        
+        this.agrupaciones = agrupaciones;
     }
 
     /**
@@ -43,6 +46,12 @@ public class Campus {
         this.aulas = aulas;
     }
     
-    
+    public ArrayList<Agrupacion> getAgrupaciones() {
+        return agrupaciones;
+    }
+
+    public void setAgrupaciones(ArrayList<Agrupacion> agrupaciones) {
+        this.agrupaciones = agrupaciones;
+    }
     
 }

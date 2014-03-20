@@ -15,14 +15,14 @@ public class Hora {
     private int idHora;
     private String inicio;
     private String fin;
-    private Materia materia;
+    private Grupo grupo;
     private boolean disponible;
     
     public Hora(int id) {
         this.idHora = id;
         this.inicio = "";
         this.fin = "";
-        this.materia = new Materia();
+        this.grupo = new Grupo();
         this.disponible = true;
     }
 
@@ -30,7 +30,7 @@ public class Hora {
         this.idHora = 0;
         this.inicio = "";
         this.fin = "";
-        this.materia = new Materia();
+        this.grupo = new Grupo();
         this.disponible = true;
     }
 
@@ -77,17 +77,17 @@ public class Hora {
     }
 
     /**
-     * @return the materia
+     * @return the grupo
      */
-    public Materia getMateria() {
-        return materia;
+    public Grupo getGrupo() {
+        return grupo;
     }
 
     /**
-     * @param materia the materia to set
+     * @param grupo the materia to set
      */
-    public void setMateria(Materia materia) {
-        this.materia = materia;
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
     }
 
     /**
