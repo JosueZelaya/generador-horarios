@@ -13,17 +13,18 @@ import java.util.ArrayList;
  * @author alexander
  */
 public class Dia {
-    
+ 
     private String nombre;
-    private ArrayList<Aula> aulas;
-    
-    public Dia(){
-        
+    private ArrayList<Hora> horas;    
+
+    public Dia(String nombre) {
+        this.nombre = nombre;
+        this.horas = new ArrayList();
     }
     
-    public Dia(String nombre){
-        this.nombre = nombre;
-        aulas = new ArrayList();
+    public Dia() {
+        this.nombre = "";
+        this.horas = new ArrayList();
     }
 
     /**
@@ -41,17 +42,20 @@ public class Dia {
     }
 
     /**
-     * @return the aulas
+     * @return the horas
      */
-    public ArrayList<Aula> getAulas() {
-        return aulas;
+    public ArrayList<Hora> getHoras() {
+        return horas;
     }
 
     /**
-     * @param aulas the aulas to set
+     * @param horas the horas to set
      */
-    public void setAulas(ArrayList<Aula> aulas) {
-        this.aulas = aulas;
+    public void setHoras(ArrayList<Hora> horas) {
+        this.horas = horas;
     }
+    
+    
+    
     
 }

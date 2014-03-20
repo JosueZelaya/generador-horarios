@@ -9,6 +9,9 @@ package generador_horarios;
 import static generador_horarios.ManejadorMaterias.getTodasMaterias;
 import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.util.ArrayList;
+import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,42 +20,54 @@ import java.util.ArrayList;
 public class Main {
     
     public static void main(String[] args){
-        Semana semana = new Semana();
+        Campus campus = new Campus(ManejadorAgrupaciones.getAgrupaciones());
         ArrayList<Materia> materias;        
         Procesador procesador = new Procesador();
+        boolean cicloPar = true;
         
-        materias = getTodasMaterias();
+        materias = ManejadorMaterias.getTodasMaterias(cicloPar);
         
-        for (int i = 0; i < materias.size(); i++) {            
-            Materia materia = materias.get(i);
-            ArrayList<Grupo> grupos;
-            grupos = new ArrayList();
-            int numGrupos = getNumeroAleatorio(1, 12);
-            for (int j = 0; j < numGrupos; j++) {
-                int numEstudiantes = getNumeroAleatorio(1, 100);            
-                Grupo grupo = new Grupo(j,numEstudiantes);
-                grupos.add(grupo);
-            } 
-            materia.setGrupos(grupos);
-            procesador.procesarMateria(semana, materia,false);
+        for (int i = 0; i < materias.size(); i++) {
+            Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),campus.getAgrupaciones());
+            while(agrup.getNumGruposAsignados() < agrup.getNum_grupos()){
+                try {
+                    procesador.procesarMateria(campus, materias.get(i));
+                } catch (Exception ex) {
+                    //Se produce cuando ya no hay aulas disponibles
+                    System.out.println(ex.getMessage());                                        
+                }
+                agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
+                //System.out.println("Grupo Asignado: "+agrup.getNumGruposAsignados()+" materia: "+agrup.getPropietario());
+            }
         }        
         
         //IMPRIMIR LA SEMANA
-        imprimir(semana);
+        imprimir(campus);
+        
+//        int num= Procesador.getNumeroAleatorio(0,1);
+//        System.out.println("numero: "+num);
+        
     }
     
-    public static void imprimir(Semana semana){
-        for (int i = 0; i < semana.getDias().size(); i++) {
-            Dia dia = semana.getDias().get(i);
-            System.out.println("Dia: "+dia.getNombre());
-            for (int j = 0; j < dia.getAulas().size(); j++) {
-                Aula aula = dia.getAulas().get(j);
-                System.out.println("        Aula: "+aula.getNombre()+", Capacidad: "+aula.getCapacidad());                
-                for (int k = 0; k < aula.getHoras().size(); k++) {
-                    Hora hora = aula.getHoras().get(k);
-                    //System.out.println("            Hora: "+hora.getIdHora()+"| "+hora.getInicio()+"| "+hora.getFin()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+", Ciclo: "+hora.getMateria().getCiclo());
-                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getMateria().getNombre()+" Grupo: "+hora.getGrupo().getId()+"Ciclo: "+hora.getMateria().getCiclo());                    
+    public static void imprimir(Campus campus){
+        ArrayList<Aula> aulas;
+        aulas = campus.getAulas();
+        ArrayList<Dia> dias;
+        ArrayList<Hora> horas;
+        
+        for (int i = 0; i < aulas.size(); i++) {
+            Aula aula = aulas.get(i);
+            System.out.println("Aula: "+aula.getNombre());
+            dias = aula.getDias();
+            for (int j = 0; j < dias.size(); j++) {
+                Dia dia = dias.get(j);
+                System.out.println("        Nombre: "+dia.getNombre());
+                horas = dia.getHoras();
+                for (int k = 0; k < horas.size(); k++) {
+                    Hora hora = horas.get(k);
+                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getGrupo().getCod_materia()+", Grupo: "+hora.getGrupo().getId_grupo()+", Departamento"+hora.getGrupo().getId_depar());                    
                 }
+                
             }
         }
     }

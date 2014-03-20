@@ -15,23 +15,24 @@ public class Hora {
     private int idHora;
     private String inicio;
     private String fin;
-    private Materia materia;
     private Grupo grupo;
-    private boolean disponible;    
+    private boolean disponible;
     
-    public Hora(){
-        
-    }
-    
-    public Hora(int id){
+    public Hora(int id) {
         this.idHora = id;
-        disponible = true;
-        materia = new Materia();
+        this.inicio = "";
+        this.fin = "";
+        this.grupo = new Grupo();
+        this.disponible = true;
     }
 
-    /**
-     * @return the aulas
-     */
+    public Hora() {
+        this.idHora = 0;
+        this.inicio = "";
+        this.fin = "";
+        this.grupo = new Grupo();
+        this.disponible = true;
+    }
 
     /**
      * @return the idHora
@@ -76,6 +77,20 @@ public class Hora {
     }
 
     /**
+     * @return the grupo
+     */
+    public Grupo getGrupo() {
+        return grupo;
+    }
+
+    /**
+     * @param grupo the materia to set
+     */
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
+    }
+
+    /**
      * @return the disponible
      */
     public boolean estaDisponible() {
@@ -88,33 +103,7 @@ public class Hora {
     public void setDisponible(boolean disponible) {
         this.disponible = disponible;
     }
-
-    /**
-     * @return the materia
-     */
-    public Materia getMateria() {
-        return materia;
-    }
-
-    /**
-     * @param materia the materia to set
-     */
-    public void setMateria(Materia materia) {
-        this.materia = materia;
-    }
-
-    /**
-     * @return the grupo
-     */
-    public Grupo getGrupo() {
-        return grupo;
-    }
-
-    /**
-     * @param grupo the grupo to set
-     */
-    public void setGrupo(Grupo grupo) {
-        this.grupo = grupo;
-    }
+    
+    
     
 }

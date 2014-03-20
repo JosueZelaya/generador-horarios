@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package generador_horarios;
 
 import java.util.ArrayList;
@@ -17,21 +18,18 @@ public class Materia {
     private String nombre;
     private int ciclo;
     private int unidadesValorativas;
-    private String departamento;
-    private int horasAsignadas;
-    private ArrayList<Grupo> grupos;
+    private int departamento;
+    private boolean incompleta;
     
-    public Materia() {
+    public Materia(){
+        codigo = "";
         nombre = "";
-        grupos = new ArrayList();
-    }
-    
-    public Materia(String nombre){
-        this.nombre = nombre;
         ciclo = 0;
         unidadesValorativas=0;
-        grupos = new ArrayList();
-    }    
+        departamento=0;
+        incompleta = false; //Cambiará a true si no se puede asignar o se asigna parcialmente.
+    }
+    
 
     /**
      * @return the codigo
@@ -92,52 +90,34 @@ public class Materia {
     /**
      * @return the departamento
      */
-    public String getDepartamento() {
+    public int getDepartamento() {
         return departamento;
     }
 
     /**
      * @param departamento the departamento to set
      */
-    public void setDepartamento(String departamento) {
+    public void setDepartamento(int departamento) {
         this.departamento = departamento;
     }
-
-    /**
-     * @return the horasAsignadas
-     */
-    public int getHorasAsignadas() {
-        return horasAsignadas;
-    }
-
-    /**
-     * @param horasAsignadas the horasAsignadas to set
-     */
-    public void setHorasAsignadas(int horasAsignadas) {
-        this.horasAsignadas = horasAsignadas;
-    }
     
-    //Calcula el total de horas que debe tener esta materia en base a sus unidades valorativas...
     public int getTotalHorasRequeridas(){
-        int total = Math.round((this.unidadesValorativas * 20) / 16);
-        if(total > 5)
-            total = 6;
+        int total = Math.round((this.unidadesValorativas*20)/16);
         
         return total;
     }
 
     /**
-     * @return the grupos
+     * @return the incompleta
      */
-    public ArrayList<Grupo> getGrupos() {
-        return grupos;
+    public boolean quedoIncompleta() {
+        return incompleta;
     }
 
     /**
-     * @param grupos the grupos to set
+     * @param incompleta the incompleta to set
      */
-    public void setGrupos(ArrayList<Grupo> grupos) {
-        this.grupos = grupos;
+    public void setIncompleta(boolean incompleta) {
+        this.incompleta = incompleta;
     }
-
 }
