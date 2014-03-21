@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 
 /**
  *
@@ -75,7 +76,7 @@ public class Conexion {
         return this.declaracion.executeUpdate(inserta);
     }
     
-    public ResultSet consultaPrep(String consulta, boolean param) throws SQLException {
+    public ResultSet consultaCiclos(String consulta, boolean param) throws SQLException {
         this.ps = this.conn.prepareStatement(consulta);
         if(param){
             this.ps.setInt(1, 2);
@@ -91,6 +92,18 @@ public class Conexion {
             this.ps.setInt(5, 9);
         }
         return this.ps.executeQuery();
+    }
+    
+    public void actualizarHora(String statement, int id, String inicio, String fin) throws SQLException{
+        this.ps = this.conn.prepareStatement(statement);
+        Time i = Time.valueOf(inicio);
+        Time f = Time.valueOf(fin);
+        
+        this.ps.setInt(3, id);
+        this.ps.setTime(1, i);
+        this.ps.setTime(2, f);
+        
+        this.ps.executeUpdate();
     }
 }
 
