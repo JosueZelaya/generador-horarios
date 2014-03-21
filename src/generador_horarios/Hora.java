@@ -25,6 +25,14 @@ public class Hora {
         this.grupo = new Grupo();
         this.disponible = true;
     }
+    
+    public Hora(int id, String inicio, String fin){
+        this.idHora = id;
+        this.inicio = inicio;
+        this.fin = fin;
+        this.grupo = new Grupo();
+        this.disponible = true;
+    }
 
     public Hora() {
         this.idHora = 0;

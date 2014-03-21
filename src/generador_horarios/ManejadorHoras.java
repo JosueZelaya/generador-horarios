@@ -9,9 +9,8 @@ package generador_horarios;
 import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -130,6 +129,45 @@ public abstract class ManejadorHoras {
             return horasDisponibles;
         }       
         return null;
+    }
+    
+    public static ArrayList<Hora> generarHoras(Time initManana, Time initTarde){
+        int id=1;
+        Time horaInicial=initManana;
+        Time horaFinal=new Time(0);
+        long duracionHora = 50*60*1000;
+        ArrayList<Hora> horas = new ArrayList();
+        try{
+            if(initManana.getTime()*50*60*1000*7 > initTarde.getTime()){ //Si las 7 horas de 50 minutos no han terminado al comenzar jornada despertina
+                throw new Exception("Horas sobrelapan. Cambie hora");
+            }
+            while(id <= 15){ //7 horas en la mañana, 8 horas en la tarde
+                horaFinal.setTime(horaInicial.getTime() + duracionHora);
+                horas.add(new Hora(id,horaInicial.toString(),horaFinal.toString()));
+                horaInicial.setTime(horaFinal.getTime());
+                id++;
+                if(id == 8){
+                    horaInicial.setTime(initTarde.getTime()); //inicio de jornada despertina
+                    horaFinal.setTime(horaInicial.getTime()); //final apunta a inicio
+                }
+            }
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+        return horas;
+    }
+    
+    public static void actualizarHoras(ArrayList<Hora> horas){
+        Conexion con = new Conexion();
+        try{
+            con.conectar();
+            for(Hora h : horas){
+                con.actualizarHora("UPDATE horas_test SET inicio=?,final=? WHERE id_hora=?;", h.getIdHora(), h.getInicio(), h.getFin());
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
     }
     
 }

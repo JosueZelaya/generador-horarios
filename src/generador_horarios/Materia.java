@@ -17,6 +17,7 @@ public class Materia {
     private int ciclo;
     private int unidadesValorativas;
     private int departamento;
+    private String codigoCarrera;
     private boolean incompleta;
     
     public Materia(){
@@ -117,5 +118,13 @@ public class Materia {
      */
     public void setIncompleta(boolean incompleta) {
         this.incompleta = incompleta;
+    }
+    
+    public String getCodigoCarrera() {
+        return codigoCarrera;
+    }
+
+    public void setCodigoCarrera(String codigoCarrera) {
+        this.codigoCarrera = codigoCarrera;
     }
 }
