@@ -39,6 +39,27 @@ public abstract class ManejadorAulas {
         }        
         return aulas;
     }
+  
+     public static ArrayList<Aula> getTodasAulasOrdenadas(String ordenarPor){
+        ArrayList<Aula> aulas = new ArrayList();
+        
+        Conexion conexion = new Conexion();        
+        ResultSet resultadoConsulta;
+        try {
+            conexion.conectar();
+            resultadoConsulta = conexion.consulta("SELECT * FROM aulas ORDER BY "+ordenarPor+" DESC");
+            while(resultadoConsulta.next()){
+                Aula aula = new Aula();
+                aula.setNombre(resultadoConsulta.getString("cod_aula"));
+                aula.setCapacidad(resultadoConsulta.getInt("capacidad"));
+                aulas.add(aula);
+            }
+            conexion.cierraConexion();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());            
+        }        
+        return aulas;
+    }
     
     public static Aula elegirAulaDiferente(ArrayList<Aula> aulas,ArrayList<Aula> aulasUsadas){
         //Si ya se usaron todas las aulas entonces no seguimos buscando y devolvemos null

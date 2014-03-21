@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -39,8 +41,12 @@ public class Main {
             }
         }        
         
+        
+        
+        VentanaInicio ventanaInicial = new VentanaInicio();
+        ventanaInicial.setVisible(true);
         //IMPRIMIR LA SEMANA
-        imprimir(campus);
+        //imprimir(campus);
         
 //        int num= Procesador.getNumeroAleatorio(0,1);
 //        System.out.println("numero: "+num);

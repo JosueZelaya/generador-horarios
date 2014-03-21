@@ -125,6 +125,7 @@ public class Procesador {
                        }
                    }
                    if(i==aulas.size()-1){
+                       grupo.setIncompleto(true);
                        throw new Exception("¡Ya no hay aulas disponibles para el grupo "+grupo.getId_grupo()+" Materia: "+grupo.getCod_materia()+" Departamento: "+grupo.getId_depar());
                    }
                }           

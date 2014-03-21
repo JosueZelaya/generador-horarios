@@ -16,12 +16,14 @@ public class Grupo {
     private int id_depar;
     private int id_grupo;
     private int horasAsignadas;
+    private boolean incompleto;
     
     public Grupo(){
         
     }
     
     public Grupo(String codigo, int id_depar, int id_grupo){
+        incompleto=false;
         this.cod_materia = codigo;
         this.id_depar = id_depar;
         this.id_grupo = id_grupo;
@@ -64,6 +66,20 @@ public class Grupo {
      */
     public void setHorasAsignadas(int horasAsignadas) {
         this.horasAsignadas = horasAsignadas;
+    }
+
+    /**
+     * @return the incompleto
+     */
+    public boolean estaIncompleto() {
+        return incompleto;
+    }
+
+    /**
+     * @param incompleto the incompleto to set
+     */
+    public void setIncompleto(boolean incompleto) {
+        this.incompleto = incompleto;
     }
     
 }
