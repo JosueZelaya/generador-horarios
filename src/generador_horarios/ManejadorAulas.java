@@ -69,7 +69,10 @@ public abstract class ManejadorAulas {
                 for(int x=0; x<dias.size(); x++){
                     ArrayList<Hora> horas = dias.get(x).getHoras();
                     for(int y=0; y<horas.size(); y++){
-                        table.setValueAt(horas.get(y).getGrupo().getCod_materia()+"\nGrupo: "+horas.get(y).getGrupo().getId_grupo()+"\nDepartamento: "+horas.get(y).getGrupo().getId_depar(), y, x+1);
+                        if(horas.get(y) != null)
+                            table.setValueAt(horas.get(y).getGrupo().getCod_materia()+"\nGrupo: "+horas.get(y).getGrupo().getId_grupo()+"\nDepartamento: "+horas.get(y).getGrupo().getId_depar(), y, x+1);
+                        else
+                            table.setValueAt("", y, x+1);
                     }
                 }
             }
@@ -78,17 +81,39 @@ public abstract class ManejadorAulas {
         return table;
     }
     
-    public static DefaultTableModel getHorarioEnAula_Depar(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar, ArrayList<Departamento> depars){
+    public static DefaultTableModel getHorarioEnAula(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar, ArrayList<Departamento> depars){
         for(int i=0; i<aulas.size(); i++){
             if(aulas.get(i).getNombre().equals(aula)){
                 ArrayList<Dia> dias = aulas.get(i).getDias();
                 for(int x=0; x<dias.size(); x++){
                     ArrayList<Hora> horas = dias.get(x).getHoras();
                     for(int y=0; y<horas.size(); y++){
-                        if(horas.get(y).getGrupo().getId_depar() == id_depar)
-                            table.setValueAt(horas.get(y).getGrupo().getCod_materia()+"\nGrupo: "+horas.get(y).getGrupo().getId_grupo()+"\nDepartamento: "+horas.get(y).getGrupo().getId_depar(), y, x+1);
+                        if(horas.get(y).getGrupo().getId_depar() == id_depar){
+                            String depar = ManejadorDepartamentos.getNombreDepar(id_depar, depars);
+                            table.setValueAt(horas.get(y).getGrupo().getCod_materia()+"\nGrupo: "+horas.get(y).getGrupo().getId_grupo()+"\nDepartamento: "+depar, y, x+1);
+                        }
                         else
-                            table.setValueAt("Vacio", y, x+1);
+                            table.setValueAt("", y, x+1);
+                    }
+                }
+            }
+        }
+        
+        return table;
+    }
+    
+    public static DefaultTableModel getHorarioEnAula(ArrayList<Aula> aulas, String aula, DefaultTableModel table, ArrayList<Departamento> depars, int id_carrera, ArrayList<String> materias){
+        for(int i=0; i<aulas.size(); i++){
+            if(aulas.get(i).getNombre().equals(aula)){
+                ArrayList<Dia> dias = aulas.get(i).getDias();
+                for(int x=0; x<dias.size(); x++){
+                    ArrayList<Hora> horas = dias.get(x).getHoras();
+                    for(int y=0; y<horas.size(); y++){
+                        if(materias.contains(horas.get(y).getGrupo().getCod_materia())){
+                            table.setValueAt(horas.get(y).getGrupo().getCod_materia()+"\nGrupo: "+horas.get(y).getGrupo().getId_grupo(), y, x+1);
+                        }
+                        else
+                            table.setValueAt("", y, x+1);
                     }
                 }
             }
