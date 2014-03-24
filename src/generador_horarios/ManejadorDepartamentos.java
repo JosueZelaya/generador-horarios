@@ -43,4 +43,15 @@ public abstract class ManejadorDepartamentos {
         return id;
     }
     
+    public static String getNombreDepar(int id, ArrayList<Departamento> depars){
+        String name="";
+        
+        for(int x=0; x<depars.size(); x++){
+            if(depars.get(x).getId() == id)
+                name = depars.get(x).getNombre();
+        }
+        
+        return name;
+    }
+    
 }
