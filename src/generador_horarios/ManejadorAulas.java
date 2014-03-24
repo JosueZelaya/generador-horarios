@@ -79,7 +79,20 @@ public abstract class ManejadorAulas {
     }
     
     public static DefaultTableModel getHorarioEnAula_Depar(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar, ArrayList<Departamento> depars){
-        
+        for(int i=0; i<aulas.size(); i++){
+            if(aulas.get(i).getNombre().equals(aula)){
+                ArrayList<Dia> dias = aulas.get(i).getDias();
+                for(int x=0; x<dias.size(); x++){
+                    ArrayList<Hora> horas = dias.get(x).getHoras();
+                    for(int y=0; y<horas.size(); y++){
+                        if(horas.get(y).getGrupo().getId_depar() == id_depar)
+                            table.setValueAt(horas.get(y).getGrupo().getCod_materia()+"\nGrupo: "+horas.get(y).getGrupo().getId_grupo()+"\nDepartamento: "+horas.get(y).getGrupo().getId_depar(), y, x+1);
+                        else
+                            table.setValueAt("Vacio", y, x+1);
+                    }
+                }
+            }
+        }
         
         return table;
     }
