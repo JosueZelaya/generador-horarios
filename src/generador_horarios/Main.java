@@ -19,38 +19,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Main {
     
-    public static void main(String[] args){
-        Campus campus = new Campus(ManejadorAgrupaciones.getAgrupaciones());
-        ArrayList<Materia> materias;        
-        Procesador procesador = new Procesador();
-        boolean cicloPar = true;
-        
-        materias = ManejadorMaterias.getTodasMaterias(cicloPar);
-        
-        for (int i = 0; i < materias.size(); i++) {
-            Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),campus.getAgrupaciones());
-            while(agrup.getNumGruposAsignados() < agrup.getNum_grupos()){
-                try {
-                    procesador.procesarMateria(campus, materias.get(i));
-                } catch (Exception ex) {
-                    //Se produce cuando ya no hay aulas disponibles
-                    System.out.println(ex.getMessage());                                        
-                }
-                agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
-                //System.out.println("Grupo Asignado: "+agrup.getNumGruposAsignados()+" materia: "+agrup.getPropietario());
-            }
-        }        
-        
-        
-        
+    public static void main(String[] args){     
         VentanaInicio ventanaInicial = new VentanaInicio();
-        ventanaInicial.setVisible(true);
-        //IMPRIMIR LA SEMANA
-        //imprimir(campus);
-        
-//        int num= Procesador.getNumeroAleatorio(0,1);
-//        System.out.println("numero: "+num);
-        
+        ventanaInicial.setLocationRelativeTo(null);
+        ventanaInicial.setVisible(true);           
     }
     
     public static void imprimir(Campus campus){
