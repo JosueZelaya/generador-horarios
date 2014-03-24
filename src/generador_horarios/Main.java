@@ -6,12 +6,11 @@
 
 package generador_horarios;
 
+import static generador_horarios.ManejadorMaterias.getTodasMaterias;
+import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.util.ArrayList;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.table.DefaultTableModel;
+import java.sql.Time;
 
 /**
  *
@@ -37,11 +36,11 @@ public class Main {
             dias = aula.getDias();
             for (int j = 0; j < dias.size(); j++) {
                 Dia dia = dias.get(j);
-                System.out.println("        Nombre: "+dia.getNombre());
+                System.out.println("\tNombre: "+dia.getNombre());
                 horas = dia.getHoras();
                 for (int k = 0; k < horas.size(); k++) {
                     Hora hora = horas.get(k);
-                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getGrupo().getCod_materia()+", Grupo: "+hora.getGrupo().getId_grupo()+", Departamento"+hora.getGrupo().getId_depar());                    
+                    System.out.println("\t\tDia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getGrupo().getCod_materia()+", Grupo: "+hora.getGrupo().getId_grupo()+", Departamento"+hora.getGrupo().getId_depar());                    
                 }
                 
             }
