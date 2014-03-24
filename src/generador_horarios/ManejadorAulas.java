@@ -10,6 +10,7 @@ import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -59,6 +60,28 @@ public abstract class ManejadorAulas {
         int hasta = aulas.size()-1;
         int aula = getNumeroAleatorio(desde, hasta);
         return aulas.get(aula);
+    }
+    
+    public static DefaultTableModel getHorarioEnAula(ArrayList<Aula> aulas, String aula, DefaultTableModel table){
+        for(int i=0; i<aulas.size(); i++){
+            if(aulas.get(i).getNombre().equals(aula)){
+                ArrayList<Dia> dias = aulas.get(i).getDias();
+                for(int x=0; x<dias.size(); x++){
+                    ArrayList<Hora> horas = dias.get(x).getHoras();
+                    for(int y=0; y<horas.size(); y++){
+                        table.setValueAt(horas.get(y).getGrupo().getCod_materia()+"\nGrupo: "+horas.get(y).getGrupo().getId_grupo()+"\nDepartamento: "+horas.get(y).getGrupo().getId_depar(), y, x+1);
+                    }
+                }
+            }
+        }
+        
+        return table;
+    }
+    
+    public static DefaultTableModel getHorarioEnAula_Depar(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar, ArrayList<Departamento> depars){
+        
+        
+        return table;
     }
     
 }
