@@ -43,6 +43,13 @@ public abstract class ManejadorMaterias {
         return materias;
     }
     
-    
+    public static ArrayList<Materia> getMateriasDeCarrera(ArrayList<Materia> materias, String idCarrera){
+        ArrayList<Materia> materiasCarrera = new ArrayList();
+        for(int i=0; i<materias.size(); i++){
+            if(materias.get(i).getCodigoCarrera().equals(idCarrera))
+                materiasCarrera.add(materias.get(i));
+        }
+        return materiasCarrera;
+    }
     
 }

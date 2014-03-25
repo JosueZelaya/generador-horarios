@@ -25,6 +25,7 @@ public class Materia {
         nombre = "";
         ciclo = 0;
         unidadesValorativas=0;
+        codigoCarrera = "";
         departamento=0;
         incompleta = false; //Cambiará a true si no se puede asignar o se asigna parcialmente.
     }
