@@ -38,7 +38,7 @@ public class Main {
                 agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
                 //System.out.println("Grupo Asignado: "+agrup.getNumGruposAsignados()+" materia: "+agrup.getPropietario());
             }
-        }        
+        }
         
         //IMPRIMIR LA SEMANA
         imprimir(campus);
