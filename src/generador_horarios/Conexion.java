@@ -94,12 +94,6 @@ public class Conexion {
         return this.ps.executeQuery();
     }
     
-    public ResultSet consultaMateriasDeCarrera(String consulta, String codCarrera) throws SQLException{
-        this.ps = this.conn.prepareStatement(consulta);
-        this.ps.setString(1, codCarrera);
-        return this.ps.executeQuery();
-    }
-    
     public void actualizarHora(String statement, int id, String inicio, String fin) throws SQLException{
         this.ps = this.conn.prepareStatement(statement);
         Time i = Time.valueOf(inicio);
