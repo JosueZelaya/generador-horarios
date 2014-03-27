@@ -6,13 +6,15 @@
 
 package generador_horarios;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author alexander
  */
 public abstract class Filtro {
     
-   public static void filtrar(String criterio){
+   public static void filtrar(ArrayList<Object> arreglo,String criterio,String valor){
        
    }
     

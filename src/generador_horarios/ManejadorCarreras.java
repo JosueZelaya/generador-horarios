@@ -34,4 +34,21 @@ public abstract class ManejadorCarreras {
         
     }
     
+     public static String getCodigoCarrera(String nombreCarrera){
+        String codCarrera="";
+        Conexion conexion = new Conexion();        
+        ResultSet resultadoConsulta;
+        try {
+            conexion.conectar();
+            resultadoConsulta = conexion.consulta("SELECT id_carrera FROM carreras WHERE nombre_carrera='"+nombreCarrera+"'");
+            while(resultadoConsulta.next()){               
+                codCarrera=resultadoConsulta.getString("id_carrera");
+            }
+            conexion.cierraConexion();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return codCarrera;
+    }
+    
 }

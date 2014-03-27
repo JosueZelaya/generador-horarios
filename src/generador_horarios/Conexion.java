@@ -94,6 +94,13 @@ public class Conexion {
         return this.ps.executeQuery();
     }
     
+    public ResultSet consultaMateriaDeGrupo(String consulta, String codigoMateria, int id_depar) throws SQLException{
+        this.ps = this.conn.prepareStatement(consulta);
+        this.ps.setString(1, codigoMateria);
+        this.ps.setInt(2, id_depar);
+        return this.ps.executeQuery();
+    }
+    
     public void actualizarHora(String statement, int id, String inicio, String fin) throws SQLException{
         this.ps = this.conn.prepareStatement(statement);
         Time i = Time.valueOf(inicio);

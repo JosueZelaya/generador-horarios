@@ -32,6 +32,10 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
     DefaultTableModel modelo;
     Campus campus;
     String aulaSeleccionada;
+    String departamentoSeleccionado;
+    String carreraSeleccionada;
+    ArrayList<Materia> materias;
+    
     String[][] datosTabla={};
     String[] cabeceraTabla={"Horas","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"};
     String[] listadoAulas;
@@ -47,7 +51,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
     public VentanaInicio() {
         initComponents();
         //Se crea el objeto campus
-        campus = new Campus(ManejadorAgrupaciones.getAgrupaciones());
+        campus = new Campus(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
         
         //Se llena la tabla de dias y horas
         modelo = new DefaultTableModel(datosTabla, cabeceraTabla){
@@ -86,8 +90,8 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
             jlist_departamentos.addItem(departamentos.get(i));
         }
         
-        String aulaSeleccionada = null;
-        
+        aulaSeleccionada = null;
+        materias = new ArrayList();
     }
     
     
@@ -368,7 +372,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
         jlist_carreras.setEnabled(false);
         btn_filtrar.setEnabled(false);
         
-        ArrayList<Materia> materias;        
+                
         Procesador procesador = new Procesador();
         boolean cicloPar = true;
         
@@ -396,7 +400,13 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
     private void btn_filtrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_filtrarActionPerformed
         // TODO add your handling code here:
         aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
-        jTable1.setModel(ManejadorAulas.getHorarioEnAula(campus.getAulas(),jlist_aulas.getSelectedItem().toString(), modelo));
+        departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
+        carreraSeleccionada = jlist_carreras.getSelectedItem().toString();
+        departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, campus.getDepartamentos());
+        ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(materias, ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
+        jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(campus.getAulas(), aulaSeleccionada, modelo, campus.getDepartamentos(), materiasCarrera));
+        //jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(campus.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), campus.getDepartamentos()));
+        //jTable1.setModel(ManejadorAulas.getHorarioEnAula(campus.getAulas(),jlist_aulas.getSelectedItem().toString(), modelo));
         
     }//GEN-LAST:event_btn_filtrarActionPerformed
 

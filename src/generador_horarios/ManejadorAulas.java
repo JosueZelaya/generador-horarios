@@ -7,7 +7,6 @@
 package generador_horarios;
 
 import static generador_horarios.Procesador.getNumeroAleatorio;
-import java.awt.TextArea;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -101,6 +100,7 @@ public abstract class ManejadorAulas {
                         }                        
                     }
                 }
+                break;
             }
         }
         
@@ -108,7 +108,47 @@ public abstract class ManejadorAulas {
     }
     
     public static DefaultTableModel getHorarioEnAula_Depar(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar, ArrayList<Departamento> depars){
+        for(int i=0; i<aulas.size(); i++){
+            if(aulas.get(i).getNombre().equals(aula)){
+                ArrayList<Dia> dias = aulas.get(i).getDias();
+                for(int x=0; x<dias.size(); x++){
+                    ArrayList<Hora> horas = dias.get(x).getHoras();
+                    for(int y=0; y<horas.size(); y++){
+                        Grupo grupo = horas.get(y).getGrupo();
+                        if(horas.get(y).getGrupo().getId_depar() == id_depar)
+                            table.setValueAt(grupo.getCod_materia()+"\nGT "+grupo.getId_grupo(), y, x+1);
+                        else
+                            table.setValueAt("", y, x+1);
+                    }
+                }
+                break;
+            }
+        }
         
+        return table;
+    }
+    
+    public static DefaultTableModel getHorarioEnAula_Carrera(ArrayList<Aula> aulas, String aula, DefaultTableModel table, ArrayList<Departamento> depars, ArrayList<Materia> materias){
+        for(int i=0; i<aulas.size(); i++){
+            if(aulas.get(i).getNombre().equals(aula)){
+                ArrayList<Dia> dias = aulas.get(i).getDias();
+                for(int x=0; x<dias.size(); x++){
+                    ArrayList<Hora> horas = dias.get(x).getHoras();
+                    for(int y=0; y<horas.size(); y++){
+                        Grupo grupo = horas.get(y).getGrupo();
+                        for(int z=0; z<materias.size(); z++){
+                            if(materias.get(z).getCodigo().equals(grupo.getCod_materia()) && materias.get(z).getDepartamento() == grupo.getId_depar()){
+                                table.setValueAt(grupo.getCod_materia()+"\nGT "+grupo.getId_grupo(), y, x+1);
+                                break;
+                            }
+                            else
+                                table.setValueAt("", y, x+1);
+                        }
+                    }
+                }
+                break;
+            }
+        }
         
         return table;
     }

@@ -10,6 +10,7 @@ import static generador_horarios.ManejadorMaterias.getTodasMaterias;
 import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.util.ArrayList;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
+import java.sql.SQLException;
 import java.sql.Time;
 
 /**
