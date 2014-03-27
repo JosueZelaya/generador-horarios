@@ -16,8 +16,9 @@ public class Campus {
     
     private ArrayList<Aula> aulas;
     private ArrayList<Agrupacion> agrupaciones;
+    private ArrayList<Departamento> departamentos;
 
-    public Campus(ArrayList<Agrupacion> agrupaciones) {
+    public Campus(ArrayList<Agrupacion> agrupaciones, ArrayList<Departamento> departamentos) {
         this.aulas = new ArrayList();        
         aulas = ManejadorAulas.getTodasAulas();
         for (int i = 0; i < aulas.size(); i++) {
@@ -30,6 +31,7 @@ public class Campus {
         }
         
         this.agrupaciones = agrupaciones;
+        this.departamentos = departamentos;
     }
 
     /**
