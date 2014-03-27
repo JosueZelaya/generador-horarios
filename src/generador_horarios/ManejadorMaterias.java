@@ -43,6 +43,22 @@ public abstract class ManejadorMaterias {
         return materias;
     }
     
+    public static String getNombreMateria(String codMateria){
+        String nombreMateria="";
+        Conexion conexion = new Conexion();        
+        ResultSet resultadoConsulta;
+        try {
+            conexion.conectar();
+            resultadoConsulta = conexion.consulta("SELECT nombre_materia FROM materias WHERE cod_materia='"+codMateria+"'");
+            while(resultadoConsulta.next()){               
+                nombreMateria=resultadoConsulta.getString("nombre_materia");
+            }
+            conexion.cierraConexion();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return nombreMateria;
+    }
     
     
 }

@@ -19,7 +19,11 @@ public class Grupo {
     private boolean incompleto;
     
     public Grupo(){
-        
+        incompleto=false;
+        this.cod_materia = "";
+        this.id_depar = 0;
+        this.id_grupo = 0;
+        this.horasAsignadas = 0;
     }
     
     public Grupo(String codigo, int id_depar, int id_grupo){

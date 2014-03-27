@@ -32,6 +32,40 @@ public abstract class ManejadorDepartamentos {
         return depars;
     }
     
+    public static ArrayList<String> getNombreDepartamentos(){
+        ArrayList<String> nombre_departamentos = new ArrayList();
+        Conexion conexion = new Conexion();        
+        ResultSet resultadoConsulta;
+        try {
+            conexion.conectar();
+            resultadoConsulta = conexion.consulta("SELECT nombre_depar FROM departamentos ORDER BY nombre_depar");
+            while(resultadoConsulta.next()){
+                nombre_departamentos.add(resultadoConsulta.getString("nombre_depar"));
+            }
+            conexion.cierraConexion();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());            
+        }        
+        return nombre_departamentos;
+    }
+    
+    public static String getNombreDepartamento(int idDepartamento){
+        String nombreDepartamento="";
+        Conexion conexion = new Conexion();        
+        ResultSet resultadoConsulta;
+        try {
+            conexion.conectar();
+            resultadoConsulta = conexion.consulta("SELECT nombre_depar FROM departamentos WHERE id_depar='"+idDepartamento+"'");
+            while(resultadoConsulta.next()){               
+                nombreDepartamento=resultadoConsulta.getString("nombre_depar");
+            }
+            conexion.cierraConexion();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return nombreDepartamento;
+    }
+    
     public static int getIdDepar(String nombre, ArrayList<Departamento> depars){
         int id = 0;
         
