@@ -27,6 +27,7 @@ public abstract class ManejadorAgrupaciones {
             while(resultado.next()){
                 agrupaciones.add(new Agrupacion(resultado.getString("cod_materia"),resultado.getInt("id_depar"),resultado.getInt("num_grupos"),resultado.getInt("numero_alumnos")));
             }
+            con.cierraConexion();
         }
         catch(SQLException e){
             System.out.println(e.getMessage());

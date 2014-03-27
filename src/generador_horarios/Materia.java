@@ -20,6 +20,7 @@ public class Materia {
     private int unidadesValorativas;
     private int departamento;
     private String codigoCarrera;
+    private int planEstudio;
     private boolean incompleta;
     
     public Materia(){
@@ -28,6 +29,7 @@ public class Materia {
         ciclo = 0;
         unidadesValorativas=0;
         codigoCarrera = "";
+        planEstudio = 0;
         departamento=0;
         incompleta = false; //Cambiará a true si no se puede asignar o se asigna parcialmente.
     }
@@ -129,5 +131,13 @@ public class Materia {
 
     public void setCodigoCarrera(String codigoCarrera) {
         this.codigoCarrera = codigoCarrera;
+    }
+
+    public int getPlanEstudio() {
+        return planEstudio;
+    }
+
+    public void setPlanEstudio(int planEstudio) {
+        this.planEstudio = planEstudio;
     }
 }

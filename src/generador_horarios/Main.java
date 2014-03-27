@@ -10,6 +10,7 @@ import static generador_horarios.ManejadorMaterias.getTodasMaterias;
 import static generador_horarios.Procesador.getNumeroAleatorio;
 import java.util.ArrayList;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
+import java.sql.SQLException;
 import java.sql.Time;
 
 /**
@@ -18,8 +19,8 @@ import java.sql.Time;
  */
 public class Main {
     
-    public static void main(String[] args){
-        Campus campus = new Campus(ManejadorAgrupaciones.getAgrupaciones());
+    public static void main(String[] args) throws SQLException{
+        Campus campus = new Campus(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
         ArrayList<Materia> materias;        
         Procesador procesador = new Procesador();
         boolean cicloPar = true;
@@ -41,7 +42,7 @@ public class Main {
         }
         
         //IMPRIMIR LA SEMANA
-        imprimir(campus);
+        //imprimir(campus);
         
         //ManejadorHoras.actualizarHoras(ManejadorHoras.generarHoras(Time.valueOf("07:00:00"), Time.valueOf("12:00:00")));
     }

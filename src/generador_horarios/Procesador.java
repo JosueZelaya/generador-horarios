@@ -8,9 +8,9 @@ package generador_horarios;
 
 
 import static generador_horarios.ManejadorDias.elegirDiaDiferente;
-import static generador_horarios.ManejadorHoras.buscarhorasDisponibles;
+import static generador_horarios.ManejadorHoras.buscarHorasDisponibles;
+import static generador_horarios.ManejadorHoras.MateriaDeNivelEnHoras;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
-
 import java.util.ArrayList;
 
 /**
@@ -69,26 +69,6 @@ public class Procesador {
          }         
      }
     
-//    public void asignarAula(Materia materia, Campus campus){         
-//         ArrayList<Aula> aulasUsadas = new ArrayList();
-//         boolean sePudoAsignar=false;         
-//         while(!sePudoAsignar){
-//             Aula aula = ManejadorAulas.elegirAulaDiferente(campus.getAulas(), aulasUsadas);
-//             if(aula!=null){
-//                aulasUsadas.add(aula);
-//                ArrayList<Dia> dias;
-//                dias = aula.getDias();
-//                if(asignarDias(materia, dias)){                 
-//                    sePudoAsignar = true;
-//                }
-//             }else{
-//                 //Si ya no hay aulas
-//                 materia.setIncompleta(true); //La materia no se pudo asignar o se asigno parcialmente
-//                 sePudoAsignar=true; //Indicamos que se pudo asignar para romper el bucle
-//             }             
-//         }        
-//    }
-    
     public void asignarAulaPorCapacidad(Materia materia,Campus campus) throws Exception{
         ArrayList<Agrupacion> agrupaciones = campus.getAgrupaciones();
         Agrupacion agrupacion = getAgrupacion(materia.getCodigo(),materia.getDepartamento(),agrupaciones);
@@ -112,26 +92,26 @@ public class Procesador {
             }            
         }
         if(!sePudoAsignar){ //Se asigna el día sábado            
-                for (int i = 0; i < aulas.size(); i++) {
-                   Aula aula = aulas.get(i);
-                   int capacidad = aula.getCapacidad();
-                   if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
-                       Dia dia = aula.getDia("Sabado");
-                       ArrayList<Hora> horas = dia.getHoras();
-                       ArrayList<Hora> horasDisponibles = buscarhorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta); //elige las primeras horas disponibles que encuentre ese día
-                       if(horasDisponibles != null){                                   //Si hay horas disponibles
-                            asignar(grupo, horasDisponibles);                         //Asignamos la materia            
-                            break;
-                       }
+            for (int i = 0; i < aulas.size(); i++) {
+               Aula aula = aulas.get(i);
+               int capacidad = aula.getCapacidad();
+               if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
+                   Dia dia = aula.getDia("Sabado");
+                   ArrayList<Hora> horas = dia.getHoras();
+                   ArrayList<Hora> horasDisponibles = buscarHorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta); //elige las primeras horas disponibles que encuentre ese día
+                   if(horasDisponibles != null){                 //Si hay horas disponibles
+                        asignar(grupo, horasDisponibles);        //Asignamos la materia            
+                        break;
                    }
-                   if(i==aulas.size()-1){
-                       throw new Exception("¡Ya no hay aulas disponibles para el grupo "+grupo.getId_grupo()+" Materia: "+grupo.getCod_materia()+" Departamento: "+grupo.getId_depar());
-                   }
-               }           
+               }
+               if(i==aulas.size()-1){
+                   throw new Exception("¡Ya no hay aulas disponibles para el grupo "+grupo.getId_grupo()+" Materia: "+grupo.getCod_materia()+" Departamento: "+grupo.getId_depar());
+               }
+           }
         }        
     }
     
-    public boolean asignarDias(Materia materia, Grupo grupo,ArrayList<Dia> dias){
+    public boolean asignarDias(Materia materia, Grupo grupo, ArrayList<Dia> dias){
        Dia diaElegido;
        ArrayList<Dia> diasUsados = new ArrayList();       
        //Se debe elegir un día diferente para cada clase
@@ -150,10 +130,14 @@ public class Procesador {
     }
     
     public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas){
+        System.out.println("intentando para: "+materia.getCodigo()+" y grupo: "+grupo.getId_grupo());
         ArrayList<Hora> horasDisponibles;
-        int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase        
-        
-        horasDisponibles = buscarhorasDisponibles(horas, numHorasContinuas, desde, hasta); //elige las primeras horas disponibles que encuentre ese día
+        int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
+        Hora horaNivel = MateriaDeNivelEnHoras(materia, horas);
+        if(horaNivel != null)
+            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, horaNivel.getIdHora(), hasta);
+        else
+            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta); //elige las primeras horas disponibles que encuentre ese día
         
         if(horasDisponibles != null){                                   //Si hay horas disponibles
             asignar(grupo, horasDisponibles);                         //Asignamos la materia            
@@ -162,12 +146,8 @@ public class Procesador {
     
     //Realiza el procesamiento necesario para generar el horario de una materia.
     public void procesarMateria(Campus campus,Materia materia) throws Exception{
-              
             establecerTurno(materia);                         //Se establece el turno
-            //asignarAula(materia, campus);
             asignarAulaPorCapacidad(materia, campus);
-       
     }
-    
     
 }

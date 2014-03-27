@@ -21,7 +21,8 @@ public abstract class ManejadorDepartamentos {
         Conexion con = new Conexion();
         ResultSet resultado;
         
-        resultado = con.consulta("SELECT * FROM departamentos");
+        con.conectar();
+        resultado = con.consulta("SELECT * FROM departamentos;");
         
         while(resultado.next()){
             depars.add(new Departamento(resultado.getInt(1),resultado.getString(2)));
@@ -36,8 +37,10 @@ public abstract class ManejadorDepartamentos {
         int id = 0;
         
         for(int x=0; x<depars.size(); x++){
-            if(depars.get(x).getNombre().equals(nombre))
+            if(depars.get(x).getNombre().equals(nombre)){
                 id = depars.get(x).getId();
+                break;
+            }
         }
         
         return id;
@@ -47,8 +50,10 @@ public abstract class ManejadorDepartamentos {
         String name="";
         
         for(int x=0; x<depars.size(); x++){
-            if(depars.get(x).getId() == id)
+            if(depars.get(x).getId() == id){
                 name = depars.get(x).getNombre();
+                break;
+            }
         }
         
         return name;

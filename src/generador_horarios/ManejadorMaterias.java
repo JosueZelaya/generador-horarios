@@ -24,7 +24,7 @@ public abstract class ManejadorMaterias {
         ResultSet resultadoConsulta;
         try {
             conexion.conectar();
-            resultadoConsulta = conexion.consultaCiclos("SELECT b.cod_materia,b.nombre_materia,b.unidades_valorativas,a.ciclo,a.agrupacion_id_depar,a.carreras_id_carrera FROM carreras_materias AS a INNER JOIN materias AS b ON (b.cod_materia=a.materias_cod_materia) WHERE a.ciclo IN (?,?,?,?,?);",cicloPar);
+            resultadoConsulta = conexion.consultaCiclos("SELECT b.cod_materia,b.nombre_materia,b.unidades_valorativas,a.ciclo,a.agrupacion_id_depar,a.carreras_id_carrera,a.carreras_plan_estudio FROM carreras_materias AS a INNER JOIN materias AS b ON (b.cod_materia=a.materias_cod_materia) WHERE a.ciclo IN (?,?,?,?,?);",cicloPar);
             while(resultadoConsulta.next()){
                 Materia materia = new Materia();
                 materia.setCodigo(resultadoConsulta.getString("cod_materia"));
@@ -33,6 +33,7 @@ public abstract class ManejadorMaterias {
                 materia.setUnidadesValorativas(resultadoConsulta.getInt("unidades_valorativas"));
                 materia.setDepartamento(resultadoConsulta.getInt("agrupacion_id_depar"));
                 materia.setCodigoCarrera(resultadoConsulta.getString("carreras_id_carrera"));
+                materia.setPlanEstudio(resultadoConsulta.getInt("carreras_plan_estudio"));
                 materias.add(materia);
             }
             conexion.cierraConexion();

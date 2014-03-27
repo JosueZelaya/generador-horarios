@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public abstract class ManejadorHoras {
     
     public static ArrayList<Hora> getTodasHoras(){
-        ArrayList<Hora> horas = new ArrayList();        
+        ArrayList<Hora> horas = new ArrayList();
         Conexion conexion = new Conexion();        
         ResultSet resultadoConsulta;
         try {
@@ -53,13 +53,13 @@ public abstract class ManejadorHoras {
     }
     
     //Devuelve las primeras horas disponibles consecutivas que encuentre
-    public static ArrayList<Hora> buscarhorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta){        
+    public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta){        
         ArrayList<Hora> horasDisponibles = new ArrayList();
         for (int i = desde; i <= hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
             Boolean hayBloquesDisponibles=false;
             
             //Si hay una hora disponible debe verificarse que su indice no sea tal que se desborde el array al preguntar por las siguientes
-            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=horas.size()-cantidadHoras+1){            
+            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=(horas.size()+1)-cantidadHoras){            
                 hayBloquesDisponibles = true;
                     for (int j = i+1; j < i+cantidadHoras; j++) {
                         Hora hora = horas.get(j);
@@ -70,7 +70,6 @@ public abstract class ManejadorHoras {
                             hayBloquesDisponibles=false;
                         }
                     }
-                    
             }
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
@@ -83,52 +82,32 @@ public abstract class ManejadorHoras {
         return null;
     }
     
-    /**
-     *
-     * Elige horas disponibles dentro del array y que sean consecutivas
-     * 
-     * @param horas = el array de horas de las cuales puede elegir
-     * @param cantidadHoras = la cantidad de horas consecutivas que busca elegir
-     * @param desde = el límite inferior para elegir
-     * @param hasta = el límite superior para elegir
-     * @return = si las hay retorna las horas consecutivas que se encuentren disponibles, de lo contrario retorna null
-     */
-    
-    public static ArrayList<Hora> elegirHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde, int hasta){
-        ArrayList<Hora> horasPosibles =new ArrayList();
-        ArrayList<Hora> horasDisponibles =new ArrayList();
-        Hora hora;        
-        
-        for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
-            Boolean hayDisponibles=false;
-            
-            //Si hay una hora disponible debe verificarse que su indice no sea tal que desborde el array al preguntar por las siguientes
-            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=horas.size()-cantidadHoras+1){
-                hayDisponibles = true;                
-                    for (int j = i; j < i+cantidadHoras; j++) {
-                        if(!horas.get(j).estaDisponible()){
-                            hayDisponibles=false;
+    public static Hora MateriaDeNivelEnHoras(Materia materia, ArrayList<Hora> horas){
+        Hora horaNivel = null;
+        Conexion con;
+        try{
+            con = new Conexion();
+            for(int x=0; x<horas.size(); x++){
+                if(!horas.get(x).estaDisponible() && horas.get(x).getGrupo().getId_depar() == materia.getDepartamento()){
+                    con.conectar();
+                    Grupo grupo = horas.get(x).getGrupo();
+                    String codigo = grupo.getCod_materia();
+                    int id_dep = grupo.getId_depar();
+                    ResultSet res = con.consultaMateriaDeGrupo("SELECT carreras_id_carrera, ciclo FROM carreras_materias WHERE materias_cod_materia=? AND agrupacion_id_depar=?;", codigo, id_dep);
+                    while(res.next()){
+                        if(res.getString(1).equals(materia.getCodigoCarrera()) && res.getInt(2) == materia.getCiclo()){
+                            horaNivel = horas.get(x);
+                            break;
                         }
-                    }                                
+                    }
+                    con.cierraConexion();
+                }
             }
-            //Si hay horas consecutivas disponibles agrego la primera de ellas al array de horas posibles
-            if(hayDisponibles){
-                horasPosibles.add(horas.get(i));
-            }
+        } catch(SQLException ex){
+            System.out.println(ex.getMessage());
         }
-      
-        if(horasPosibles.size()>0){
-            //Elijo una hora de las horas posibles que he agregado
-            int indice = getNumeroAleatorio(0,horasPosibles.size()-1);
-            hora = horasPosibles.get(indice);
-            int indice2 = horas.indexOf(hora);
-            
-            for (int i = indice2; i < indice2+cantidadHoras; i++) {
-                horasDisponibles.add(horas.get(i));
-            }
-            return horasDisponibles;
-        }       
-        return null;
+        
+        return horaNivel;
     }
     
     public static ArrayList<Hora> generarHoras(Time initManana, Time initTarde){
@@ -165,6 +144,7 @@ public abstract class ManejadorHoras {
             for(Hora h : horas){
                 con.actualizarHora("UPDATE horas_test SET inicio=?,final=? WHERE id_hora=?;", h.getIdHora(), h.getInicio(), h.getFin());
             }
+            con.cierraConexion();
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
