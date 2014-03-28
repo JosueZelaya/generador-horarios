@@ -91,8 +91,9 @@ public abstract class ManejadorAulas {
                     ArrayList<Hora> horas = dias.get(x).getHoras();
                     for(int y=0; y<horas.size(); y++){
                         Hora hora = horas.get(y);
+                        Grupo grupo = hora.getGrupo();
                         if(!hora.estaDisponible()){
-                            String texto = hora.getGrupo().getCod_materia()+" GT: "+hora.getGrupo().getId_grupo();
+                            String texto = grupo.getCod_materia()+" GT: "+grupo.getId_grupo();
                             //String texto=hora.getGrupo().getCod_materia()+"\nGrupo: "+hora.getGrupo().getId_grupo()+"\nDepartamento: "+hora.getGrupo().getId_depar()+"\n\n hola";                            
                             table.setValueAt(texto, y, x+1);
                         }else{
@@ -114,10 +115,12 @@ public abstract class ManejadorAulas {
                 for(int x=0; x<dias.size(); x++){
                     ArrayList<Hora> horas = dias.get(x).getHoras();
                     for(int y=0; y<horas.size(); y++){
-                        Grupo grupo = horas.get(y).getGrupo();
-                        if(horas.get(y).getGrupo().getId_depar() == id_depar)
-                            table.setValueAt(grupo.getCod_materia()+"\nGT "+grupo.getId_grupo(), y, x+1);
-                        else
+                        Hora hora = horas.get(y);
+                        Grupo grupo = hora.getGrupo();
+                        if(grupo.getId_depar() == id_depar){
+                            String texto = grupo.getCod_materia()+" GT: "+grupo.getId_grupo();
+                            table.setValueAt(texto, y, x+1);
+                        }else
                             table.setValueAt("", y, x+1);
                     }
                 }
@@ -138,7 +141,7 @@ public abstract class ManejadorAulas {
                         Grupo grupo = horas.get(y).getGrupo();
                         for(int z=0; z<materias.size(); z++){
                             if(materias.get(z).getCodigo().equals(grupo.getCod_materia()) && materias.get(z).getDepartamento() == grupo.getId_depar()){
-                                table.setValueAt(grupo.getCod_materia()+"\nGT "+grupo.getId_grupo(), y, x+1);
+                                table.setValueAt(grupo.getCod_materia()+" GT: "+grupo.getId_grupo(), y, x+1);
                                 break;
                             }
                             else

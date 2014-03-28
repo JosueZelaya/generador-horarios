@@ -9,10 +9,17 @@ package generador_horarios;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import javax.swing.CellRendererPane;
 import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -20,6 +27,8 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -27,7 +36,7 @@ import javax.swing.table.TableCellRenderer;
  *
  * @author alexander
  */
-public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
+public class VentanaInicio extends javax.swing.JFrame implements MouseListener,ActionListener,ListSelectionListener{
 
     DefaultTableModel modelo;
     Campus campus;
@@ -35,7 +44,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
     String departamentoSeleccionado;
     String carreraSeleccionada;
     ArrayList<Materia> materias;
-    
+    int fila,columna; //representan la posición dentro del jTable
     String[][] datosTabla={};
     String[] cabeceraTabla={"Horas","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"};
     String[] listadoAulas;
@@ -50,6 +59,9 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
      */
     public VentanaInicio() {
         initComponents();
+        fila =0;
+        columna =0;
+        
         //Se crea el objeto campus
         campus = new Campus(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
         
@@ -69,28 +81,23 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
         //jTable1.setDefaultRenderer(Object.class, new MyRenderer());
         jTable1.setModel(modelo);
         jTable1.addMouseListener(this);
+        jTable1.getSelectionModel().addListSelectionListener(this);
+        jTable1.getColumnModel().getSelectionModel().addListSelectionListener(this);
+        jTable1.setColumnSelectionAllowed(true);
         
         //Se llena la lista de aulas
         ArrayList<Aula> aulas = ManejadorAulas.getTodasAulasOrdenadas("cod_aula");
-        listadoAulas = new String[aulas.size()];
+        jlist_aulas.addItem(null);
         for (int i = 0; i < aulas.size(); i++) {
             Aula aula = aulas.get(i);
             jlist_aulas.addItem(aula.getNombre());
         }
-        
-        //Se llena la lista de departamentos
-        ArrayList<String> carreras= ManejadorCarreras.getNombreTodasCarreras();
-        for (int i = 0; i < carreras.size(); i++) {
-            jlist_carreras.addItem(carreras.get(i));
-        }
-        
-        //Se llena la lista de carreras
-        ArrayList<String> departamentos= ManejadorDepartamentos.getNombreDepartamentos();
-        for (int i = 0; i < departamentos.size(); i++) {
-            jlist_departamentos.addItem(departamentos.get(i));
-        }
+        jlist_aulas.setName("lista_aulas");
+        jlist_aulas.addActionListener(this);
         
         aulaSeleccionada = null;
+        departamentoSeleccionado = null;
+        carreraSeleccionada = null;
         materias = new ArrayList();
     }
     
@@ -122,17 +129,17 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
     @Override
     public void mouseClicked(MouseEvent e) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        if (e.getClickCount() == 1) {
-            JTable target = (JTable)e.getSource();
-            int row = target.getSelectedRow()+1;
-            int column = target.getSelectedColumn();
-            Grupo grupo = ManejadorGrupos.getGrupo(campus.getAulas(), aulaSeleccionada, target.getColumnName(column), row);            
-            
-            String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
-            String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
-            lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
-            
-        }
+//        if (e.getClickCount() == 1) {
+//            JTable target = (JTable)e.getSource();
+//            int row = target.getSelectedRow()+1;
+//            int column = target.getSelectedColumn();
+//            Grupo grupo = ManejadorGrupos.getGrupo(campus.getAulas(), aulaSeleccionada, target.getColumnName(column), row);            
+//            
+//            String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
+//            String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
+//            lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
+//            
+//        }
     }
 
     @Override
@@ -154,12 +161,96 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
     public void mouseExited(MouseEvent e) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.        
+        JComboBox lista = (JComboBox)e.getSource();
+        if(lista!=null){            
+            if(lista.getName().equals("lista_aulas")){
+                if(lista.getSelectedItem()!=null){
+                    llenarListaDepartamentos();
+                    jlist_departamentos.setEnabled(true);
+                    btn_filtrar.setEnabled(true);
+                }else{
+                    jlist_departamentos.setEnabled(false);
+                    btn_filtrar.setEnabled(false);
+                }                
+            }else if(lista.getName().equals("lista_departamentos")){
+                if(lista.getSelectedItem()!=null){
+                    llenarListaCarreras(lista.getSelectedItem().toString());
+                    jlist_carreras.setEnabled(true);
+                }else{
+                    jlist_carreras.setEnabled(false);
+                }
+            }
+        }
+    }
+    
+    public void llenarListaDepartamentos(){
+        //Se llena la lista de departamentos
+        ArrayList<String> departamentos= ManejadorDepartamentos.getNombreDepartamentos();
+            jlist_departamentos.addItem(null);
+        for (int i = 0; i < departamentos.size(); i++) {
+            jlist_departamentos.addItem(departamentos.get(i));
+        }
+        jlist_departamentos.setName("lista_departamentos");
+        jlist_departamentos.addActionListener(this);
+    }
+    
+    public void llenarListaCarreras(String nombreDepartamento){
+        jlist_carreras.removeAllItems();
+        int idDepartamento = ManejadorDepartamentos.getIdDepartamento(nombreDepartamento);
+        //Se llena la lista de carreras
+        ArrayList<String> carreras= ManejadorCarreras.getNombreTodasCarrerasPorDepartamento(idDepartamento);
+        jlist_carreras.addItem(null);
+        for (int i = 0; i < carreras.size(); i++) {
+            jlist_carreras.addItem(carreras.get(i));
+        }
+        jlist_carreras.setName("lista_carreras");
+        jlist_carreras.addActionListener(this);
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        if(!e.getValueIsAdjusting()){
+            if (e.getSource() == jTable1.getSelectionModel() && jTable1.getRowSelectionAllowed()) {
+                // Column selection changed
+                //int first = e.getFirstIndex();
+                //fila = e.getLastIndex();
+                fila = jTable1.getSelectedRow()+1;
+                //System.out.println("fila: "+fila);
+            } else if (e.getSource() == jTable1.getColumnModel().getSelectionModel() && jTable1.getColumnSelectionAllowed() ){
+                // Row selection changed
+                //int first = e.getFirstIndex();
+                //columna = e.getLastIndex();
+                
+                columna = jTable1.getSelectedColumn();
+                //System.out.println("columna: "+columna);
+            }
+            //JTable target = (JTable)e.getSource();
+            Grupo grupo = ManejadorGrupos.getGrupo(campus.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
+            jTable1.getCellRenderer(fila, columna).getTableCellRendererComponent(jTable1, e, rootPaneCheckingEnabled, rootPaneCheckingEnabled, fila, columna).setBackground(Color.GREEN);
+            String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
+            String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
+            lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
+        }
+    }
     
     class MyRenderer implements TableCellRenderer {
+        Color color = Color.WHITE;
+        
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
             boolean hasFocus, int row, int column) {
             
+                JLabel texto = new JLabel();
+                texto.setBackground(color);
+                if(value != null)
+                    texto.setText(value.toString());
+                return texto;
                 //JPanel middlePanel = new JPanel ();
                 //middlePanel.setBorder ( new TitledBorder ( new EtchedBorder (), "Display Area" ) );
 
@@ -183,14 +274,19 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
 //            JScrollPane panel = new JScrollPane(display);
 //            return panel;
             
-            
-          JTextArea display = new JTextArea();
-          if (value != null)
-            display.setText(value.toString());
-          display.setEditable(false);
-          display.setBackground((row % 2 == 0) ? Color.white : new Color(211,211,211));
-          return display;
+//            
+//          JTextArea display = new JTextArea();
+//          if (value != null)
+//            display.setText(value.toString());
+//          display.setEditable(false);
+//          display.setBackground((row % 2 == 0) ? Color.white : new Color(211,211,211));
+//          return display;
         }
+        
+        public void cambiarColorFondo(Color color){
+            this.color = color;
+        }
+        
     }
 
     /**
@@ -392,22 +488,29 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener{
             }
         }
         jlist_aulas.setEnabled(true);
-        jlist_departamentos.setEnabled(true);
-        jlist_carreras.setEnabled(true);
-        btn_filtrar.setEnabled(true);
     }//GEN-LAST:event_btn_generarActionPerformed
 
     private void btn_filtrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_filtrarActionPerformed
-        // TODO add your handling code here:
-        aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
-        departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
-        carreraSeleccionada = jlist_carreras.getSelectedItem().toString();
-        departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, campus.getDepartamentos());
-        ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(materias, ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
-        jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(campus.getAulas(), aulaSeleccionada, modelo, campus.getDepartamentos(), materiasCarrera));
-        //jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(campus.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), campus.getDepartamentos()));
-        //jTable1.setModel(ManejadorAulas.getHorarioEnAula(campus.getAulas(),jlist_aulas.getSelectedItem().toString(), modelo));
+        // TODO add your handling code here:        
         
+        if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null && jlist_departamentos.getSelectedItem()==null){
+            System.out.println("aula");
+            aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula(campus.getAulas(),aulaSeleccionada, modelo));
+        }else if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()!=null){
+            System.out.println("carrera");
+            aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
+            carreraSeleccionada = jlist_carreras.getSelectedItem().toString();
+            ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(materias, ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(campus.getAulas(), aulaSeleccionada, modelo, campus.getDepartamentos(), materiasCarrera));
+        }else if(jlist_aulas.getSelectedItem()!=null && jlist_departamentos.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null){
+            System.out.println("departamento");
+            aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
+            departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
+            departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, campus.getDepartamentos());
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(campus.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), campus.getDepartamentos()));
+        }
+            
     }//GEN-LAST:event_btn_filtrarActionPerformed
 
     /**
