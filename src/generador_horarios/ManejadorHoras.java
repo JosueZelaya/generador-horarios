@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -53,7 +54,7 @@ public abstract class ManejadorHoras {
     }
     
     //Devuelve las primeras horas disponibles consecutivas que encuentre
-    public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta){        
+    public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas){        
         ArrayList<Hora> horasDisponibles = new ArrayList();
         for (int i = desde; i <= hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
             Boolean hayBloquesDisponibles=false;
@@ -74,12 +75,25 @@ public abstract class ManejadorHoras {
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
                 for (int j = i; j < i+cantidadHoras; j++) {
-                    horasDisponibles.add(horas.get(j));
+                    if(!chocaMateria(nombre_dia,horas.get(j).getIdHora(),aulas,materia,cantidadHoras))
+                        horasDisponibles.add(horas.get(j));
                 }
-                return horasDisponibles;
+                if(horasDisponibles.size() == cantidadHoras)
+                    return horasDisponibles;
             }
         }
         return null;
+    }
+    
+    public static ArrayList<Hora> buscarHorasParaNivel(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas){
+        ArrayList<Hora> horasDisponibles = null;
+        for(int x=0; x<aulas.size(); x++){
+            Dia dia = aulas.get(x).getDia(nombre_dia);
+            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde+1,hasta,nombre_dia,materia,aulas);
+            if(horasDisponibles != null)
+                break;
+        }
+        return horasDisponibles;
     }
     
     public static Hora MateriaDeNivelEnHoras(Materia materia, ArrayList<Hora> horas){
@@ -96,18 +110,52 @@ public abstract class ManejadorHoras {
                     ResultSet res = con.consultaMateriaDeGrupo("SELECT carreras_id_carrera, ciclo FROM carreras_materias WHERE materias_cod_materia=? AND agrupacion_id_depar=?;", codigo, id_dep);
                     while(res.next()){
                         if(res.getString(1).equals(materia.getCodigoCarrera()) && res.getInt(2) == materia.getCiclo()){
-                            horaNivel = horas.get(x);
-                            break;
+                            horaNivel = horas.get(x); //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
                         }
                     }
                     con.cierraConexion();
                 }
+                else if(horas.get(x).estaDisponible() && horas.get(x).getIdHora()==7)
+                    continue;
+                else if(horas.get(x).estaDisponible())
+                    break;
             }
         } catch(SQLException ex){
-            System.out.println(ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error en MateriadeNivelEnHoras\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         
         return horaNivel;
+    }
+    
+    public static boolean chocaMateria(String nombre_dia, int id_hora, ArrayList<Aula> aulas, Materia materia, int num_horas){
+        boolean chocan = false;
+        Conexion con;
+        try{
+            con = new Conexion();
+            for(int i=0; i<aulas.size(); i++){
+                Dia dia = aulas.get(i).getDia(nombre_dia);
+                for(int h=id_hora; h<id_hora+num_horas; h++){
+                    Hora hora = dia.getHoras().get(h-1);
+                    if(!hora.estaDisponible()){
+                        Grupo grupo = hora.getGrupo();
+                        con.conectar();
+                        ResultSet res = con.consulta("SELECT carreras_id_carrera, ciclo FROM carreras_materias WHERE materias_cod_materia='"+grupo.getCod_materia()+"' AND agrupacion_id_depar="+grupo.getId_depar()+";");
+                        while(res.next()){
+                            if(res.getString(1).equals(materia.getCodigoCarrera()) && res.getInt(2) == materia.getCiclo()){
+                                chocan = true;
+                                break;
+                            }
+                        }
+                        con.cierraConexion();
+                    }
+                }
+                if(chocan)
+                    break;
+            }
+        } catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Error en chocaMateria\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return chocan;
     }
     
     public static ArrayList<Hora> generarHoras(Time initManana, Time initTarde){

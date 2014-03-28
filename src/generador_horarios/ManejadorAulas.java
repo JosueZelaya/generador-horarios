@@ -83,7 +83,20 @@ public abstract class ManejadorAulas {
         return aulas.get(aula);
     }
     
+
+    public static ArrayList<Aula> obtenerAulasPorCapacidad(ArrayList<Aula> aulas, int num_alumnos){
+        ArrayList<Aula> aulasSelec = new ArrayList();
+        for(int x=0; x<aulas.size(); x++){
+            Aula aula = aulas.get(x);
+            int capacidad = aula.getCapacidad();
+            if(capacidad >= num_alumnos)
+                aulasSelec.add(aulas.get(x));
+        }
+        return aulasSelec;
+    }
+    
     public static DefaultTableModel getHorarioEnAula(ArrayList<Aula> aulas, String aula, DefaultTableModel table){
+
         for(int i=0; i<aulas.size(); i++){
             if(aulas.get(i).getNombre().equals(aula)){
                 ArrayList<Dia> dias = aulas.get(i).getDias();
