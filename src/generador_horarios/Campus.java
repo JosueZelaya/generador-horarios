@@ -55,5 +55,13 @@ public class Campus {
     public void setAgrupaciones(ArrayList<Agrupacion> agrupaciones) {
         this.agrupaciones = agrupaciones;
     }
+
+    public ArrayList<Departamento> getDepartamentos() {
+        return departamentos;
+    }
+
+    public void setDepartamentos(ArrayList<Departamento> departamentos) {
+        this.departamentos = departamentos;
+    }
     
 }
