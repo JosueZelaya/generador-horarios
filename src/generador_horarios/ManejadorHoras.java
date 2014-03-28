@@ -60,7 +60,7 @@ public abstract class ManejadorHoras {
             Boolean hayBloquesDisponibles=false;
             
             //Si hay una hora disponible debe verificarse que su indice no sea tal que se desborde el array al preguntar por las siguientes
-            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=(horas.size()+1)-cantidadHoras){            
+            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=(hasta+1)-cantidadHoras){            
                 hayBloquesDisponibles = true;
                     for (int j = i+1; j < i+cantidadHoras; j++) {
                         Hora hora = horas.get(j);
@@ -85,10 +85,10 @@ public abstract class ManejadorHoras {
         return null;
     }
     
-    public static ArrayList<Hora> buscarHorasParaNivel(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas){
+    public static ArrayList<Hora> buscarHorasParaNivel(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas){
         ArrayList<Hora> horasDisponibles = null;
-        for(int x=0; x<aulas.size(); x++){
-            Dia dia = aulas.get(x).getDia(nombre_dia);
+        for(int x=0; x<aulasConCapa.size(); x++){
+            Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
             horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde+1,hasta,nombre_dia,materia,aulas);
             if(horasDisponibles != null)
                 break;

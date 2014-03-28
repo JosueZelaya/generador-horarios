@@ -139,7 +139,7 @@ public class Procesador {
         if(horaNivel != null){
             if((horaNivel.getIdHora() == 13 && numHorasContinuas == 3) || (horaNivel.getIdHora() == 14 && numHorasContinuas >= 2) || horaNivel.getIdHora() == 15){}
             else    
-                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas, num_alumnos));
+                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas, num_alumnos), aulas);
         } else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas); //elige las primeras horas disponibles que encuentre ese día
         
