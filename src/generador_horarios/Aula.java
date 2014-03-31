@@ -57,7 +57,7 @@ public class Aula {
     /**
      * @return the disponible
      */
-    public boolean isDisponible() {
+    public boolean estaDisponible() {
         return disponible;
     }
 

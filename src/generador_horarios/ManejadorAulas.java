@@ -32,6 +32,7 @@ public abstract class ManejadorAulas {
                 Aula aula = new Aula();
                 aula.setNombre(resultadoConsulta.getString("cod_aula"));
                 aula.setCapacidad(resultadoConsulta.getInt("capacidad"));
+                aula.setDisponible(true);
                 aulas.add(aula);
             }
             conexion.cierraConexion();

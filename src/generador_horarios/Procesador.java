@@ -145,6 +145,9 @@ public class Procesador {
         } else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas); //elige las primeras horas disponibles que encuentre ese día
         
+        if(horasDisponibles == null)
+            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
+        
         if(horasDisponibles != null)
             asignar(grupo, horasDisponibles);
     }

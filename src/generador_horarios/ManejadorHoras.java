@@ -61,15 +61,15 @@ public abstract class ManejadorHoras {
             //Si hay una hora disponible debe verificarse que su indice no sea tal que se desborde el array al preguntar por las siguientes
             if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=(hasta+1)-cantidadHoras){            
                 hayBloquesDisponibles = true;
-                    for (int j = i+1; j < i+cantidadHoras; j++) {
-                        Hora hora = horas.get(j);
-                        if(hora.getIdHora()==8){
-                            hayBloquesDisponibles=false;
-                        }
-                        if(!hora.estaDisponible()){                            
-                            hayBloquesDisponibles=false;
-                        }
+                for (int j = i+1; j < i+cantidadHoras; j++) {
+                    Hora hora = horas.get(j);
+                    if(hora.getIdHora()==8){
+                        hayBloquesDisponibles=false;
                     }
+                    if(!hora.estaDisponible()){                            
+                        hayBloquesDisponibles=false;
+                    }
+                }
             }
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
@@ -77,6 +77,36 @@ public abstract class ManejadorHoras {
                     for (int j = i; j < i+cantidadHoras; j++) {
                         horasDisponibles.add(horas.get(j));
                     }
+                }
+                if(horasDisponibles.size() == cantidadHoras)
+                    return horasDisponibles;
+            }
+        }
+        return null;
+    }
+    
+    public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta){        
+        ArrayList<Hora> horasDisponibles = new ArrayList();
+        for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
+            Boolean hayBloquesDisponibles=false;
+            
+            //Si hay una hora disponible debe verificarse que su indice no sea tal que se desborde el array al preguntar por las siguientes
+            if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=(hasta+1)-cantidadHoras){            
+                hayBloquesDisponibles = true;
+                for (int j = i+1; j < i+cantidadHoras; j++) {
+                    Hora hora = horas.get(j);
+                    if(hora.getIdHora()==8){
+                        hayBloquesDisponibles=false;
+                    }
+                    if(!hora.estaDisponible()){                            
+                        hayBloquesDisponibles=false;
+                    }
+                }
+            }
+            //Si hay horas consecutivas disponibles las agrego al array
+            if(hayBloquesDisponibles){
+                for (int j = i; j < i+cantidadHoras; j++) {
+                    horasDisponibles.add(horas.get(j));
                 }
                 if(horasDisponibles.size() == cantidadHoras)
                     return horasDisponibles;

@@ -106,8 +106,7 @@ public class Materia {
     }
     
     public int getTotalHorasRequeridas(){
-        int total = Math.round((this.unidadesValorativas*20)/16);
-        
+        int total = (int) Math.rint((this.unidadesValorativas*20)/16);
         return total;
     }
 
