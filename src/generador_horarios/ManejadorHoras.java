@@ -73,9 +73,10 @@ public abstract class ManejadorHoras {
             }
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
-                for (int j = i; j < i+cantidadHoras; j++) {
-//                    if(!chocaMateria(nombre_dia,horas.get(j).getIdHora(),aulas,materia,cantidadHoras))
+                if(!chocaMateria(nombre_dia,horas.get(i).getIdHora(),aulas,materia,cantidadHoras)){
+                    for (int j = i; j < i+cantidadHoras; j++) {
                         horasDisponibles.add(horas.get(j));
+                    }
                 }
                 if(horasDisponibles.size() == cantidadHoras)
                     return horasDisponibles;
@@ -88,7 +89,7 @@ public abstract class ManejadorHoras {
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
-            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde+1,hasta,nombre_dia,materia,aulas);
+            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas);
             if(horasDisponibles != null)
                 break;
         }
@@ -146,8 +147,6 @@ public abstract class ManejadorHoras {
                         con.cierraConexion();
                     }
                 }
-                if(chocan)
-                    break;
             }
         } catch(SQLException ex){
             JOptionPane.showMessageDialog(null, "Error en chocaMateria()\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
