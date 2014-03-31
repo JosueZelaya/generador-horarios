@@ -133,18 +133,16 @@ public class Procesador {
     }
     
     public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas, String nombreDia, ArrayList<Aula> aulas, int num_alumnos){
-        ArrayList<Hora> horasDisponibles = null;
+        ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
         Hora horaNivel = MateriaDeNivelEnHoras(materia, horas);
         if(horaNivel != null){
-            if((horaNivel.getIdHora() == 13 && numHorasContinuas == 3) || (horaNivel.getIdHora() == 14 && numHorasContinuas >= 2) || horaNivel.getIdHora() == 15){}
-            else    
-                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas, num_alumnos), aulas);
+            if((horaNivel.getIdHora() == 13 && numHorasContinuas == 3) || (horaNivel.getIdHora() == 14 && numHorasContinuas >= 2) || horaNivel.getIdHora() == 15)
+                horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas);
+            else
+                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora()-1, (horaNivel.getIdHora()+numHorasContinuas)-1, nombreDia, materia, obtenerAulasPorCapacidad(aulas, num_alumnos), aulas);
         } else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas); //elige las primeras horas disponibles que encuentre ese día
-        
-        if(horasDisponibles == null)
-            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas);
         
         if(horasDisponibles != null)
             asignar(grupo, horasDisponibles);
@@ -154,6 +152,5 @@ public class Procesador {
     public void procesarMateria(Campus campus,Materia materia) throws Exception{
             establecerTurno(materia);                         //Se establece el turno
             asignarAulaPorCapacidad(materia, campus);
-    }
-    
+    }   
 }

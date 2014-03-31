@@ -35,7 +35,6 @@ public abstract class ManejadorHoras {
             conexion.cierraConexion();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
-            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return horas;
@@ -56,7 +55,7 @@ public abstract class ManejadorHoras {
     //Devuelve las primeras horas disponibles consecutivas que encuentre
     public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas){        
         ArrayList<Hora> horasDisponibles = new ArrayList();
-        for (int i = desde; i <= hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
+        for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
             Boolean hayBloquesDisponibles=false;
             
             //Si hay una hora disponible debe verificarse que su indice no sea tal que se desborde el array al preguntar por las siguientes
@@ -115,9 +114,7 @@ public abstract class ManejadorHoras {
                     }
                     con.cierraConexion();
                 }
-                else if(horas.get(x).estaDisponible() && horas.get(x).getIdHora()==7)
-                    continue;
-                else if(horas.get(x).estaDisponible())
+                else if(horas.get(x).estaDisponible() && horas.get(x).getIdHora() != 7)
                     break;
             }
         } catch(SQLException ex){
@@ -153,7 +150,7 @@ public abstract class ManejadorHoras {
                     break;
             }
         } catch(SQLException ex){
-            JOptionPane.showMessageDialog(null, "Error en chocaMateria\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error en chocaMateria()\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         return chocan;
     }
