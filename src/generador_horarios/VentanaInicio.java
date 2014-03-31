@@ -232,7 +232,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
             }
             //JTable target = (JTable)e.getSource();
             Grupo grupo = ManejadorGrupos.getGrupo(campus.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
-            jTable1.getCellRenderer(fila, columna).getTableCellRendererComponent(jTable1, e, rootPaneCheckingEnabled, rootPaneCheckingEnabled, fila, columna).setBackground(Color.GREEN);
+//            jTable1.getCellRenderer(fila, columna).getTableCellRendererComponent(jTable1, e, rootPaneCheckingEnabled, rootPaneCheckingEnabled, fila, columna).setBackground(Color.GREEN);
             String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
             String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
             lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");

@@ -75,7 +75,7 @@ public abstract class ManejadorHoras {
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
                 for (int j = i; j < i+cantidadHoras; j++) {
-                    if(!chocaMateria(nombre_dia,horas.get(j).getIdHora(),aulas,materia,cantidadHoras))
+//                    if(!chocaMateria(nombre_dia,horas.get(j).getIdHora(),aulas,materia,cantidadHoras))
                         horasDisponibles.add(horas.get(j));
                 }
                 if(horasDisponibles.size() == cantidadHoras)
