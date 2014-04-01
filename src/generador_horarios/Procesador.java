@@ -88,7 +88,7 @@ public class Procesador {
             if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
                 ArrayList<Dia> dias;
                 dias = aula.getDias();
-                if(asignarDias(materia, grupo, dias, aulas, cantidadAlumnos+10)){
+                if(asignarDias(materia, grupo, dias, aulas, cantidadAlumnos+10, campus.materias)){
                    sePudoAsignar=true;
                    break; 
                 }                
@@ -101,7 +101,7 @@ public class Procesador {
                if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
                    Dia dia = aula.getDia("Sabado");
                    ArrayList<Hora> horas = dia.getHoras();
-                   ArrayList<Hora> horasDisponibles = buscarHorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta, "Sabado", materia, aulas); //elige las primeras horas disponibles que encuentre ese día
+                   ArrayList<Hora> horasDisponibles = buscarHorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta, "Sabado", materia, aulas, campus.materias); //elige las primeras horas disponibles que encuentre ese día
                    if(horasDisponibles != null){                 //Si hay horas disponibles
                         asignar(grupo, horasDisponibles);        //Asignamos la materia            
                         break;
@@ -115,7 +115,7 @@ public class Procesador {
         }
     }
     
-    public boolean asignarDias(Materia materia, Grupo grupo, ArrayList<Dia> dias, ArrayList<Aula> aulas, int num_alumnos){
+    public boolean asignarDias(Materia materia, Grupo grupo, ArrayList<Dia> dias, ArrayList<Aula> aulas, int num_alumnos, ArrayList<Materia> m){
        Dia diaElegido;
        ArrayList<Dia> diasUsados = new ArrayList();       
        //Se debe elegir un día diferente para cada clase
@@ -124,7 +124,7 @@ public class Procesador {
             if(diaElegido != null){
                 ArrayList<Hora> horas;       
                 horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día                
-                asignarHoras(materia, grupo, horas, diaElegido.getNombre(), aulas, num_alumnos);
+                asignarHoras(materia, grupo, horas, diaElegido.getNombre(), aulas, num_alumnos, m);
                 diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
             }else{
                 return false;
@@ -133,17 +133,17 @@ public class Procesador {
        return true;
     }
     
-    public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas, String nombreDia, ArrayList<Aula> aulas, int num_alumnos){
+    public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas, String nombreDia, ArrayList<Aula> aulas, int num_alumnos, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        Hora horaNivel = MateriaDeNivelEnHoras(materia, horas);
+        Hora horaNivel = MateriaDeNivelEnHoras(materia, horas, m);
         if(horaNivel != null){
             if((horaNivel.getIdHora() == 13 && numHorasContinuas == 3) || (horaNivel.getIdHora() == 14 && numHorasContinuas >= 2) || horaNivel.getIdHora() == 15)
-                horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas);
+                horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, m);
             else
-                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora()-1, (horaNivel.getIdHora()+numHorasContinuas)-1, nombreDia, materia, obtenerAulasPorCapacidad(aulas, num_alumnos), aulas);
+                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora()-1, (horaNivel.getIdHora()+numHorasContinuas)-1, nombreDia, materia, obtenerAulasPorCapacidad(aulas, num_alumnos), aulas, m);
         } else
-            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas); //elige las primeras horas disponibles que encuentre ese día
+            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, m); //elige las primeras horas disponibles que encuentre ese día
         
         if(horasDisponibles == null)
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
