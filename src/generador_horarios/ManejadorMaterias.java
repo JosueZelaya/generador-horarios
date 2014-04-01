@@ -72,7 +72,7 @@ public abstract class ManejadorMaterias {
     
     public static ArrayList<Materia> getMateriaDeGrupo(String cod_materia, int id_depar, ArrayList<Materia> todas_mats){
         ArrayList <Materia> materias = new ArrayList();
-        for(Materia m : materias){
+        for(Materia m : todas_mats){
             if(m.getCodigo().equals(cod_materia) && m.getDepartamento() == id_depar)
                 materias.add(m);
         }

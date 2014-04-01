@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -158,9 +157,12 @@ public abstract class ManejadorHoras {
                     for(int j=0; j<materias.size(); j++){
                         if(materias.get(j).getCodigoCarrera().equals(materia.getCodigoCarrera()) && materias.get(j).getCiclo() == materia.getCiclo()){
                             chocan = true;
+                            System.out.println("Esta materia: "+materia.getCodigo()+" choca con: "+grupo.getCod_materia()+" GT "+grupo.getId_grupo());
                             break;
                         }
                     }
+                    if(chocan)
+                        break;
                 }
             }
         }

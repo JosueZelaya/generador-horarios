@@ -17,9 +17,9 @@ public class Campus {
     private ArrayList<Aula> aulas;
     private ArrayList<Agrupacion> agrupaciones;
     private ArrayList<Departamento> departamentos;
-    public final ArrayList<Materia> materias;
+    private ArrayList<Materia> materias;
 
-    public Campus(ArrayList<Agrupacion> agrupaciones, ArrayList<Departamento> departamentos, ArrayList<Materia> materias) {
+    public Campus(ArrayList<Agrupacion> agrupaciones, ArrayList<Departamento> departamentos) {
         this.aulas = new ArrayList();        
         aulas = ManejadorAulas.getTodasAulas();
         for (int i = 0; i < aulas.size(); i++) {
@@ -33,7 +33,6 @@ public class Campus {
         
         this.agrupaciones = agrupaciones;
         this.departamentos = departamentos;
-        this.materias = materias;
     }
 
     /**
@@ -71,5 +70,12 @@ public class Campus {
     public void setDepartamentos(ArrayList<Departamento> departamentos) {
         this.departamentos = departamentos;
     }
-    
+
+    public ArrayList<Materia> getMaterias() {
+        return materias;
+    }
+
+    public void setMaterias(ArrayList<Materia> materias) {
+        this.materias = materias;
+    }
 }
