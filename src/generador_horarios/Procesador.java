@@ -89,17 +89,17 @@ public class Procesador {
             if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
                 ArrayList<Dia> dias;
                 dias = aula.getDias();
-                if(asignarDias(materia, grupo, dias, aulas, cantidadAlumnos+10, materias)){
+                if(asignarDias(materia, grupo, dias, aulas, cantidadAlumnos+10, materias)){ // se trata de asignar el grupo en el aula elegida comprobando si existen choques
                    sePudoAsignar=true;
                    break; 
                 }
-                else if(asignarDias(materia, grupo, dias)){
+                else if(asignarDias(materia, grupo, dias)){ // se asignan las horas que no se pudieron asignar por choques, ya no se consideran choques
                     sePudoAsignar = true;
                     break;
                 }
             }            
         }
-        if(!sePudoAsignar){ //Se asigna el día sábado            
+        if(!sePudoAsignar){ //Se asigna el día sábado si no se pudieron asignar las horas del grupo durante la semana       
             for (int i = 0; i < aulas.size(); i++) {
                Aula aula = aulas.get(i);
                int capacidad = aula.getCapacidad();
@@ -121,6 +121,16 @@ public class Procesador {
     }
     
     //Asignar dias considerando choques en ellos
+    /**
+     * 
+     * @param materia = objeto materia de la cual se quiere asignar un grupo
+     * @param grupo = grupo que se quiere asignar
+     * @param dias = dias en los que se puede dar clases dentro del aula elegida
+     * @param aulas = array de todas las aulas del campus; se utiliza para comprobar choques y para obtener las aulas en las que se puede hacer la asignacion segun capacidad
+     * @param num_alumnos = numero de alumnos que tiene el grupo; se utiliza para obtener las aulas en las que se puede hacer la asignacion segun capacidad
+     * @param m = array de todas las materias del campus; se utiliza para comprobar choques
+     * @return true si se puede hacer la asignacion de todas las horas que requiere el grupo
+     */
     public boolean asignarDias(Materia materia, Grupo grupo, ArrayList<Dia> dias, ArrayList<Aula> aulas, int num_alumnos, ArrayList<Materia> m){
        Dia diaElegido;
        ArrayList<Dia> diasUsados = new ArrayList();       
@@ -159,6 +169,16 @@ public class Procesador {
     }
     
     //Asignar Horas considerando choques
+    /**
+     * 
+     * @param materia = objeto materia de la cual se quiere asignar un grupo
+     * @param grupo = grupo que se quiere asignar
+     * @param horas = horas del dia en el que se quiere hacer la asignacion
+     * @param nombreDia = nombre del dia en el que se quiere hacer la asignacion; se utiliza para compbrobar choques
+     * @param aulas = array de todas las aulas del campus; se utiliza para comprobar choques y para obtener las aulas en las que se puede hacer la asignacion segun capacidad
+     * @param num_alumnos = numero de alumnos que tiene el grupo; se utiliza para obtener las aulas en las que se puede hacer la asignacion segun capacidad
+     * @param m = array de todas las materias del campus; se utiliza para comprobar choques
+     */
     public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas, String nombreDia, ArrayList<Aula> aulas, int num_alumnos, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
@@ -167,7 +187,7 @@ public class Procesador {
             if((horaNivel.getIdHora() == 13 && numHorasContinuas == 3) || (horaNivel.getIdHora() == 14 && numHorasContinuas >= 2) || horaNivel.getIdHora() == 15)
                 horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, m);
             else
-                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora()-1, (horaNivel.getIdHora()+numHorasContinuas)-1, nombreDia, materia, obtenerAulasPorCapacidad(aulas, num_alumnos), aulas, m);
+                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas, num_alumnos), aulas, m);
         } else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, m); //elige las primeras horas disponibles que encuentre ese día
         
