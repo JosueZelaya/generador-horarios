@@ -6,11 +6,13 @@
 
 package generador_horarios;
 
+import java.io.Serializable;
+
 /**
  *
  * @author dasm
  */
-public class Grupo {
+public class Grupo implements Serializable{
     
     private String cod_materia;
     private int id_depar;

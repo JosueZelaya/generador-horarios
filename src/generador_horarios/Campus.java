@@ -6,13 +6,14 @@
 
 package generador_horarios;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author alexander
  */
-public class Campus {
+public class Campus implements Serializable{
     
     private ArrayList<Aula> aulas;
     private ArrayList<Agrupacion> agrupaciones;
