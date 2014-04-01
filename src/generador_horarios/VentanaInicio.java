@@ -75,7 +75,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         columna =0;
         
         //Se crea el objeto campus
-        campus = new Campus(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
+        campus = new Campus(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos(), ManejadorMaterias.getTodasMaterias(true));
         
         //Se llena la tabla de dias y horas
         modelo = new DefaultTableModel(datosTabla, cabeceraTabla){
@@ -557,7 +557,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         Procesador procesador = new Procesador();
         boolean cicloPar = true;
         
-        materias = ManejadorMaterias.getTodasMaterias(cicloPar);
+        materias = campus.materias;
         
         for (int i = 0; i < materias.size(); i++) {
             Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),campus.getAgrupaciones());
