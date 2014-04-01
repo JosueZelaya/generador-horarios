@@ -77,6 +77,7 @@ public class Procesador {
         Agrupacion agrupacion = getAgrupacion(materia.getCodigo(),materia.getDepartamento(),agrupaciones);
         
         ArrayList<Aula> aulas = campus.getAulas();
+        ArrayList<Materia> materias = campus.getMaterias();
         int cantidadAlumnos = agrupacion.getNum_alumnos();
         int numAulas = campus.getAulas().size();
         Grupo grupo = new Grupo(agrupacion.getPropietario(),agrupacion.getDepartamento(),agrupacion.getNumGruposAsignados()+1);
@@ -88,10 +89,14 @@ public class Procesador {
             if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
                 ArrayList<Dia> dias;
                 dias = aula.getDias();
-                if(asignarDias(materia, grupo, dias, aulas, cantidadAlumnos+10, campus.materias)){
+                if(asignarDias(materia, grupo, dias, aulas, cantidadAlumnos+10, materias)){
                    sePudoAsignar=true;
                    break; 
-                }                
+                }
+                else if(asignarDias(materia, grupo, dias)){
+                    sePudoAsignar = true;
+                    break;
+                }
             }            
         }
         if(!sePudoAsignar){ //Se asigna el día sábado            
@@ -101,7 +106,7 @@ public class Procesador {
                if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
                    Dia dia = aula.getDia("Sabado");
                    ArrayList<Hora> horas = dia.getHoras();
-                   ArrayList<Hora> horasDisponibles = buscarHorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta, "Sabado", materia, aulas, campus.materias); //elige las primeras horas disponibles que encuentre ese día
+                   ArrayList<Hora> horasDisponibles = buscarHorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta, "Sabado", materia, aulas, materias); //elige las primeras horas disponibles que encuentre ese día
                    if(horasDisponibles != null){                 //Si hay horas disponibles
                         asignar(grupo, horasDisponibles);        //Asignamos la materia            
                         break;
@@ -115,6 +120,7 @@ public class Procesador {
         }
     }
     
+    //Asignar dias considerando choques en ellos
     public boolean asignarDias(Materia materia, Grupo grupo, ArrayList<Dia> dias, ArrayList<Aula> aulas, int num_alumnos, ArrayList<Materia> m){
        Dia diaElegido;
        ArrayList<Dia> diasUsados = new ArrayList();       
@@ -133,6 +139,26 @@ public class Procesador {
        return true;
     }
     
+    //Asiganar dias sin considerar choques en ellos
+    public boolean asignarDias(Materia materia, Grupo grupo, ArrayList<Dia> dias){
+       Dia diaElegido;
+       ArrayList<Dia> diasUsados = new ArrayList();       
+       //Se debe elegir un día diferente para cada clase
+       while(materia.getTotalHorasRequeridas() > grupo.getHorasAsignadas()){
+            diaElegido = elegirDiaDiferente(dias, diasUsados); //Elegimos un día entre todos
+            if(diaElegido != null){
+                ArrayList<Hora> horas;       
+                horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día                
+                asignarHoras(materia, grupo, horas);
+                diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
+            }else{
+                return false;
+            }            
+       }
+       return true;
+    }
+    
+    //Asignar Horas considerando choques
     public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas, String nombreDia, ArrayList<Aula> aulas, int num_alumnos, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
@@ -145,8 +171,16 @@ public class Procesador {
         } else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, m); //elige las primeras horas disponibles que encuentre ese día
         
-        if(horasDisponibles == null)
-            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
+        if(horasDisponibles != null)
+            asignar(grupo, horasDisponibles);
+    }
+    
+    //Asignar horas sin considerar choques
+    public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas){
+        ArrayList<Hora> horasDisponibles;
+        int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
+        
+        horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
         
         if(horasDisponibles != null)
             asignar(grupo, horasDisponibles);
