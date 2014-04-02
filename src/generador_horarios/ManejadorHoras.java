@@ -157,7 +157,7 @@ public abstract class ManejadorHoras {
                     for(int j=0; j<materias.size(); j++){
                         if(materias.get(j).getCodigoCarrera().equals(materia.getCodigoCarrera()) && materias.get(j).getCiclo() == materia.getCiclo()){
                             chocan = true;
-                            System.out.println("Esta materia: "+materia.getCodigo()+" choca con: "+grupo.getCod_materia()+" GT "+grupo.getId_grupo());
+                            System.out.println("Esta materia: "+materia.getCodigo()+" choca con: "+grupo.getCod_materia()+" GT "+grupo.getId_grupo()+" dia: "+nombre_dia);
                             break;
                         }
                     }
@@ -165,6 +165,8 @@ public abstract class ManejadorHoras {
                         break;
                 }
             }
+            if(chocan)
+                break;
         }
         
         return chocan;
