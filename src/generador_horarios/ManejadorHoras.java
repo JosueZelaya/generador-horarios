@@ -51,7 +51,18 @@ public abstract class ManejadorHoras {
         return horas.get(hora);
     }
     
-    //Devuelve las primeras horas disponibles consecutivas que encuentre
+    /**Devuelve las primeras horas disponibles consecutivas que encuentre
+     * 
+     * @param horas = horas del dia en que va a tratar de asignar
+     * @param cantidadHoras = cuantas horas a asignar
+     * @param desde = desde cual hora tratar de asignar
+     * @param hasta = hasta cual hora tratar de asginar
+     * @param nombre_dia = nombre del dia en el que se quiere asignar, se usa para comprobar choques
+     * @param materia = objeto materia que se esta tratando de asignar
+     * @param aulas = todas las aulas de campus, se usan para verificar choques
+     * @param m = array de todas las materias que posee campus
+     * @return las horas disponibles sin choque en las que se puede asignar el grupo; null si no hay ninguna
+     */
     public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = new ArrayList();
         for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
@@ -84,6 +95,14 @@ public abstract class ManejadorHoras {
         return null;
     }
     
+    /**
+     * 
+     * @param horas = horas del dia en que va a tratar de asignar
+     * @param cantidadHoras = cuantas horas a asignar
+     * @param desde = desde cual hora tratar de asignar
+     * @param hasta = hasta cual hora tratar de asginar
+     * @return horas disponibles en las que se puede asignar el grupo aunque hayan choques
+     */
     public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta){        
         ArrayList<Hora> horasDisponibles = new ArrayList();
         for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
@@ -114,6 +133,18 @@ public abstract class ManejadorHoras {
         return null;
     }
     
+    /** Metodo para buscar horas en un dia elegido debajo de una materia del mismo nivel
+     * 
+     * @param cantidadHoras = numero de horas que se quieren asignar
+     * @param desde = desde cual hora se quiere hacer la asignacion
+     * @param hasta = hasta cual hora tratar de hacer la asignacion
+     * @param nombre_dia = nombre del dia en que se quiere hacer la asignacion
+     * @param materia = objeto materia de la cual se quiere asignar un grupo
+     * @param aulasConCapa = array de aulas que tienen capacidad para asignar al grupo de la materia
+     * @param aulas = array de todas las aulas que tiene el campus, se usa para verificar si hay choques
+     * @param m = array de todas las materias del campus, se usa para comprobar choques
+     * @return horas disponibles en las que se puede asignar el grupo
+     */
     public static ArrayList<Hora> buscarHorasParaNivel(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
@@ -125,6 +156,13 @@ public abstract class ManejadorHoras {
         return horasDisponibles;
     }
     
+    /** Meotodo para relizar busquedas de una materia que pertenece al mismo nivel en el dia elegido
+     * 
+     * @param materia
+     * @param horas
+     * @param todas_mats
+     * @return ultima hora en la que hay una materia del mismo nivel
+     */
     public static Hora MateriaDeNivelEnHoras(Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats){
         Hora horaNivel = null;
         
@@ -144,6 +182,16 @@ public abstract class ManejadorHoras {
         return horaNivel;
     }
     
+    /** Metodo para comprobar si existe choques de materia de mismo nivel en un dia determinado y hora determinada
+     * 
+     * @param nombre_dia
+     * @param id_hora
+     * @param aulas
+     * @param materia
+     * @param num_horas
+     * @param todas_mats
+     * @return true si hay choque, false si no hay choque
+     */
     public static boolean chocaMateria(String nombre_dia, int id_hora, ArrayList<Aula> aulas, Materia materia, int num_horas, ArrayList<Materia> todas_mats){
         boolean chocan = false;
         
@@ -172,6 +220,12 @@ public abstract class ManejadorHoras {
         return chocan;
     }
     
+    /** Metodo para generar nuevas horas clase
+     * 
+     * @param initManana = hora de inicio del dia clase
+     * @param initTarde = hora de final dia clase
+     * @return horas generadas en los limites recibidos
+     */
     public static ArrayList<Hora> generarHoras(Time initManana, Time initTarde){
         int id=1;
         Time horaInicial=initManana;
@@ -199,6 +253,10 @@ public abstract class ManejadorHoras {
         return horas;
     }
     
+    /** Metodo para actulizar las horas creadas con generarHoras() en la base de datos
+     * 
+     * @param horas = horas generadas con generarHoras()
+     */
     public static void actualizarHoras(ArrayList<Hora> horas){
         Conexion con = new Conexion();
         try{
