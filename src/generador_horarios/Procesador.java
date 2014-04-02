@@ -54,10 +54,10 @@ public class Procesador {
      * -Su turno abarca los horarios de la tarde y noche
      */
     public void establecerTurno(Materia materia){
-        if(materia.getCiclo()<=5)
-            hasta = 8;
+        if(materia.getCiclo()<=6)
+            hasta = 10;
         else
-            desde = 8; 
+            desde = 10;
     }
     
     //Asigna la materia en las horas correspondientes
@@ -89,11 +89,14 @@ public class Procesador {
             if(capacidad >= cantidadAlumnos+10){ //Las aulas deben quedar con una holgura de 10               
                 ArrayList<Dia> dias;
                 dias = aula.getDias();
+                System.out.println("Se probara en aula "+aula.getNombre());
                 if(asignarDias(materia, grupo, dias, aulas, cantidadAlumnos+10, materias)){ // se trata de asignar el grupo en el aula elegida comprobando si existen choques
-                   sePudoAsignar=true;
+                    System.out.println("Se asigno en aula "+aula.getNombre()+" sin choques");
+                    sePudoAsignar=true;
                    break; 
                 }
                 else if(asignarDias(materia, grupo, dias)){ // se asignan las horas que no se pudieron asignar por choques, ya no se consideran choques
+                    System.out.println("Se asigno en aula "+aula.getNombre()+" con choques");
                     sePudoAsignar = true;
                     break;
                 }
@@ -138,10 +141,11 @@ public class Procesador {
        while(materia.getTotalHorasRequeridas() > grupo.getHorasAsignadas()){
             diaElegido = elegirDiaDiferente(dias, diasUsados); //Elegimos un día entre todos
             if(diaElegido != null){
+                System.out.println("Se probara sin choques en dia "+diaElegido.getNombre());
                 ArrayList<Hora> horas;       
                 horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día                
                 asignarHoras(materia, grupo, horas, diaElegido.getNombre(), aulas, num_alumnos, m);
-                diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
+                diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia
             }else{
                 return false;
             }            
@@ -183,7 +187,7 @@ public class Procesador {
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
         Hora horaNivel = MateriaDeNivelEnHoras(materia, horas, m);
-        if(horaNivel != null){
+        if(horaNivel != null){          ///NO EXCEDER LIMITE DE HORAS PARA LAS MATERIAS DE CICLOS < 7
             if((horaNivel.getIdHora() == 13 && numHorasContinuas == 3) || (horaNivel.getIdHora() == 14 && numHorasContinuas >= 2) || horaNivel.getIdHora() == 15)
                 horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, m);
             else
@@ -191,13 +195,13 @@ public class Procesador {
         } else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, m); //elige las primeras horas disponibles que encuentre ese día
         
-        if(horasDisponibles != null)
+        if(horasDisponibles != null && horasDisponibles.size() > 0)
             asignar(grupo, horasDisponibles);
     }
     
     //Asignar horas sin considerar choques
     public void asignarHoras(Materia materia, Grupo grupo, ArrayList<Hora> horas){
-        ArrayList<Hora> horasDisponibles;
+        ArrayList<Hora> horasDisponibles;                       ///COMRPOBAR SI SE PUEDE ASIGNAR CON OTRA DEL NIVEL CON CHOQUE
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
         
         horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
