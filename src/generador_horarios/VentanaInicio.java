@@ -9,11 +9,8 @@ package generador_horarios;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -23,20 +20,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import javax.swing.CellRendererPane;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -49,7 +39,7 @@ import javax.swing.table.TableCellRenderer;
 public class VentanaInicio extends javax.swing.JFrame implements MouseListener,ActionListener,ListSelectionListener{
 
     DefaultTableModel modelo;
-    Campus campus;
+    Facultad facultad;
     String aulaSeleccionada;
     String departamentoSeleccionado;
     String carreraSeleccionada;
@@ -75,7 +65,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         columna =0;
         
         //Se crea el objeto campus
-        campus = new Campus(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
+        facultad = new Facultad(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
         
         //Se llena la tabla de dias y horas
         modelo = new DefaultTableModel(datosTabla, cabeceraTabla){
@@ -126,7 +116,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
     
     public void imprimir(){
         ArrayList<Aula> aulas;
-        aulas = campus.getAulas();
+        aulas = facultad.getAulas();
         ArrayList<Dia> dias;
         ArrayList<Hora> horas;
         
@@ -224,7 +214,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
                 {
                    FileInputStream fileIn = new FileInputStream(archivoElegido.getPath());
                    ObjectInputStream in = new ObjectInputStream(fileIn);
-                   campus = (Campus) in.readObject();
+                   facultad = (Facultad) in.readObject();
                    in.close();
                    fileIn.close();
                    jlist_aulas.setEnabled(true);
@@ -256,7 +246,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
                 {
                    FileOutputStream fileOut = new FileOutputStream(archivoElegido.getPath());
                    ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                   out.writeObject(campus);
+                   out.writeObject(facultad);
                    out.close();
                    fileOut.close();                   
                 }catch(IOException i)
@@ -316,7 +306,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
                 //System.out.println("columna: "+columna);
             }
             //JTable target = (JTable)e.getSource();
-            Grupo grupo = ManejadorGrupos.getGrupo(campus.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
+            Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
 //            jTable1.getCellRenderer(fila, columna).getTableCellRendererComponent(jTable1, e, rootPaneCheckingEnabled, rootPaneCheckingEnabled, fila, columna).setBackground(Color.GREEN);
             String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
             String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
@@ -554,17 +544,21 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         btn_filtrar.setEnabled(false);
         
                 
-        Procesador procesador = new Procesador();
+        
         boolean cicloPar = true;
         
-        campus.setMaterias(ManejadorMaterias.getTodasMaterias(cicloPar));
-        materias = campus.getMaterias();
+        facultad.setMaterias(ManejadorMaterias.getTodasMaterias(cicloPar));
+        materias = facultad.getMaterias();
+        
+        Procesador procesador = new Procesador();
+        procesador.setFacultad(facultad);
+        
         
         for (int i = 0; i < materias.size(); i++) {
-            Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),campus.getAgrupaciones());
+            Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),facultad.getAgrupaciones());
             while(agrup.getNumGruposAsignados() < agrup.getNum_grupos()){
-                try {
-                    procesador.procesarMateria(campus, materias.get(i));
+                try {         
+                    procesador.procesarMateria(materias.get(i));
                 } catch (Exception ex) {
                     //Se produce cuando ya no hay aulas disponibles
                     System.out.println(ex.getMessage());                                        
@@ -582,19 +576,19 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null && jlist_departamentos.getSelectedItem()==null){
             System.out.println("aula");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula(campus.getAulas(),aulaSeleccionada, modelo));
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula(facultad.getAulas(),aulaSeleccionada, modelo));
         }else if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()!=null){
             System.out.println("carrera");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             carreraSeleccionada = jlist_carreras.getSelectedItem().toString();
             ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(materias, ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(campus.getAulas(), aulaSeleccionada, modelo, campus.getDepartamentos(), materiasCarrera));
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(facultad.getAulas(), aulaSeleccionada, modelo, facultad.getDepartamentos(), materiasCarrera));
         }else if(jlist_aulas.getSelectedItem()!=null && jlist_departamentos.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null){
             System.out.println("departamento");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
-            departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, campus.getDepartamentos());
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(campus.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), campus.getDepartamentos()));
+            departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, facultad.getDepartamentos());
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(facultad.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), facultad.getDepartamentos()));
         }
             
     }//GEN-LAST:event_btn_filtrarActionPerformed

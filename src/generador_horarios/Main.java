@@ -25,7 +25,7 @@ public class Main {
         ventanaInicial.setVisible(true);           
     }
     
-    public static void imprimir(Campus campus){
+    public static void imprimir(Facultad campus){
         ArrayList<Aula> aulas;
         aulas = campus.getAulas();
         ArrayList<Dia> dias;

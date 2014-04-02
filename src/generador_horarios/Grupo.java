@@ -36,6 +36,14 @@ public class Grupo implements Serializable{
         this.horasAsignadas = 0;
     }
 
+    public Grupo(Agrupacion agrupacion){
+        incompleto = false;
+        this.cod_materia = agrupacion.getPropietario();
+        this.id_depar = agrupacion.getDepartamento();
+        this.id_grupo = agrupacion.getNumGruposAsignados()+1;
+        this.horasAsignadas = 0;
+    }
+    
     public String getCod_materia() {
         return cod_materia;
     }

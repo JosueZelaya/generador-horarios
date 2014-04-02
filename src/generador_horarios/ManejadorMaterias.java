@@ -70,6 +70,14 @@ public abstract class ManejadorMaterias {
         return materiasCarrera;
     }
     
+    /** Devuelve la Materia a la que pertenece el grupo
+     * 
+     * 
+     * @param cod_materia
+     * @param id_depar
+     * @param todas_mats
+     * @return 
+     */
     public static ArrayList<Materia> getMateriaDeGrupo(String cod_materia, int id_depar, ArrayList<Materia> todas_mats){
         ArrayList <Materia> materias = new ArrayList();
         for(Materia m : todas_mats){

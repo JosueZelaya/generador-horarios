@@ -13,14 +13,14 @@ import java.util.ArrayList;
  *
  * @author alexander
  */
-public class Campus implements Serializable{
+public class Facultad implements Serializable{
     
     private ArrayList<Aula> aulas;
     private ArrayList<Agrupacion> agrupaciones;
     private ArrayList<Departamento> departamentos;
     private ArrayList<Materia> materias;
 
-    public Campus(ArrayList<Agrupacion> agrupaciones, ArrayList<Departamento> departamentos) {
+    public Facultad(ArrayList<Agrupacion> agrupaciones, ArrayList<Departamento> departamentos) {
         this.aulas = new ArrayList();        
         aulas = ManejadorAulas.getTodasAulas();
         for (int i = 0; i < aulas.size(); i++) {
