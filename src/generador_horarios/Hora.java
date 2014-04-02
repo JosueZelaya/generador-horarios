@@ -6,11 +6,13 @@
 
 package generador_horarios;
 
+import java.io.Serializable;
+
 /**
  *
  * @author alexander
  */
-public class Hora {
+public class Hora implements Serializable{
     
     private int idHora;
     private String inicio;

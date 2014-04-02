@@ -6,13 +6,14 @@
 
 package generador_horarios;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author alexander
  */
-public class Dia {
+public class Dia implements Serializable{
  
     private String nombre;
     private ArrayList<Hora> horas;    

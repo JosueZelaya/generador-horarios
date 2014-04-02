@@ -125,8 +125,7 @@ public abstract class ManejadorHoras {
                 for (int j = i; j < i+cantidadHoras; j++) {
                     horasDisponibles.add(horas.get(j));
                 }
-                if(horasDisponibles.size() == cantidadHoras)
-                    return horasDisponibles;
+                return horasDisponibles;
             }
         }
         return null;
@@ -155,6 +154,17 @@ public abstract class ManejadorHoras {
         return horasDisponibles;
     }
     
+    public static ArrayList<Hora> buscarHorasParaNivelConChoque(int cantidadHoras,int desde,int hasta,String nombre_dia,ArrayList<Aula> aulasConCapa){
+        ArrayList<Hora> horasDisponibles = null;
+        for(int x=0; x<aulasConCapa.size(); x++){
+            Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
+            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta);
+            if(horasDisponibles != null)
+                break;
+        }
+        return horasDisponibles;
+    }
+    
     /** Meotodo para relizar busquedas de una materia que pertenece al mismo nivel en el dia elegido
      * 
      * @param materia
@@ -162,12 +172,13 @@ public abstract class ManejadorHoras {
      * @param todas_mats
      * @return ultima hora en la que hay una materia del mismo nivel
      */
-    public static Hora MateriaDeNivelEnHoras(Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats){
+    public static Hora gethoraDondeExisteMateriaDelMismoNivel(Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats){
         Hora horaNivel = null;
         
         for(int x=0; x<horas.size(); x++){
             if(!horas.get(x).estaDisponible() && horas.get(x).getGrupo().getId_depar() == materia.getDepartamento()){
                 Grupo grupo = horas.get(x).getGrupo();
+                //Se obtiene la materia a la que pertenece el grupo
                 ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupo.getCod_materia(), grupo.getId_depar(), todas_mats);
                 for(int j=0; j<materias.size(); j++){
                     if(materias.get(j).getCodigoCarrera().equals(materia.getCodigoCarrera()) && materias.get(j).getCiclo() == materia.getCiclo()){

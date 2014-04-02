@@ -6,13 +6,14 @@
 
 package generador_horarios;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author alexander
  */
-public class Materia {
+public class Materia implements Serializable{
 
     private String codigo;
     private String nombre;

@@ -11,22 +11,22 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import javax.swing.CellRendererPane;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -39,7 +39,7 @@ import javax.swing.table.TableCellRenderer;
 public class VentanaInicio extends javax.swing.JFrame implements MouseListener,ActionListener,ListSelectionListener{
 
     DefaultTableModel modelo;
-    Campus campus;
+    Facultad facultad;
     String aulaSeleccionada;
     String departamentoSeleccionado;
     String carreraSeleccionada;
@@ -50,6 +50,8 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
     String[] listadoAulas;
     String[] listadoDepartamentos;
     String[] listadoCarreras;
+    
+    JMenuItem jm_abrir,jm_guardar;
     
     
     DefaultListModel<String> modeloLista;
@@ -63,7 +65,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         columna =0;
         
         //Se crea el objeto campus
-        campus = new Campus(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
+        facultad = new Facultad(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
         
         //Se llena la tabla de dias y horas
         modelo = new DefaultTableModel(datosTabla, cabeceraTabla){
@@ -99,13 +101,22 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         departamentoSeleccionado = null;
         carreraSeleccionada = null;
         materias = new ArrayList();
+        
+        //Barra de Menú
+        jm_abrir = new JMenuItem("Abrir");
+        jm_guardar = new JMenuItem("Guardar");
+        jm_abrir.addActionListener(this);
+        jm_guardar.addActionListener(this);
+        jMenu1.add(jm_abrir);
+        jMenu1.add(jm_guardar);
+        
     }
     
     
     
     public void imprimir(){
         ArrayList<Aula> aulas;
-        aulas = campus.getAulas();
+        aulas = facultad.getAulas();
         ArrayList<Dia> dias;
         ArrayList<Hora> horas;
         
@@ -165,26 +176,90 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
     @Override
     public void actionPerformed(ActionEvent e) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.        
-        JComboBox lista = (JComboBox)e.getSource();
-        if(lista!=null){            
-            if(lista.getName().equals("lista_aulas")){
-                if(lista.getSelectedItem()!=null){
-                    llenarListaDepartamentos();
-                    jlist_departamentos.setEnabled(true);
-                    btn_filtrar.setEnabled(true);
-                }else{
-                    jlist_departamentos.setEnabled(false);
-                    btn_filtrar.setEnabled(false);
-                }                
-            }else if(lista.getName().equals("lista_departamentos")){
-                if(lista.getSelectedItem()!=null){
-                    llenarListaCarreras(lista.getSelectedItem().toString());
-                    jlist_carreras.setEnabled(true);
-                }else{
-                    jlist_carreras.setEnabled(false);
+        if(e.getSource()==jlist_aulas || e.getSource() == jlist_departamentos || e.getSource() == jlist_carreras){
+            JComboBox lista = (JComboBox)e.getSource();
+            if(lista!=null){            
+                if(lista.getName().equals("lista_aulas")){
+                    if(lista.getSelectedItem()!=null){
+                        llenarListaDepartamentos();
+                        jlist_departamentos.setEnabled(true);
+                        btn_filtrar.setEnabled(true);
+                    }else{
+                        jlist_departamentos.setEnabled(false);
+                        btn_filtrar.setEnabled(false);
+                    }                
+                }else if(lista.getName().equals("lista_departamentos")){
+                    if(lista.getSelectedItem()!=null){
+                        llenarListaCarreras(lista.getSelectedItem().toString());
+                        jlist_carreras.setEnabled(true);
+                    }else{
+                        jlist_carreras.setEnabled(false);
+                    }
                 }
             }
+        }else if(e.getSource()==jm_abrir){
+            //Crear un objeto FileChooser
+            JFileChooser fc = new JFileChooser();
+            //Mostrar la ventana para abrir archivo y recoger la respuesta
+            //En el parámetro del showOpenDialog se indica la ventana
+            //  al que estará asociado. Con el valor this se asocia a la
+            //  ventana que la abre.
+            int respuesta = fc.showOpenDialog(this);
+            //Comprobar si se ha pulsado Aceptar
+            if (respuesta == JFileChooser.APPROVE_OPTION)
+            {
+                //Crear un objeto File con el archivo elegido
+                File archivoElegido = fc.getSelectedFile();                
+                try
+                {
+                   FileInputStream fileIn = new FileInputStream(archivoElegido.getPath());
+                   ObjectInputStream in = new ObjectInputStream(fileIn);
+                   facultad = (Facultad) in.readObject();
+                   in.close();
+                   fileIn.close();
+                   jlist_aulas.setEnabled(true);
+                }catch(IOException i)
+                {
+                   i.printStackTrace();
+                   return;
+                }catch(ClassNotFoundException c)
+                {
+                   System.out.println("Campus class not found");
+                   c.printStackTrace();
+                   return;
+                }
+                JOptionPane.showMessageDialog(null, archivoElegido.getPath());
+            }
+        }else if(e.getSource()==jm_guardar){
+            //Crear un objeto FileChooser
+            JFileChooser fc = new JFileChooser();
+            //Mostrar la ventana para abrir archivo y recoger la respuesta
+            //En el parámetro del showOpenDialog se indica la ventana
+            //  al que estará asociado. Con el valor this se asocia a la
+            //  ventana que la abre.
+            int respuesta = fc.showSaveDialog(this);
+            //Comprobar si se ha pulsado Aceptar
+            if (respuesta == JFileChooser.APPROVE_OPTION)
+            {
+                File archivoElegido = fc.getSelectedFile();
+                try
+                {
+                   FileOutputStream fileOut = new FileOutputStream(archivoElegido.getPath());
+                   ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                   out.writeObject(facultad);
+                   out.close();
+                   fileOut.close();                   
+                }catch(IOException i)
+                {
+                    i.printStackTrace();
+                }
+                JOptionPane.showMessageDialog(null, "Se guardó en: "+archivoElegido.getPath());
+                
+            }
+            //JOptionPane.showMessageDialog(null, "guardar");
+            
         }
+        
     }
     
     public void llenarListaDepartamentos(){
@@ -231,7 +306,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
                 //System.out.println("columna: "+columna);
             }
             //JTable target = (JTable)e.getSource();
-            Grupo grupo = ManejadorGrupos.getGrupo(campus.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
+            Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
 //            jTable1.getCellRenderer(fila, columna).getTableCellRendererComponent(jTable1, e, rootPaneCheckingEnabled, rootPaneCheckingEnabled, fila, columna).setBackground(Color.GREEN);
             String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
             String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
@@ -439,10 +514,10 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
 
         jTabbedPane1.addTab("Por Aula", jPanel1);
 
-        jMenu1.setText("File");
+        jMenu1.setText("Archivo");
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("Editar");
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -469,17 +544,21 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         btn_filtrar.setEnabled(false);
         
                 
-        Procesador procesador = new Procesador();
+        
         boolean cicloPar = true;
         
-        campus.setMaterias(ManejadorMaterias.getTodasMaterias(cicloPar));
-        materias = campus.getMaterias();
+        facultad.setMaterias(ManejadorMaterias.getTodasMaterias(cicloPar));
+        materias = facultad.getMaterias();
+        
+        Procesador procesador = new Procesador();
+        procesador.setFacultad(facultad);
+        
         
         for (int i = 0; i < materias.size(); i++) {
-            Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),campus.getAgrupaciones());
+            Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),facultad.getAgrupaciones());
             while(agrup.getNumGruposAsignados() < agrup.getNum_grupos()){
-                try {
-                    procesador.procesarMateria(campus, materias.get(i));
+                try {         
+                    procesador.procesarMateria(materias.get(i));
                 } catch (Exception ex) {
                     //Se produce cuando ya no hay aulas disponibles
                     System.out.println(ex.getMessage());                                        
@@ -497,19 +576,19 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null && jlist_departamentos.getSelectedItem()==null){
             System.out.println("aula");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula(campus.getAulas(),aulaSeleccionada, modelo));
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula(facultad.getAulas(),aulaSeleccionada, modelo));
         }else if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()!=null){
             System.out.println("carrera");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             carreraSeleccionada = jlist_carreras.getSelectedItem().toString();
             ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(materias, ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(campus.getAulas(), aulaSeleccionada, modelo, campus.getDepartamentos(), materiasCarrera));
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(facultad.getAulas(), aulaSeleccionada, modelo, facultad.getDepartamentos(), materiasCarrera));
         }else if(jlist_aulas.getSelectedItem()!=null && jlist_departamentos.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null){
             System.out.println("departamento");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
-            departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, campus.getDepartamentos());
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(campus.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), campus.getDepartamentos()));
+            departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, facultad.getDepartamentos());
+            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(facultad.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), facultad.getDepartamentos()));
         }
             
     }//GEN-LAST:event_btn_filtrarActionPerformed

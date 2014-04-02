@@ -6,11 +6,13 @@
 
 package generador_horarios;
 
+import java.io.Serializable;
+
 /**
  *
  * @author dasm
  */
-public class Grupo {
+public class Grupo implements Serializable{
     
     private String cod_materia;
     private int id_depar;
@@ -34,6 +36,14 @@ public class Grupo {
         this.horasAsignadas = 0;
     }
 
+    public Grupo(Agrupacion agrupacion){
+        incompleto = false;
+        this.cod_materia = agrupacion.getPropietario();
+        this.id_depar = agrupacion.getDepartamento();
+        this.id_grupo = agrupacion.getNumGruposAsignados()+1;
+        this.horasAsignadas = 0;
+    }
+    
     public String getCod_materia() {
         return cod_materia;
     }
