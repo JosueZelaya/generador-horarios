@@ -9,7 +9,7 @@ package generador_horarios;
 
 import static generador_horarios.ManejadorDias.elegirDiaDiferente;
 import static generador_horarios.ManejadorHoras.buscarHorasDisponibles;
-import static generador_horarios.ManejadorHoras.gethoraDondeExisteMateriaDelMismoNivel;
+import static generador_horarios.ManejadorHoras.getUltimaHoraDeNivel;
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
 import static generador_horarios.ManejadorHoras.buscarHorasParaNivel;
 import static generador_horarios.ManejadorAulas.obtenerAulasPorCapacidad;
@@ -34,7 +34,6 @@ public class Procesador {
     ArrayList<Agrupacion> agrupaciones;
     Agrupacion agrupacion;
     Grupo grupo; //Grupo a asignar
-    
     
     int desde;
     int hasta;
@@ -70,6 +69,8 @@ public class Procesador {
      * -Su turno abarca los horarios de la tarde y noche
      */
     public void establecerTurno(){
+        desde=0;
+        hasta=15;
         if(materia.getCiclo()<=6)
             hasta = 10;
         else
@@ -196,13 +197,10 @@ public class Procesador {
         int num_alumnos = agrupacion.getNum_alumnos()+holguraAula;
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        Hora horaNivel = gethoraDondeExisteMateriaDelMismoNivel(materia, horas, materias);
-        if(horaNivel != null){
-            if((horaNivel.getIdHora() == 13 && numHorasContinuas == 3) || (horaNivel.getIdHora() == 14 && numHorasContinuas >= 2) || horaNivel.getIdHora() == 15)
-                horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, materias);
-            else
-                horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas,num_alumnos), aulas, materias);
-        } else
+        Hora horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias);
+        if(horaNivel != null && (horaNivel.getIdHora()+numHorasContinuas)<hasta)
+            horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas,num_alumnos), aulas, materias);
+        else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, materias); //elige las primeras horas disponibles que encuentre ese día
         
         if(horasDisponibles != null && horasDisponibles.size() > 0)
@@ -214,20 +212,15 @@ public class Procesador {
         ArrayList<Hora> horasDisponibles;
         int num_alumnos = agrupacion.getNum_alumnos()+holguraAula;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        Hora horaNivel = gethoraDondeExisteMateriaDelMismoNivel(materia, horas, materias);
-        if(horaNivel != null){
-            if((horaNivel.getIdHora() == 13 && numHorasContinuas == 3) || (horaNivel.getIdHora() == 14 && numHorasContinuas >= 2) || horaNivel.getIdHora() == 15)
-                horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
-            else
-                horasDisponibles = buscarHorasParaNivelConChoque(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, obtenerAulasPorCapacidad(aulas,num_alumnos));
-        } else
+        Hora horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias);
+        if(horaNivel != null && (horaNivel.getIdHora()+numHorasContinuas)<hasta)
+            horasDisponibles = buscarHorasParaNivelConChoque(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, obtenerAulasPorCapacidad(aulas,num_alumnos));
+        else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
         
         if(horasDisponibles != null)
             asignar(grupo, horasDisponibles);
     }
-    
-    
     
     /** Realiza el procesamiento necesario para generar el horario de una materia.
      * 

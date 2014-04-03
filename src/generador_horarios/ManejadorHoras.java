@@ -61,7 +61,7 @@ public abstract class ManejadorHoras {
      * @param materia = objeto materia que se esta tratando de asignar
      * @param aulas = todas las aulas de campus, se usan para verificar choques
      * @param m = array de todas las materias que posee campus
-     * @return las horas disponibles sin choque en las que se puede asignar el grupo; null si no hay ninguna
+     * @return las horas disponibles sin choque en las que se puede asignar el grupoHora; null si no hay ninguna
      */
     public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = new ArrayList();
@@ -100,7 +100,7 @@ public abstract class ManejadorHoras {
      * @param cantidadHoras = cuantas horas a asignar
      * @param desde = desde cual hora tratar de asignar
      * @param hasta = hasta cual hora tratar de asginar
-     * @return horas disponibles en las que se puede asignar el grupo aunque hayan choques
+     * @return horas disponibles en las que se puede asignar el grupoHora aunque hayan choques
      */
     public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta){        
         ArrayList<Hora> horasDisponibles = new ArrayList();
@@ -137,11 +137,11 @@ public abstract class ManejadorHoras {
      * @param desde = desde cual hora se quiere hacer la asignacion
      * @param hasta = hasta cual hora tratar de hacer la asignacion
      * @param nombre_dia = nombre del dia en que se quiere hacer la asignacion
-     * @param materia = objeto materia de la cual se quiere asignar un grupo
-     * @param aulasConCapa = array de aulas que tienen capacidad para asignar al grupo de la materia
+     * @param materia = objeto materia de la cual se quiere asignar un grupoHora
+     * @param aulasConCapa = array de aulas que tienen capacidad para asignar al grupoHora de la materia
      * @param aulas = array de todas las aulas que tiene el campus, se usa para verificar si hay choques
      * @param m = array de todas las materias del campus, se usa para comprobar choques
-     * @return horas disponibles en las que se puede asignar el grupo
+     * @return horas disponibles en las que se puede asignar el grupoHora
      */
     public static ArrayList<Hora> buscarHorasParaNivel(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = null;
@@ -166,24 +166,32 @@ public abstract class ManejadorHoras {
     }
     
     /** Meotodo para relizar busquedas de una materia que pertenece al mismo nivel en el dia elegido
-     * 
-     * @param materia
-     * @param horas
-     * @param todas_mats
+     *
+     * @param grupo = grupo que se quiere asignar en dia elegido
+     * @param materia = materia a la que pertenece el grupo que se quiere asignar
+     * @param horas = horas del dia en la que se quiere hacer la asignacion
+     * @param todas_mats = array con todas las materias de la facultad
      * @return ultima hora en la que hay una materia del mismo nivel
      */
-    public static Hora gethoraDondeExisteMateriaDelMismoNivel(Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats){
+    public static Hora getUltimaHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats){
         Hora horaNivel = null;
         
         for(int x=0; x<horas.size(); x++){
             if(!horas.get(x).estaDisponible() && horas.get(x).getGrupo().getId_depar() == materia.getDepartamento()){
-                Grupo grupo = horas.get(x).getGrupo();
-                //Se obtiene la materia a la que pertenece el grupo
-                ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupo.getCod_materia(), grupo.getId_depar(), todas_mats);
+                Grupo grupoHora = horas.get(x).getGrupo();
+                //Se obtiene la materia a la que pertenece el grupoHora
+                ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupoHora.getCod_materia(), grupoHora.getId_depar(), todas_mats);
                 for(int j=0; j<materias.size(); j++){
-                    if(materias.get(j).getCodigoCarrera().equals(materia.getCodigoCarrera()) && materias.get(j).getCiclo() == materia.getCiclo()){
-                        horaNivel = horas.get(x); //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
-                        break;
+                    Materia materiaHora = materias.get(j);
+                    if(materiaHora.getCodigoCarrera().equals(materia.getCodigoCarrera()) && materiaHora.getCiclo() == materia.getCiclo()){
+                        if(materia.getCodigo().equals(grupoHora.getCod_materia()) && grupoHora.getId_grupo() != grupo.getId_grupo()){
+                            horaNivel = horas.get(x); //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
+                            break;
+                        }
+                        if(!materia.getCodigo().equals(grupoHora.getCod_materia())){
+                            horaNivel = horas.get(x); //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
+                            break;
+                        }
                     }
                 }
             }
