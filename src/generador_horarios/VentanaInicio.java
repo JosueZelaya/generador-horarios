@@ -7,12 +7,8 @@
 package generador_horarios;
 
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,22 +17,18 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 
 /**
  *
  * @author alexander
  */
-public class VentanaInicio extends javax.swing.JFrame implements MouseListener,ActionListener,ListSelectionListener{
+public class VentanaInicio extends javax.swing.JFrame{
 
     DefaultTableModel modelo;
     Facultad facultad;
@@ -82,9 +74,23 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         }
         //jTable1.setDefaultRenderer(Object.class, new MyRenderer());
         jTable1.setModel(modelo);
-        jTable1.addMouseListener(this);
-        jTable1.getSelectionModel().addListSelectionListener(this);
-        jTable1.getColumnModel().getSelectionModel().addListSelectionListener(this);
+        //Evento cuando se selecciona una fila
+        jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                jtbl_filaValueChanged(e);
+            }
+        });
+        //Evento cuando se selecciona una columna
+        jTable1.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                jtbl_columnaValueChanged(e);
+            }
+        });
+        
+        //jTable1.getSelectionModel().addListSelectionListener(this);
+        //jTable1.getColumnModel().getSelectionModel().addListSelectionListener(this);
         jTable1.setColumnSelectionAllowed(true);
         
         //Se llena la lista de aulas
@@ -94,8 +100,7 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
             Aula aula = aulas.get(i);
             jlist_aulas.addItem(aula.getNombre());
         }
-        jlist_aulas.setName("lista_aulas");
-        jlist_aulas.addActionListener(this);
+        jlist_aulas.setName("lista_aulas");        
         
         aulaSeleccionada = null;
         departamentoSeleccionado = null;
@@ -105,8 +110,18 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         //Barra de Menú
         jm_abrir = new JMenuItem("Abrir");
         jm_guardar = new JMenuItem("Guardar");
-        jm_abrir.addActionListener(this);
-        jm_guardar.addActionListener(this);
+        jm_abrir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jm_abrirActionPerformed(e);
+            }
+        });
+        jm_guardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jm_guardarActionPermformed(e);
+            }
+        });
         jMenu1.add(jm_abrir);
         jMenu1.add(jm_guardar);
         
@@ -136,131 +151,6 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
             }
         }
     }
-        
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//        if (e.getClickCount() == 1) {
-//            JTable target = (JTable)e.getSource();
-//            int row = target.getSelectedRow()+1;
-//            int column = target.getSelectedColumn();
-//            Grupo grupo = ManejadorGrupos.getGrupo(campus.getAulas(), aulaSeleccionada, target.getColumnName(column), row);            
-//            
-//            String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
-//            String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
-//            lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
-//            
-//        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.        
-        if(e.getSource()==jlist_aulas || e.getSource() == jlist_departamentos || e.getSource() == jlist_carreras){
-            JComboBox lista = (JComboBox)e.getSource();
-            if(lista!=null){            
-                if(lista.getName().equals("lista_aulas")){
-                    if(lista.getSelectedItem()!=null){
-                        llenarListaDepartamentos();
-                        jlist_departamentos.setEnabled(true);
-                        btn_filtrar.setEnabled(true);
-                    }else{
-                        jlist_departamentos.setEnabled(false);
-                        btn_filtrar.setEnabled(false);
-                    }                
-                }else if(lista.getName().equals("lista_departamentos")){
-                    if(lista.getSelectedItem()!=null){
-                        llenarListaCarreras(lista.getSelectedItem().toString());
-                        jlist_carreras.setEnabled(true);
-                    }else{
-                        jlist_carreras.setEnabled(false);
-                    }
-                }
-            }
-        }else if(e.getSource()==jm_abrir){
-            //Crear un objeto FileChooser
-            JFileChooser fc = new JFileChooser();
-            //Mostrar la ventana para abrir archivo y recoger la respuesta
-            //En el parámetro del showOpenDialog se indica la ventana
-            //  al que estará asociado. Con el valor this se asocia a la
-            //  ventana que la abre.
-            int respuesta = fc.showOpenDialog(this);
-            //Comprobar si se ha pulsado Aceptar
-            if (respuesta == JFileChooser.APPROVE_OPTION)
-            {
-                //Crear un objeto File con el archivo elegido
-                File archivoElegido = fc.getSelectedFile();                
-                try
-                {
-                   FileInputStream fileIn = new FileInputStream(archivoElegido.getPath());
-                   ObjectInputStream in = new ObjectInputStream(fileIn);
-                   facultad = (Facultad) in.readObject();
-                   in.close();
-                   fileIn.close();
-                   jlist_aulas.setEnabled(true);
-                }catch(IOException i)
-                {
-                   i.printStackTrace();
-                   return;
-                }catch(ClassNotFoundException c)
-                {
-                   System.out.println("Campus class not found");
-                   c.printStackTrace();
-                   return;
-                }
-                JOptionPane.showMessageDialog(null, archivoElegido.getPath());
-            }
-        }else if(e.getSource()==jm_guardar){
-            //Crear un objeto FileChooser
-            JFileChooser fc = new JFileChooser();
-            //Mostrar la ventana para abrir archivo y recoger la respuesta
-            //En el parámetro del showOpenDialog se indica la ventana
-            //  al que estará asociado. Con el valor this se asocia a la
-            //  ventana que la abre.
-            int respuesta = fc.showSaveDialog(this);
-            //Comprobar si se ha pulsado Aceptar
-            if (respuesta == JFileChooser.APPROVE_OPTION)
-            {
-                File archivoElegido = fc.getSelectedFile();
-                try
-                {
-                   FileOutputStream fileOut = new FileOutputStream(archivoElegido.getPath());
-                   ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                   out.writeObject(facultad);
-                   out.close();
-                   fileOut.close();                   
-                }catch(IOException i)
-                {
-                    i.printStackTrace();
-                }
-                JOptionPane.showMessageDialog(null, "Se guardó en: "+archivoElegido.getPath());
-                
-            }
-            //JOptionPane.showMessageDialog(null, "guardar");
-            
-        }
-        
-    }
     
     public void llenarListaDepartamentos(){
         //Se llena la lista de departamentos
@@ -270,7 +160,6 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
             jlist_departamentos.addItem(departamentos.get(i));
         }
         jlist_departamentos.setName("lista_departamentos");
-        jlist_departamentos.addActionListener(this);
     }
     
     public void llenarListaCarreras(String nombreDepartamento){
@@ -283,85 +172,13 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
             jlist_carreras.addItem(carreras.get(i));
         }
         jlist_carreras.setName("lista_carreras");
-        jlist_carreras.addActionListener(this);
-    }
-
-    @Override
-    public void valueChanged(ListSelectionEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        
-        if(!e.getValueIsAdjusting()){
-            if (e.getSource() == jTable1.getSelectionModel() && jTable1.getRowSelectionAllowed()) {
-                // Column selection changed
-                //int first = e.getFirstIndex();
-                //fila = e.getLastIndex();
-                fila = jTable1.getSelectedRow()+1;
-                //System.out.println("fila: "+fila);
-            } else if (e.getSource() == jTable1.getColumnModel().getSelectionModel() && jTable1.getColumnSelectionAllowed() ){
-                // Row selection changed
-                //int first = e.getFirstIndex();
-                //columna = e.getLastIndex();
-                
-                columna = jTable1.getSelectedColumn();
-                //System.out.println("columna: "+columna);
-            }
-            //JTable target = (JTable)e.getSource();
-            Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
-//            jTable1.getCellRenderer(fila, columna).getTableCellRendererComponent(jTable1, e, rootPaneCheckingEnabled, rootPaneCheckingEnabled, fila, columna).setBackground(Color.GREEN);
-            String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
-            String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
-            lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
-        }
     }
     
-    class MyRenderer implements TableCellRenderer {
-        Color color = Color.WHITE;
-        
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-            boolean hasFocus, int row, int column) {
-            
-                JLabel texto = new JLabel();
-                texto.setBackground(color);
-                if(value != null)
-                    texto.setText(value.toString());
-                return texto;
-                //JPanel middlePanel = new JPanel ();
-                //middlePanel.setBorder ( new TitledBorder ( new EtchedBorder (), "Display Area" ) );
-
-                // create the middle panel components
-
-//                JTextArea display = new JTextArea ();
-//                if(value != null)
-//                    display.setText(value.toString());
-//                display.setEditable ( false ); // set textArea non-editable
-//                JScrollPane scroll = new JScrollPane ( display );
-//                scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-//
-//                //Add Textarea in to middle panel
-//                middlePanel.add ( scroll );
-//                return middlePanel;
-            
-//            JTextArea display = new JTextArea();
-//            display.setEditable(false);
-//            if(value != null)
-//                display.setText(value.toString());                        
-//            JScrollPane panel = new JScrollPane(display);
-//            return panel;
-            
-//            
-//          JTextArea display = new JTextArea();
-//          if (value != null)
-//            display.setText(value.toString());
-//          display.setEditable(false);
-//          display.setBackground((row % 2 == 0) ? Color.white : new Color(211,211,211));
-//          return display;
-        }
-        
-        public void cambiarColorFondo(Color color){
-            this.color = color;
-        }
-        
+    public void mostrarInfoMateria(){
+        Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
+        String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
+        String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
+        lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
     }
 
     /**
@@ -403,8 +220,18 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         });
 
         jlist_aulas.setEnabled(false);
+        jlist_aulas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jlist_aulasActionPerformed(evt);
+            }
+        });
 
         jlist_departamentos.setEnabled(false);
+        jlist_departamentos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jlist_departamentosActionPerformed(evt);
+            }
+        });
 
         jlist_carreras.setEnabled(false);
 
@@ -536,6 +363,16 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jtbl_filaValueChanged(ListSelectionEvent e){
+        fila = jTable1.getSelectedRow()+1;
+        mostrarInfoMateria();
+    }
+    
+    private void jtbl_columnaValueChanged(ListSelectionEvent e){
+        columna = jTable1.getSelectedColumn();
+        mostrarInfoMateria();
+    }
+    
     private void btn_generarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_generarActionPerformed
         // TODO add your handling code here:
         jlist_aulas.setEnabled(false);
@@ -593,6 +430,96 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
             
     }//GEN-LAST:event_btn_filtrarActionPerformed
 
+    private void jlist_aulasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jlist_aulasActionPerformed
+        // TODO add your handling code here:            
+            if(jlist_aulas.getSelectedItem()!=null){
+                llenarListaDepartamentos();
+                jlist_departamentos.setEnabled(true);
+                btn_filtrar.setEnabled(true);
+            }else{
+                jlist_departamentos.setSelectedItem(null);
+                jlist_carreras.setSelectedItem(null);
+                jlist_departamentos.setEnabled(false);
+                jlist_carreras.setEnabled(false);
+                btn_filtrar.setEnabled(false);
+            }
+            
+    }//GEN-LAST:event_jlist_aulasActionPerformed
+
+    private void jlist_departamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jlist_departamentosActionPerformed
+        // TODO add your handling code here:
+        if(jlist_departamentos.getSelectedItem()!=null){
+            llenarListaCarreras(jlist_departamentos.getSelectedItem().toString());
+            jlist_carreras.setEnabled(true);
+        }else{
+            jlist_carreras.setSelectedItem(null);
+            jlist_carreras.setEnabled(false);
+        }    
+    }//GEN-LAST:event_jlist_departamentosActionPerformed
+
+    private void jm_abrirActionPerformed(java.awt.event.ActionEvent e){
+        //Crear un objeto FileChooser
+            JFileChooser fc = new JFileChooser();
+            //Mostrar la ventana para abrir archivo y recoger la respuesta
+            //En el parámetro del showOpenDialog se indica la ventana
+            //  al que estará asociado. Con el valor this se asocia a la
+            //  ventana que la abre.
+            int respuesta = fc.showOpenDialog(this);
+            //Comprobar si se ha pulsado Aceptar
+            if (respuesta == JFileChooser.APPROVE_OPTION)
+            {
+                //Crear un objeto File con el archivo elegido
+                File archivoElegido = fc.getSelectedFile();                
+                try
+                {
+                   FileInputStream fileIn = new FileInputStream(archivoElegido.getPath());
+                   ObjectInputStream in = new ObjectInputStream(fileIn);
+                   facultad = (Facultad) in.readObject();
+                   in.close();
+                   fileIn.close();
+                   jlist_aulas.setEnabled(true);
+                }catch(IOException i)
+                {
+                   i.printStackTrace();
+                   return;
+                }catch(ClassNotFoundException c)
+                {
+                   System.out.println("Campus class not found");
+                   c.printStackTrace();
+                   return;
+                }
+                JOptionPane.showMessageDialog(null, archivoElegido.getPath());
+            }
+    }
+    
+    private void jm_guardarActionPermformed(ActionEvent e){
+        //Crear un objeto FileChooser
+            JFileChooser fc = new JFileChooser();
+            //Mostrar la ventana para abrir archivo y recoger la respuesta
+            //En el parámetro del showOpenDialog se indica la ventana
+            //  al que estará asociado. Con el valor this se asocia a la
+            //  ventana que la abre.
+            int respuesta = fc.showSaveDialog(this);
+            //Comprobar si se ha pulsado Aceptar
+            if (respuesta == JFileChooser.APPROVE_OPTION)
+            {
+                File archivoElegido = fc.getSelectedFile();
+                try
+                {
+                   FileOutputStream fileOut = new FileOutputStream(archivoElegido.getPath());
+                   ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                   out.writeObject(facultad);
+                   out.close();
+                   fileOut.close();                   
+                }catch(IOException i)
+                {
+                    i.printStackTrace();
+                }
+                JOptionPane.showMessageDialog(null, "Se guardó en: "+archivoElegido.getPath());
+                
+            }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -602,28 +529,31 @@ public class VentanaInicio extends javax.swing.JFrame implements MouseListener,A
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VentanaInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VentanaInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VentanaInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VentanaInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(VentanaInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(VentanaInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(VentanaInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(VentanaInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VentanaInicio().setVisible(true);
+                VentanaInicio ventanaInicial = new VentanaInicio();
+                ventanaInicial.setLocationRelativeTo(null);
+                ventanaInicial.setVisible(true); 
+                //new VentanaInicio().setVisible(true);
             }
         });
     }
