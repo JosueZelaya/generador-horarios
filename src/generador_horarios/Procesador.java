@@ -177,7 +177,7 @@ public class Procesador {
             if(diaElegido != null){
                 ArrayList<Hora> horas;       
                 horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día                
-                asignarHorasSinConsiderarChoques(horas);
+                asignarHorasSinConsiderarChoques(horas,diaElegido.getNombre());
                 diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
             }else{
                 return false;
@@ -206,7 +206,7 @@ public class Procesador {
     }
     
     //Asignar horas sin considerar choques
-    public void asignarHorasSinConsiderarChoques(ArrayList<Hora> horas){
+    public void asignarHorasSinConsiderarChoques(ArrayList<Hora> horas,String nombreDia){
         ArrayList<Hora> horasDisponibles;
         int num_alumnos = agrupacion.getNum_alumnos()+holguraAula;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
