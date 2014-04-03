@@ -378,7 +378,7 @@ public class VentanaInicio extends javax.swing.JFrame{
         jlist_aulas.setEnabled(false);
         jlist_departamentos.setEnabled(false);
         jlist_carreras.setEnabled(false);
-        btn_filtrar.setEnabled(false);
+        btn_filtrar.setEnabled(false);       
         
                 
         
@@ -408,20 +408,18 @@ public class VentanaInicio extends javax.swing.JFrame{
     }//GEN-LAST:event_btn_generarActionPerformed
 
     private void btn_filtrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_filtrarActionPerformed
-        // TODO add your handling code here:        
-        
         if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null && jlist_departamentos.getSelectedItem()==null){
-            System.out.println("aula");
+            //System.out.println("aula");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             jTable1.setModel(ManejadorAulas.getHorarioEnAula(facultad.getAulas(),aulaSeleccionada, modelo));
         }else if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()!=null){
-            System.out.println("carrera");
+            //System.out.println("carrera");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             carreraSeleccionada = jlist_carreras.getSelectedItem().toString();
             ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(materias, ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
             jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(facultad.getAulas(), aulaSeleccionada, modelo, facultad.getDepartamentos(), materiasCarrera));
         }else if(jlist_aulas.getSelectedItem()!=null && jlist_departamentos.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null){
-            System.out.println("departamento");
+            //System.out.println("departamento");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
             departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, facultad.getDepartamentos());
