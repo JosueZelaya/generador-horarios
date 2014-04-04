@@ -39,6 +39,31 @@ public abstract class ManejadorHoras {
         return horas;
     }
     
+    /**Retorna las horas de un día específico
+     * 
+     * @param dia = nombre del día del que se quiere obtener las horas
+     * @return las horas del dia en la base de datos
+     */
+    public static ArrayList<Hora> getHorasDia(String dia){
+        ArrayList<Hora> horas = new ArrayList();
+        Conexion conexion = new Conexion();        
+        ResultSet resultadoConsulta;
+        try{
+            conexion.conectar();
+            resultadoConsulta = conexion.consulta("select * from horas where id_hora in (select id_hora from dia_horas where nombre_dia='"+dia+"') order by id_hora asc;");
+            while(resultadoConsulta.next()){
+                Hora hora = new Hora(resultadoConsulta.getInt("id_hora"));
+                hora.setInicio(resultadoConsulta.getString("inicio"));
+                hora.setFin(resultadoConsulta.getString("fin"));
+                horas.add(hora);
+            }
+            conexion.cierraConexion();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return horas;
+    }
+    
     /**
      *
      * @param horas = las horas de las que dispongo para elegir

@@ -7,8 +7,6 @@
 package generador_horarios;
 
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,9 +14,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import javax.swing.DefaultListModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -43,16 +40,15 @@ public class VentanaInicio extends javax.swing.JFrame{
     String[] listadoDepartamentos;
     String[] listadoCarreras;
     
-    JMenuItem jm_abrir,jm_guardar;
-    
-    
-    DefaultListModel<String> modeloLista;
-    
     /**
      * Creates new form VentanaInicio
      */
     public VentanaInicio() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        cmb_dia.setEditable(false);
+        cmb_hora_init.setEditable(false);
+        
         fila =0;
         columna =0;
         
@@ -61,11 +57,11 @@ public class VentanaInicio extends javax.swing.JFrame{
         
         //Se llena la tabla de dias y horas
         modelo = new DefaultTableModel(datosTabla, cabeceraTabla){
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                    return false;
+            }
+	};
         ArrayList<Hora> horas = ManejadorHoras.getTodasHoras();
         for (int i = 0; i < horas.size(); i++) {
             Hora hora = horas.get(i);
@@ -94,72 +90,47 @@ public class VentanaInicio extends javax.swing.JFrame{
         jTable1.setColumnSelectionAllowed(true);
         
         //Se llena la lista de aulas
-        ArrayList<Aula> aulas = ManejadorAulas.getTodasAulasOrdenadas("cod_aula");
         jlist_aulas.addItem(null);
+        ArrayList<Aula> aulas = ManejadorAulas.getTodasAulasOrdenadas("cod_aula");
         for (int i = 0; i < aulas.size(); i++) {
             Aula aula = aulas.get(i);
             jlist_aulas.addItem(aula.getNombre());
         }
-        jlist_aulas.setName("lista_aulas");        
         
         aulaSeleccionada = null;
         departamentoSeleccionado = null;
         carreraSeleccionada = null;
         materias = new ArrayList();
-        
-        //Barra de Menú
-        jm_abrir = new JMenuItem("Abrir");
-        jm_guardar = new JMenuItem("Guardar");
-        jm_abrir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                jm_abrirActionPerformed(e);
-            }
-        });
-        jm_guardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                jm_guardarActionPermformed(e);
-            }
-        });
-        jMenu1.add(jm_abrir);
-        jMenu1.add(jm_guardar);
-        
     }
     
-    
-    
-    public void imprimir(){
-        ArrayList<Aula> aulas;
-        aulas = facultad.getAulas();
-        ArrayList<Dia> dias;
-        ArrayList<Hora> horas;
-        
-        for (int i = 0; i < aulas.size(); i++) {
-            Aula aula = aulas.get(i);
-            System.out.println("Aula: "+aula.getNombre());
-            dias = aula.getDias();
-            for (int j = 0; j < dias.size(); j++) {
-                Dia dia = dias.get(j);
-                System.out.println("        Nombre: "+dia.getNombre());
-                horas = dia.getHoras();
-                for (int k = 0; k < horas.size(); k++) {
-                    Hora hora = horas.get(k);
-                    System.out.println("            Dia: "+dia.getNombre()+" Aula: "+aula.getNombre()+" Hora: "+hora.getIdHora()+", Disponible: "+hora.estaDisponible() + ", Materia:"+hora.getGrupo().getCod_materia()+", Grupo: "+hora.getGrupo().getId_grupo()+", Departamento"+hora.getGrupo().getId_depar());                    
-                }
-                
-            }
+    public void llenarAulas(){
+        DefaultComboBoxModel modelo_aulas = new DefaultComboBoxModel();
+        ArrayList<Aula> aulas = facultad.getAulas();
+        for(int i=0; i<aulas.size(); i++){
+            modelo_aulas.addElement(aulas.get(i).getNombre());
         }
+        modelo_aulas.setSelectedItem(null);
+        cmb_aula.setModel(modelo_aulas);
+    }
+    
+    public void llenarListaDias(){
+        ArrayList<Dia> dias = ManejadorDias.getDias();
+        DefaultComboBoxModel lista = new DefaultComboBoxModel();
+        cmb_dia.removeAllItems();
+        for(int i=0; i<dias.size(); i++){
+            lista.addElement(dias.get(i).getNombre());
+        }
+        lista.setSelectedItem(null);
+        cmb_dia.setModel(lista);
     }
     
     public void llenarListaDepartamentos(){
         //Se llena la lista de departamentos
         ArrayList<String> departamentos= ManejadorDepartamentos.getNombreDepartamentos();
-            jlist_departamentos.addItem(null);
+        jlist_departamentos.addItem(null);
         for (int i = 0; i < departamentos.size(); i++) {
             jlist_departamentos.addItem(departamentos.get(i));
         }
-        jlist_departamentos.setName("lista_departamentos");
     }
     
     public void llenarListaCarreras(String nombreDepartamento){
@@ -171,7 +142,14 @@ public class VentanaInicio extends javax.swing.JFrame{
         for (int i = 0; i < carreras.size(); i++) {
             jlist_carreras.addItem(carreras.get(i));
         }
-        jlist_carreras.setName("lista_carreras");
+    }
+    
+    public void llenarListaHorasDia(String dia){
+        ArrayList<Hora> horas = ManejadorDias.obtenerHorasDia(dia);
+        cmb_hora_init.removeAllItems();
+        for(int i=0; i<horas.size(); i++){
+            cmb_hora_init.addItem(horas.get(i).getInicio());
+        }
     }
     
     public void mostrarInfoMateria(){
@@ -190,6 +168,18 @@ public class VentanaInicio extends javax.swing.JFrame{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        dialog_reservacion = new javax.swing.JDialog();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        cmb_aula = new javax.swing.JComboBox();
+        jLabel5 = new javax.swing.JLabel();
+        cmb_dia = new javax.swing.JComboBox();
+        jLabel6 = new javax.swing.JLabel();
+        cmb_hora_init = new javax.swing.JComboBox();
+        jLabel7 = new javax.swing.JLabel();
+        sp_num_horas = new javax.swing.JSpinner();
+        ok_reserv = new javax.swing.JButton();
+        cancel_reserv = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -207,9 +197,131 @@ public class VentanaInicio extends javax.swing.JFrame{
         lbl_mensaje = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        jm_nueva_reserv = new javax.swing.JMenuItem();
+        jm_abrir = new javax.swing.JMenuItem();
+        jm_guardar = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
+        dialog_reservacion.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        dialog_reservacion.setTitle("Nueva Reservacion");
+        dialog_reservacion.setModal(true);
+        dialog_reservacion.setName("dialog_reservacion"); // NOI18N
+        dialog_reservacion.setResizable(false);
+
+        jLabel4.setText("Aula:");
+
+        cmb_aula.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmb_aulaActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Dia:");
+
+        cmb_dia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmb_diaActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Hora Inicial:");
+
+        jLabel7.setText("Numero de horas:");
+
+        sp_num_horas.setModel(new javax.swing.SpinnerNumberModel(1, 1, 8, 1));
+
+        ok_reserv.setText("Aceptar");
+        ok_reserv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ok_reservActionPerformed(evt);
+            }
+        });
+
+        cancel_reserv.setText("Cancelar");
+        cancel_reserv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancel_reservActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sp_num_horas, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cmb_aula, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmb_dia, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmb_hora_init, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(37, Short.MAX_VALUE))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addComponent(ok_reserv)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cancel_reserv)
+                .addGap(29, 29, 29))
+        );
+
+        jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cancel_reserv, ok_reserv});
+
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(cmb_aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(35, 35, 35)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(cmb_dia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(30, 30, 30)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(cmb_hora_init, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(33, 33, 33)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(sp_num_horas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ok_reserv)
+                    .addComponent(cancel_reserv))
+                .addGap(38, 38, 38))
+        );
+
+        javax.swing.GroupLayout dialog_reservacionLayout = new javax.swing.GroupLayout(dialog_reservacion.getContentPane());
+        dialog_reservacion.getContentPane().setLayout(dialog_reservacionLayout);
+        dialog_reservacionLayout.setHorizontalGroup(
+            dialog_reservacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dialog_reservacionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        dialog_reservacionLayout.setVerticalGroup(
+            dialog_reservacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dialog_reservacionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Generador de Horarios");
 
         btn_generar.setText(" Generar Horario");
         btn_generar.setName(""); // NOI18N
@@ -333,7 +445,7 @@ public class VentanaInicio extends javax.swing.JFrame{
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+                .addComponent(jScrollPane2)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -342,6 +454,35 @@ public class VentanaInicio extends javax.swing.JFrame{
         jTabbedPane1.addTab("Por Aula", jPanel1);
 
         jMenu1.setText("Archivo");
+
+        jMenu3.setText("Nuevo");
+
+        jm_nueva_reserv.setText("Reservación");
+        jm_nueva_reserv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jm_nueva_reservActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jm_nueva_reserv);
+
+        jMenu1.add(jMenu3);
+
+        jm_abrir.setText("Abrir");
+        jm_abrir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jm_abrirActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jm_abrir);
+
+        jm_guardar.setText("Guardar");
+        jm_guardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jm_guardarActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jm_guardar);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Editar");
@@ -398,10 +539,9 @@ public class VentanaInicio extends javax.swing.JFrame{
                     procesador.procesarMateria(materias.get(i));
                 } catch (Exception ex) {
                     //Se produce cuando ya no hay aulas disponibles
-                    System.out.println(ex.getMessage());                                        
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
-                //System.out.println("Grupo Asignado: "+agrup.getNumGruposAsignados()+" materia: "+agrup.getPropietario());
             }
         }
         jlist_aulas.setEnabled(true);
@@ -424,99 +564,124 @@ public class VentanaInicio extends javax.swing.JFrame{
             departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
             departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, facultad.getDepartamentos());
             jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(facultad.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), facultad.getDepartamentos()));
-        }
-            
+        }  
     }//GEN-LAST:event_btn_filtrarActionPerformed
 
-    private void jlist_aulasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jlist_aulasActionPerformed
-        // TODO add your handling code here:            
-            if(jlist_aulas.getSelectedItem()!=null){
-                llenarListaDepartamentos();
-                jlist_departamentos.setEnabled(true);
-                btn_filtrar.setEnabled(true);
-            }else{
-                jlist_departamentos.setSelectedItem(null);
-                jlist_carreras.setSelectedItem(null);
-                jlist_departamentos.setEnabled(false);
-                jlist_carreras.setEnabled(false);
-                btn_filtrar.setEnabled(false);
-            }
-            
-    }//GEN-LAST:event_jlist_aulasActionPerformed
+    private void jm_nueva_reservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jm_nueva_reservActionPerformed
+        dialog_reservacion.pack();
+        dialog_reservacion.setLocationRelativeTo(this);
+        llenarAulas();
+        cmb_dia.setEnabled(false);
+        cmb_hora_init.setEnabled(false);
+        dialog_reservacion.setVisible(true);
+    }//GEN-LAST:event_jm_nueva_reservActionPerformed
 
-    private void jlist_departamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jlist_departamentosActionPerformed
-        // TODO add your handling code here:
+    private void ok_reservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ok_reservActionPerformed
+        String aula = cmb_aula.getSelectedItem().toString();
+        int id_hora = cmb_hora_init.getSelectedIndex();
+        String dia = cmb_dia.getSelectedItem().toString();
+        for(int i=0; i<(int)sp_num_horas.getValue();i++){
+            id_hora++;
+            ManejadorReservaciones.nuevaReservacion(dia, id_hora, aula);
+        }
+        dialog_reservacion.dispose();
+    }//GEN-LAST:event_ok_reservActionPerformed
+
+    private void cmb_aulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmb_aulaActionPerformed
+        llenarListaDias();
+        cmb_dia.setEnabled(true);
+    }//GEN-LAST:event_cmb_aulaActionPerformed
+
+    private void cmb_diaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmb_diaActionPerformed
+        llenarListaHorasDia(cmb_dia.getSelectedItem().toString());
+        cmb_hora_init.setSelectedIndex(-1);
+        cmb_hora_init.setEnabled(true);
+    }//GEN-LAST:event_cmb_diaActionPerformed
+
+    private void jlist_aulasActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        if(jlist_aulas.getSelectedItem()!=null){
+            llenarListaDepartamentos();
+            jlist_departamentos.setEnabled(true);
+            btn_filtrar.setEnabled(true);
+        }else{
+            jlist_departamentos.setSelectedItem(null);
+            jlist_carreras.setSelectedItem(null);
+            jlist_departamentos.setEnabled(false);
+            jlist_carreras.setEnabled(false);
+            btn_filtrar.setEnabled(false);
+        }
+    }                                           
+
+    private void jlist_departamentosActionPerformed(java.awt.event.ActionEvent evt) {                                                    
         if(jlist_departamentos.getSelectedItem()!=null){
             llenarListaCarreras(jlist_departamentos.getSelectedItem().toString());
             jlist_carreras.setEnabled(true);
         }else{
             jlist_carreras.setSelectedItem(null);
             jlist_carreras.setEnabled(false);
-        }    
-    }//GEN-LAST:event_jlist_departamentosActionPerformed
+        } 
+    }                                                   
 
-    private void jm_abrirActionPerformed(java.awt.event.ActionEvent e){
-        //Crear un objeto FileChooser
-            JFileChooser fc = new JFileChooser();
-            //Mostrar la ventana para abrir archivo y recoger la respuesta
-            //En el parámetro del showOpenDialog se indica la ventana
-            //  al que estará asociado. Con el valor this se asocia a la
-            //  ventana que la abre.
-            int respuesta = fc.showOpenDialog(this);
-            //Comprobar si se ha pulsado Aceptar
-            if (respuesta == JFileChooser.APPROVE_OPTION)
+    private void jm_abrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jm_abrirActionPerformed
+        JFileChooser fc = new JFileChooser();
+        //Mostrar la ventana para abrir archivo y recoger la respuesta
+        //En el parámetro del showOpenDialog se indica la ventana
+        //  al que estará asociado. Con el valor this se asocia a la
+        //  ventana que la abre.
+        int respuesta = fc.showOpenDialog(this);
+        //Comprobar si se ha pulsado Aceptar
+        if (respuesta == JFileChooser.APPROVE_OPTION)
+        {
+            //Crear un objeto File con el archivo elegido
+            File archivoElegido = fc.getSelectedFile();                
+            try
             {
-                //Crear un objeto File con el archivo elegido
-                File archivoElegido = fc.getSelectedFile();                
-                try
-                {
-                   FileInputStream fileIn = new FileInputStream(archivoElegido.getPath());
-                   ObjectInputStream in = new ObjectInputStream(fileIn);
-                   facultad = (Facultad) in.readObject();
-                   in.close();
-                   fileIn.close();
-                   jlist_aulas.setEnabled(true);
-                }catch(IOException i)
-                {
-                   i.printStackTrace();
-                   return;
-                }catch(ClassNotFoundException c)
-                {
-                   System.out.println("Campus class not found");
-                   c.printStackTrace();
-                   return;
-                }
-                JOptionPane.showMessageDialog(null, archivoElegido.getPath());
-            }
-    }
-    
-    private void jm_guardarActionPermformed(ActionEvent e){
-        //Crear un objeto FileChooser
-            JFileChooser fc = new JFileChooser();
-            //Mostrar la ventana para abrir archivo y recoger la respuesta
-            //En el parámetro del showOpenDialog se indica la ventana
-            //  al que estará asociado. Con el valor this se asocia a la
-            //  ventana que la abre.
-            int respuesta = fc.showSaveDialog(this);
-            //Comprobar si se ha pulsado Aceptar
-            if (respuesta == JFileChooser.APPROVE_OPTION)
+               FileInputStream fileIn = new FileInputStream(archivoElegido.getPath());
+               ObjectInputStream in = new ObjectInputStream(fileIn);
+               facultad = (Facultad) in.readObject();
+               in.close();
+               fileIn.close();
+               jlist_aulas.setEnabled(true);
+            }catch(IOException | ClassNotFoundException i)
             {
-                File archivoElegido = fc.getSelectedFile();
-                try
-                {
-                   FileOutputStream fileOut = new FileOutputStream(archivoElegido.getPath());
-                   ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                   out.writeObject(facultad);
-                   out.close();
-                   fileOut.close();                   
-                }catch(IOException i)
-                {
-                    i.printStackTrace();
-                }
-                JOptionPane.showMessageDialog(null, "Se guardó en: "+archivoElegido.getPath());
-                
+               JOptionPane.showMessageDialog(this, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+               return;
             }
-    }
+            JOptionPane.showMessageDialog(null, archivoElegido.getPath());
+        }
+    }//GEN-LAST:event_jm_abrirActionPerformed
+
+    private void jm_guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jm_guardarActionPerformed
+        //Crear un objeto FileChooser
+        JFileChooser fc = new JFileChooser();
+        //Mostrar la ventana para abrir archivo y recoger la respuesta
+        //En el parámetro del showOpenDialog se indica la ventana
+        //  al que estará asociado. Con el valor this se asocia a la
+        //  ventana que la abre.
+        int respuesta = fc.showSaveDialog(this);
+        //Comprobar si se ha pulsado Aceptar
+        if (respuesta == JFileChooser.APPROVE_OPTION)
+        {
+            File archivoElegido = fc.getSelectedFile();
+            try
+            {
+               FileOutputStream fileOut = new FileOutputStream(archivoElegido.getPath());
+               ObjectOutputStream out = new ObjectOutputStream(fileOut);
+               out.writeObject(facultad);
+               out.close();
+               fileOut.close();                   
+            }catch(IOException i)
+            {
+                JOptionPane.showMessageDialog(this, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            JOptionPane.showMessageDialog(null, "Se guardó en: "+archivoElegido.getPath());
+
+        }
+    }//GEN-LAST:event_jm_guardarActionPerformed
+
+    private void cancel_reservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancel_reservActionPerformed
+        dialog_reservacion.dispose();
+    }//GEN-LAST:event_cancel_reservActionPerformed
     
     /**
      * @param args the command line arguments
@@ -547,6 +712,7 @@ public class VentanaInicio extends javax.swing.JFrame{
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 VentanaInicio ventanaInicial = new VentanaInicio();
                 ventanaInicial.setLocationRelativeTo(null);
@@ -559,22 +725,38 @@ public class VentanaInicio extends javax.swing.JFrame{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_filtrar;
     private javax.swing.JButton btn_generar;
+    private javax.swing.JButton cancel_reserv;
+    private javax.swing.JComboBox cmb_aula;
+    private javax.swing.JComboBox cmb_dia;
+    private javax.swing.JComboBox cmb_hora_init;
+    private javax.swing.JDialog dialog_reservacion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JComboBox jlist_aulas;
     private javax.swing.JComboBox jlist_carreras;
     private javax.swing.JComboBox jlist_departamentos;
+    private javax.swing.JMenuItem jm_abrir;
+    private javax.swing.JMenuItem jm_guardar;
+    private javax.swing.JMenuItem jm_nueva_reserv;
     private javax.swing.JLabel lbl_mensaje;
+    private javax.swing.JButton ok_reserv;
+    private javax.swing.JSpinner sp_num_horas;
     // End of variables declaration//GEN-END:variables
 
 }

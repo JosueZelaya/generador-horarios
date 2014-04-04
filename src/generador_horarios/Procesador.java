@@ -37,11 +37,13 @@ public class Procesador {
     
     int desde;
     int hasta;
+    int limite; //Separacion de hora para turno de primeros años y ultimos años
     
     public Procesador(){
         holguraAula = 10;
         desde=0;
         hasta=15;
+        limite = 10;
     }
     
     //Devuelve un número aleatorio entre los límites desde y hasta, los límites no se excluyen.
@@ -70,9 +72,9 @@ public class Procesador {
      */
     public void establecerTurno(){
         if(materia.getCiclo()<=6)
-            hasta = 10;
+            hasta = limite;
         else
-            desde = 10; 
+            desde = limite; 
     }
     
     //Asigna la materia en las horas correspondientes
@@ -128,6 +130,8 @@ public class Procesador {
                if(aulaCumpleCriterioDeCapacidad(capacidad)){ //Las aulas deben quedar con una holgura de 10               
                    Dia dia = aula.getDia("Sabado");
                    ArrayList<Hora> horas = dia.getHoras();
+                   desde = 0;                       ///Todo el dia disponible
+                   hasta = dia.getHoras().size();   ///para las materias que llegen a el
                    ArrayList<Hora> horasDisponibles = buscarHorasDisponibles(horas,materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta, "Sabado", materia, aulas, materias); //elige las primeras horas disponibles que encuentre ese día
                    if(horasDisponibles != null){                 //Si hay horas disponibles
                         asignar(grupo, horasDisponibles);        //Asignamos la materia            
@@ -157,7 +161,11 @@ public class Procesador {
             if(diaElegido != null){
                 System.out.println("Se probara sin choques en dia "+diaElegido.getNombre());
                 ArrayList<Hora> horas;       
-                horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día                
+                horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día
+                
+                if(horas.size() < hasta) //Si el dia tiene menos horas clase que las que se requieren por el limite
+                    hasta = horas.size();
+                
                 asignarHorasConsiderandoChoques(horas, diaElegido.getNombre());
                 diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
             }else{
@@ -176,7 +184,11 @@ public class Procesador {
             diaElegido = elegirDiaDiferente(dias, diasUsados); //Elegimos un día entre todos
             if(diaElegido != null){
                 ArrayList<Hora> horas;       
-                horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día                
+                horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día
+                
+                if(horas.size() < hasta)
+                    hasta = horas.size();
+                
                 asignarHorasSinConsiderarChoques(horas, diaElegido.getNombre());
                 diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
             }else{

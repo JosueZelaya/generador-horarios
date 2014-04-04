@@ -26,7 +26,7 @@ public class Facultad implements Serializable{
         for (int i = 0; i < aulas.size(); i++) {
             ArrayList<Dia> dias = ManejadorDias.getDias();
             for(int j=0; j < dias.size(); j++){
-                ArrayList<Hora> horas = ManejadorHoras.getTodasHoras();
+                ArrayList<Hora> horas = ManejadorHoras.getHorasDia(dias.get(j).getNombre());
                 dias.get(j).setHoras(horas);
             }
             aulas.get(i).setDias(dias);
