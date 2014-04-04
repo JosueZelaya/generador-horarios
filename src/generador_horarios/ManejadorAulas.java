@@ -18,8 +18,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public abstract class ManejadorAulas {
     
-    
-    
     public static ArrayList<Aula> getTodasAulas(){
         ArrayList<Aula> aulas = new ArrayList();
         

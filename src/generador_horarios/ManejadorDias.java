@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public abstract class ManejadorDias {
     
-    //Devuelve los días de lunes a viernes
+    //Devuelve todos los días
     public static ArrayList<Dia> getDias(){
         ArrayList<Dia> dias = new ArrayList();
         Conexion conexion = new Conexion();        
@@ -32,13 +32,9 @@ public abstract class ManejadorDias {
             conexion.cierraConexion();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
-            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
         return dias;
     }
-    
-    
     
     public static Dia elegirDia(ArrayList<Dia> dias){
         int desde = 0;
@@ -74,4 +70,23 @@ public abstract class ManejadorDias {
         return dia1.getNombre().equals(dia2.getNombre());        
     }
     
+    public static ArrayList<Hora> obtenerHorasDia(String nombre_dia){
+        ArrayList<Hora> horas = new ArrayList();
+        Conexion conexion = new Conexion();        
+        ResultSet resultadoConsulta;
+        try {
+            conexion.conectar();
+            resultadoConsulta = conexion.consulta("SELECT * FROM horas WHERE id_hora IN (SELECT id_hora FROM dia_horas WHERE nombre_dia='"+nombre_dia+"') ORDER BY id_hora");
+            while(resultadoConsulta.next()){
+                Hora hora = new Hora(resultadoConsulta.getInt("id_hora"));
+                hora.setInicio(resultadoConsulta.getString("inicio"));
+                hora.setFin(resultadoConsulta.getString("fin"));
+                horas.add(hora);
+            }
+            conexion.cierraConexion();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return horas;
+    }
 }
