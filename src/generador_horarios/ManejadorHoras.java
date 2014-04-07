@@ -176,7 +176,7 @@ public abstract class ManejadorHoras {
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
-            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas, m);
+            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
             if(horasDisponibles != null)
                 break;
         }
@@ -263,7 +263,6 @@ public abstract class ManejadorHoras {
             if(chocan)
                 break;
         }
-        
         return chocan;
     }
     
