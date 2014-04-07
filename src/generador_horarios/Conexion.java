@@ -66,9 +66,9 @@ public class Conexion {
         declaracion.executeUpdate(actualiza);
     }
  
-    public ResultSet borrar(String borra) throws SQLException {
+    public void borrar(String borra) throws SQLException {
         this.declaracion = (Statement) this.conn.createStatement();
-        return (ResultSet) this.declaracion.executeQuery(borra);
+        this.declaracion.executeUpdate(borra);
     }
  
     public int insertar(String inserta) throws SQLException {

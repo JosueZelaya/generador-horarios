@@ -100,9 +100,11 @@ public abstract class ManejadorHoras {
                     Hora hora = horas.get(j);
                     if(hora.getIdHora()==8){
                         hayBloquesDisponibles=false;
+                        break;
                     }
                     if(!hora.estaDisponible()){                            
                         hayBloquesDisponibles=false;
+                        break;
                     }
                 }
             }
@@ -139,9 +141,11 @@ public abstract class ManejadorHoras {
                     Hora hora = horas.get(j);
                     if(hora.getIdHora()==8){
                         hayBloquesDisponibles=false;
+                        break;
                     }
                     if(!hora.estaDisponible()){                            
                         hayBloquesDisponibles=false;
+                        break;
                     }
                 }
             }
@@ -198,8 +202,8 @@ public abstract class ManejadorHoras {
      * @param todas_mats = array con todas las materias de la facultad
      * @return ultima hora en la que hay una materia del mismo nivel
      */
-    public static Hora getUltimaHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats){
-        Hora horaNivel = null;
+    public static int getUltimaHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats){
+        int horaNivel = -1;
         
         for(int x=0; x<horas.size(); x++){
             if(!horas.get(x).estaDisponible() && horas.get(x).getGrupo().getId_depar() == materia.getDepartamento()){
@@ -210,11 +214,11 @@ public abstract class ManejadorHoras {
                     Materia materiaHora = materias.get(j);
                     if(materiaHora.getCodigoCarrera().equals(materia.getCodigoCarrera()) && materiaHora.getCiclo() == materia.getCiclo()){
                         if(materia.getCodigo().equals(grupoHora.getCod_materia()) && grupoHora.getId_grupo() != grupo.getId_grupo()){
-                            horaNivel = horas.get(x); //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
+                            horaNivel = x; //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
                             break;
                         }
                         if(!materia.getCodigo().equals(grupoHora.getCod_materia())){
-                            horaNivel = horas.get(x); //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
+                            horaNivel = x; //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
                             break;
                         }
                     }

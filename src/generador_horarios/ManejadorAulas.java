@@ -104,13 +104,11 @@ public abstract class ManejadorAulas {
                     for(int y=0; y<horas.size(); y++){
                         Hora hora = horas.get(y);
                         Grupo grupo = hora.getGrupo();
-                        if(!hora.estaDisponible()){
+                        if(!hora.estaDisponible() && !grupo.getCod_materia().equals("")){
                             String texto = grupo.getCod_materia()+" GT: "+grupo.getId_grupo();
-                            //String texto=hora.getGrupo().getCod_materia()+"\nGrupo: "+hora.getGrupo().getId_grupo()+"\nDepartamento: "+hora.getGrupo().getId_depar()+"\n\n hola";                            
                             table.setValueAt(texto, y, x+1);
-                        }else{
+                        }else
                             table.setValueAt("", y, x+1);
-                        }                        
                     }
                 }
                 break;
@@ -120,7 +118,7 @@ public abstract class ManejadorAulas {
         return table;
     }
     
-    public static DefaultTableModel getHorarioEnAula_Depar(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar, ArrayList<Departamento> depars){
+    public static DefaultTableModel getHorarioEnAula_Depar(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar){
         for(int i=0; i<aulas.size(); i++){
             if(aulas.get(i).getNombre().equals(aula)){
                 ArrayList<Dia> dias = aulas.get(i).getDias();
@@ -143,7 +141,7 @@ public abstract class ManejadorAulas {
         return table;
     }
     
-    public static DefaultTableModel getHorarioEnAula_Carrera(ArrayList<Aula> aulas, String aula, DefaultTableModel table, ArrayList<Departamento> depars, ArrayList<Materia> materias){
+    public static DefaultTableModel getHorarioEnAula_Carrera(ArrayList<Aula> aulas, String aula, DefaultTableModel table, ArrayList<Materia> materias){
         for(int i=0; i<aulas.size(); i++){
             if(aulas.get(i).getNombre().equals(aula)){
                 ArrayList<Dia> dias = aulas.get(i).getDias();

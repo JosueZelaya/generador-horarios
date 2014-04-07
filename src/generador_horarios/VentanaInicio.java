@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -48,6 +49,7 @@ public class VentanaInicio extends javax.swing.JFrame{
         this.setLocationRelativeTo(null);
         cmb_dia.setEditable(false);
         cmb_hora_init.setEditable(false);
+        addReserv.setEnabled(true);
         
         fila =0;
         columna =0;
@@ -69,33 +71,26 @@ public class VentanaInicio extends javax.swing.JFrame{
             modelo.setValueAt(hora.getInicio()+" - "+hora.getFin(), i, 0);
         }
         //jTable1.setDefaultRenderer(Object.class, new MyRenderer());
-        jTable1.setModel(modelo);
+        tabla_horario.setModel(modelo);
         //Evento cuando se selecciona una fila
-        jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        tabla_horario.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 jtbl_filaValueChanged(e);
             }
         });
         //Evento cuando se selecciona una columna
-        jTable1.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        tabla_horario.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 jtbl_columnaValueChanged(e);
             }
         });
         
-        //jTable1.getSelectionModel().addListSelectionListener(this);
-        //jTable1.getColumnModel().getSelectionModel().addListSelectionListener(this);
-        jTable1.setColumnSelectionAllowed(true);
+        tabla_horario.setColumnSelectionAllowed(true);
         
         //Se llena la lista de aulas
-        jlist_aulas.addItem(null);
-        ArrayList<Aula> aulas = ManejadorAulas.getTodasAulasOrdenadas("cod_aula");
-        for (int i = 0; i < aulas.size(); i++) {
-            Aula aula = aulas.get(i);
-            jlist_aulas.addItem(aula.getNombre());
-        }
+        jlist_aulas.setModel(llenarAulas());
         
         aulaSeleccionada = null;
         departamentoSeleccionado = null;
@@ -103,17 +98,17 @@ public class VentanaInicio extends javax.swing.JFrame{
         materias = new ArrayList();
     }
     
-    public void llenarAulas(){
+    private DefaultComboBoxModel llenarAulas(){
         DefaultComboBoxModel modelo_aulas = new DefaultComboBoxModel();
-        ArrayList<Aula> aulas = facultad.getAulas();
+        ArrayList<Aula> aulas = ManejadorAulas.getTodasAulasOrdenadas("cod_aula");
         for(int i=0; i<aulas.size(); i++){
             modelo_aulas.addElement(aulas.get(i).getNombre());
         }
         modelo_aulas.setSelectedItem(null);
-        cmb_aula.setModel(modelo_aulas);
+        return modelo_aulas;
     }
     
-    public void llenarListaDias(){
+    private void llenarListaDias(){
         ArrayList<Dia> dias = ManejadorDias.getDias();
         DefaultComboBoxModel lista = new DefaultComboBoxModel();
         cmb_dia.removeAllItems();
@@ -124,7 +119,7 @@ public class VentanaInicio extends javax.swing.JFrame{
         cmb_dia.setModel(lista);
     }
     
-    public void llenarListaDepartamentos(){
+    private void llenarListaDepartamentos(){
         //Se llena la lista de departamentos
         ArrayList<String> departamentos= ManejadorDepartamentos.getNombreDepartamentos();
         jlist_departamentos.addItem(null);
@@ -133,7 +128,7 @@ public class VentanaInicio extends javax.swing.JFrame{
         }
     }
     
-    public void llenarListaCarreras(String nombreDepartamento){
+    private void llenarListaCarreras(String nombreDepartamento){
         jlist_carreras.removeAllItems();
         int idDepartamento = ManejadorDepartamentos.getIdDepartamento(nombreDepartamento);
         //Se llena la lista de carreras
@@ -144,7 +139,7 @@ public class VentanaInicio extends javax.swing.JFrame{
         }
     }
     
-    public void llenarListaHorasDia(String dia){
+    private void llenarListaHorasDia(String dia){
         ArrayList<Hora> horas = ManejadorDias.obtenerHorasDia(dia);
         cmb_hora_init.removeAllItems();
         for(int i=0; i<horas.size(); i++){
@@ -152,8 +147,33 @@ public class VentanaInicio extends javax.swing.JFrame{
         }
     }
     
-    public void mostrarInfoMateria(){
-        Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, jTable1.getColumnName(columna), fila);            
+    private void llenarTablaReservaciones(){
+        limpiarTabla(table_reserv);
+        DefaultTableModel model = (DefaultTableModel) table_reserv.getModel();
+        ArrayList<Reservacion> reservs = ManejadorReservaciones.getTodasReservaciones();
+        model.setRowCount(reservs.size());
+        for (int i=0;i<reservs.size();i++){
+            model.setValueAt(reservs.get(i).nombre_dia, i, 0);
+            model.setValueAt(reservs.get(i).inicio, i, 1);
+            model.setValueAt(reservs.get(i).fin, i, 2);
+            model.setValueAt(reservs.get(i).cod_aula, i, 3);
+        }
+        table_reserv.setModel(model);
+        if(table_reserv.getRowCount() == 0)
+            delReserv.setEnabled(false);
+        else
+            delReserv.setEnabled(true);
+    }
+    
+    private void limpiarTabla(JTable tabla){
+        DefaultTableModel model = (DefaultTableModel) tabla.getModel();
+        for(int i=0;i<model.getRowCount();i++){
+            model.removeRow(i);
+        }
+    }
+    
+    private void mostrarInfoMateria(){
+        Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, tabla_horario.getColumnName(columna), fila);            
         String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
         String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
         lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
@@ -168,7 +188,7 @@ public class VentanaInicio extends javax.swing.JFrame{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        dialog_reservacion = new javax.swing.JDialog();
+        dialog_new_reserv = new javax.swing.JDialog();
         jPanel4 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         cmb_aula = new javax.swing.JComboBox();
@@ -180,6 +200,12 @@ public class VentanaInicio extends javax.swing.JFrame{
         sp_num_horas = new javax.swing.JSpinner();
         ok_reserv = new javax.swing.JButton();
         cancel_reserv = new javax.swing.JButton();
+        dialog_reserv = new javax.swing.JDialog();
+        jPanel5 = new javax.swing.JPanel();
+        addReserv = new javax.swing.JButton();
+        delReserv = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        table_reserv = new javax.swing.JTable();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -192,22 +218,21 @@ public class VentanaInicio extends javax.swing.JFrame{
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tabla_horario = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         lbl_mensaje = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenu3 = new javax.swing.JMenu();
-        jm_nueva_reserv = new javax.swing.JMenuItem();
         jm_abrir = new javax.swing.JMenuItem();
         jm_guardar = new javax.swing.JMenuItem();
+        jm_reserv = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
-        dialog_reservacion.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        dialog_reservacion.setTitle("Nueva Reservacion");
-        dialog_reservacion.setModal(true);
-        dialog_reservacion.setName("dialog_reservacion"); // NOI18N
-        dialog_reservacion.setResizable(false);
+        dialog_new_reserv.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        dialog_new_reserv.setTitle("Nueva Reservacion");
+        dialog_new_reserv.setModal(true);
+        dialog_new_reserv.setName("dialog_new_reserv"); // NOI18N
+        dialog_new_reserv.setResizable(false);
 
         jLabel4.setText("Aula:");
 
@@ -303,20 +328,112 @@ public class VentanaInicio extends javax.swing.JFrame{
                 .addGap(38, 38, 38))
         );
 
-        javax.swing.GroupLayout dialog_reservacionLayout = new javax.swing.GroupLayout(dialog_reservacion.getContentPane());
-        dialog_reservacion.getContentPane().setLayout(dialog_reservacionLayout);
-        dialog_reservacionLayout.setHorizontalGroup(
-            dialog_reservacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dialog_reservacionLayout.createSequentialGroup()
+        javax.swing.GroupLayout dialog_new_reservLayout = new javax.swing.GroupLayout(dialog_new_reserv.getContentPane());
+        dialog_new_reserv.getContentPane().setLayout(dialog_new_reservLayout);
+        dialog_new_reservLayout.setHorizontalGroup(
+            dialog_new_reservLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dialog_new_reservLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        dialog_reservacionLayout.setVerticalGroup(
-            dialog_reservacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dialog_reservacionLayout.createSequentialGroup()
+        dialog_new_reservLayout.setVerticalGroup(
+            dialog_new_reservLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dialog_new_reservLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        dialog_reserv.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        dialog_reserv.setTitle("Reservaciones");
+        dialog_reserv.setModal(true);
+        dialog_reserv.setResizable(false);
+
+        addReserv.setText("Agregar");
+        addReserv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addReservActionPerformed(evt);
+            }
+        });
+
+        delReserv.setText("Eliminar");
+        delReserv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                delReservActionPerformed(evt);
+            }
+        });
+
+        table_reserv.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Dia", "Inicio", "Final", "Aula"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(table_reserv);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(addReserv)
+                    .addComponent(delReserv))
+                .addGap(31, 31, 31))
+        );
+
+        jPanel5Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addReserv, delReserv});
+
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addComponent(addReserv)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(delReserv))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout dialog_reservLayout = new javax.swing.GroupLayout(dialog_reserv.getContentPane());
+        dialog_reserv.getContentPane().setLayout(dialog_reservLayout);
+        dialog_reservLayout.setHorizontalGroup(
+            dialog_reservLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dialog_reservLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        dialog_reservLayout.setVerticalGroup(
+            dialog_reservLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dialog_reservLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -400,7 +517,7 @@ public class VentanaInicio extends javax.swing.JFrame{
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tabla_horario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -411,8 +528,8 @@ public class VentanaInicio extends javax.swing.JFrame{
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTable1.setRowHeight(27);
-        jScrollPane2.setViewportView(jTable1);
+        tabla_horario.setRowHeight(27);
+        jScrollPane2.setViewportView(tabla_horario);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Información"));
 
@@ -455,18 +572,6 @@ public class VentanaInicio extends javax.swing.JFrame{
 
         jMenu1.setText("Archivo");
 
-        jMenu3.setText("Nuevo");
-
-        jm_nueva_reserv.setText("Reservación");
-        jm_nueva_reserv.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jm_nueva_reservActionPerformed(evt);
-            }
-        });
-        jMenu3.add(jm_nueva_reserv);
-
-        jMenu1.add(jMenu3);
-
         jm_abrir.setText("Abrir");
         jm_abrir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -482,6 +587,14 @@ public class VentanaInicio extends javax.swing.JFrame{
             }
         });
         jMenu1.add(jm_guardar);
+
+        jm_reserv.setText("Reservación");
+        jm_reserv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jm_reservActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jm_reserv);
 
         jMenuBar1.add(jMenu1);
 
@@ -505,12 +618,12 @@ public class VentanaInicio extends javax.swing.JFrame{
     }// </editor-fold>//GEN-END:initComponents
 
     private void jtbl_filaValueChanged(ListSelectionEvent e){
-        fila = jTable1.getSelectedRow()+1;
+        fila = tabla_horario.getSelectedRow()+1;
         mostrarInfoMateria();
     }
     
     private void jtbl_columnaValueChanged(ListSelectionEvent e){
-        columna = jTable1.getSelectedColumn();
+        columna = tabla_horario.getSelectedColumn();
         mostrarInfoMateria();
     }
     
@@ -519,18 +632,18 @@ public class VentanaInicio extends javax.swing.JFrame{
         jlist_aulas.setEnabled(false);
         jlist_departamentos.setEnabled(false);
         jlist_carreras.setEnabled(false);
-        btn_filtrar.setEnabled(false);       
-        
-                
+        btn_filtrar.setEnabled(false);      
         
         boolean cicloPar = true;
         
         facultad.setMaterias(ManejadorMaterias.getTodasMaterias(cicloPar));
+        //Marcar horas ocupadas
+        ManejadorReservaciones.asignarReservaciones(facultad);
+        
         materias = facultad.getMaterias();
         
         Procesador procesador = new Procesador();
         procesador.setFacultad(facultad);
-        
         
         for (int i = 0; i < materias.size(); i++) {
             Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),facultad.getAgrupaciones());
@@ -551,30 +664,28 @@ public class VentanaInicio extends javax.swing.JFrame{
         if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null && jlist_departamentos.getSelectedItem()==null){
             //System.out.println("aula");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula(facultad.getAulas(),aulaSeleccionada, modelo));
+            tabla_horario.setModel(ManejadorAulas.getHorarioEnAula(facultad.getAulas(),aulaSeleccionada, modelo));
         }else if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()!=null){
             //System.out.println("carrera");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             carreraSeleccionada = jlist_carreras.getSelectedItem().toString();
             ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(materias, ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Carrera(facultad.getAulas(), aulaSeleccionada, modelo, facultad.getDepartamentos(), materiasCarrera));
+            tabla_horario.setModel(ManejadorAulas.getHorarioEnAula_Carrera(facultad.getAulas(), aulaSeleccionada, modelo, materiasCarrera));
         }else if(jlist_aulas.getSelectedItem()!=null && jlist_departamentos.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null){
             //System.out.println("departamento");
             aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
             departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
             departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, facultad.getDepartamentos());
-            jTable1.setModel(ManejadorAulas.getHorarioEnAula_Depar(facultad.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), facultad.getDepartamentos()));
+            tabla_horario.setModel(ManejadorAulas.getHorarioEnAula_Depar(facultad.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado)));
         }  
     }//GEN-LAST:event_btn_filtrarActionPerformed
 
-    private void jm_nueva_reservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jm_nueva_reservActionPerformed
-        dialog_reservacion.pack();
-        dialog_reservacion.setLocationRelativeTo(this);
-        llenarAulas();
-        cmb_dia.setEnabled(false);
-        cmb_hora_init.setEnabled(false);
-        dialog_reservacion.setVisible(true);
-    }//GEN-LAST:event_jm_nueva_reservActionPerformed
+    private void jm_reservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jm_reservActionPerformed
+        dialog_reserv.pack();
+        dialog_reserv.setLocationRelativeTo(this);
+        llenarTablaReservaciones();
+        dialog_reserv.setVisible(true);
+    }//GEN-LAST:event_jm_reservActionPerformed
 
     private void ok_reservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ok_reservActionPerformed
         String aula = cmb_aula.getSelectedItem().toString();
@@ -584,18 +695,23 @@ public class VentanaInicio extends javax.swing.JFrame{
             id_hora++;
             ManejadorReservaciones.nuevaReservacion(dia, id_hora, aula);
         }
-        dialog_reservacion.dispose();
+        dialog_new_reserv.dispose();
+        llenarTablaReservaciones();
     }//GEN-LAST:event_ok_reservActionPerformed
 
     private void cmb_aulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmb_aulaActionPerformed
-        llenarListaDias();
-        cmb_dia.setEnabled(true);
+        if(!cmb_dia.isEnabled()){
+            llenarListaDias();
+            cmb_dia.setEnabled(true);
+        }
     }//GEN-LAST:event_cmb_aulaActionPerformed
 
     private void cmb_diaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmb_diaActionPerformed
-        llenarListaHorasDia(cmb_dia.getSelectedItem().toString());
-        cmb_hora_init.setSelectedIndex(-1);
-        cmb_hora_init.setEnabled(true);
+        if(cmb_dia.getSelectedItem() != null){
+            llenarListaHorasDia(cmb_dia.getSelectedItem().toString());
+            cmb_hora_init.setSelectedIndex(-1);
+            cmb_hora_init.setEnabled(true);
+        }
     }//GEN-LAST:event_cmb_diaActionPerformed
 
     private void jlist_aulasActionPerformed(java.awt.event.ActionEvent evt) {                                            
@@ -680,8 +796,25 @@ public class VentanaInicio extends javax.swing.JFrame{
     }//GEN-LAST:event_jm_guardarActionPerformed
 
     private void cancel_reservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancel_reservActionPerformed
-        dialog_reservacion.dispose();
+        dialog_new_reserv.dispose();
     }//GEN-LAST:event_cancel_reservActionPerformed
+
+    private void addReservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addReservActionPerformed
+        dialog_new_reserv.pack();
+        dialog_new_reserv.setLocationRelativeTo(this);
+        cmb_aula.setModel(llenarAulas());
+        cmb_dia.setEnabled(false);
+        cmb_hora_init.setEnabled(false);
+        dialog_new_reserv.setVisible(true);
+    }//GEN-LAST:event_addReservActionPerformed
+
+    private void delReservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delReservActionPerformed
+        String dia = (String) table_reserv.getValueAt(table_reserv.getSelectedRow(), 0);
+        String hora = (String) table_reserv.getValueAt(table_reserv.getSelectedRow(), 1);
+        String aula = (String) table_reserv.getValueAt(table_reserv.getSelectedRow(), 3);
+        ManejadorReservaciones.eliminarReservacion(dia, hora, aula, facultad.getAulas());
+        llenarTablaReservaciones();
+    }//GEN-LAST:event_delReservActionPerformed
     
     /**
      * @param args the command line arguments
@@ -723,13 +856,16 @@ public class VentanaInicio extends javax.swing.JFrame{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addReserv;
     private javax.swing.JButton btn_filtrar;
     private javax.swing.JButton btn_generar;
     private javax.swing.JButton cancel_reserv;
     private javax.swing.JComboBox cmb_aula;
     private javax.swing.JComboBox cmb_dia;
     private javax.swing.JComboBox cmb_hora_init;
-    private javax.swing.JDialog dialog_reservacion;
+    private javax.swing.JButton delReserv;
+    private javax.swing.JDialog dialog_new_reserv;
+    private javax.swing.JDialog dialog_reserv;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -739,24 +875,26 @@ public class VentanaInicio extends javax.swing.JFrame{
     private javax.swing.JLabel jLabel7;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JComboBox jlist_aulas;
     private javax.swing.JComboBox jlist_carreras;
     private javax.swing.JComboBox jlist_departamentos;
     private javax.swing.JMenuItem jm_abrir;
     private javax.swing.JMenuItem jm_guardar;
-    private javax.swing.JMenuItem jm_nueva_reserv;
+    private javax.swing.JMenuItem jm_reserv;
     private javax.swing.JLabel lbl_mensaje;
     private javax.swing.JButton ok_reserv;
     private javax.swing.JSpinner sp_num_horas;
+    private javax.swing.JTable tabla_horario;
+    private javax.swing.JTable table_reserv;
     // End of variables declaration//GEN-END:variables
 
 }

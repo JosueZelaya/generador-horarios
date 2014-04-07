@@ -207,9 +207,9 @@ public class Procesador {
         int num_alumnos = agrupacion.getNum_alumnos()+holguraAula;
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        Hora horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias);
-        if(horaNivel != null && (horaNivel.getIdHora()+numHorasContinuas)<hasta)
-            horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas,num_alumnos), aulas, materias);
+        int horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias);
+        if(horaNivel != -1 && (horaNivel+numHorasContinuas)<hasta)
+            horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel+1, horaNivel+1+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas,num_alumnos), aulas, materias);
         else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta, nombreDia, materia, aulas, materias); //elige las primeras horas disponibles que encuentre ese día
         
@@ -222,9 +222,9 @@ public class Procesador {
         ArrayList<Hora> horasDisponibles;
         int num_alumnos = agrupacion.getNum_alumnos()+holguraAula;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        Hora horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias);
-        if(horaNivel != null && (horaNivel.getIdHora()+numHorasContinuas)<hasta)
-            horasDisponibles = buscarHorasParaNivelConChoque(numHorasContinuas, horaNivel.getIdHora(), horaNivel.getIdHora()+numHorasContinuas, nombreDia, obtenerAulasPorCapacidad(aulas,num_alumnos));
+        int horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias);
+        if(horaNivel != -1 && (horaNivel+numHorasContinuas)<hasta)
+            horasDisponibles = buscarHorasParaNivelConChoque(numHorasContinuas, horaNivel+1, horaNivel+1+numHorasContinuas, nombreDia, obtenerAulasPorCapacidad(aulas,num_alumnos));
         else
             horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
         
