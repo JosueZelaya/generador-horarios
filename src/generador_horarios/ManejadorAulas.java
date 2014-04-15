@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import static generador_horarios.ManejadorAgrupaciones.obtenerNombrePropietario;
+import static generador_horarios.ManejadorAgrupaciones.obtenerIdDepartamento;
 
 /**
  *
@@ -94,8 +96,7 @@ public abstract class ManejadorAulas {
         return aulasSelec;
     }
     
-    public static DefaultTableModel getHorarioEnAula(ArrayList<Aula> aulas, String aula, DefaultTableModel table){
-
+    public static DefaultTableModel getHorarioEnAula(ArrayList<Aula> aulas, String aula, DefaultTableModel table, ArrayList<Materia> materias){
         for(int i=0; i<aulas.size(); i++){
             if(aulas.get(i).getNombre().equals(aula)){
                 ArrayList<Dia> dias = aulas.get(i).getDias();
@@ -104,8 +105,9 @@ public abstract class ManejadorAulas {
                     for(int y=0; y<horas.size(); y++){
                         Hora hora = horas.get(y);
                         Grupo grupo = hora.getGrupo();
-                        if(!hora.estaDisponible() && !grupo.getCod_materia().equals("")){
-                            String texto = grupo.getCod_materia()+" GT: "+grupo.getId_grupo();
+                        if(!hora.estaDisponible() && grupo.getId_Agrup() != 0){
+                            String propietario = obtenerNombrePropietario(grupo.getId_Agrup(),materias);
+                            String texto = propietario+" GT: "+grupo.getId_grupo();
                             table.setValueAt(texto, y, x+1);
                         }else
                             table.setValueAt("", y, x+1);
@@ -118,7 +120,7 @@ public abstract class ManejadorAulas {
         return table;
     }
     
-    public static DefaultTableModel getHorarioEnAula_Depar(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar){
+    public static DefaultTableModel getHorarioEnAula_Depar(ArrayList<Aula> aulas, String aula, DefaultTableModel table, int id_depar, ArrayList<Agrupacion> agrups, ArrayList<Materia> materias){
         for(int i=0; i<aulas.size(); i++){
             if(aulas.get(i).getNombre().equals(aula)){
                 ArrayList<Dia> dias = aulas.get(i).getDias();
@@ -127,8 +129,8 @@ public abstract class ManejadorAulas {
                     for(int y=0; y<horas.size(); y++){
                         Hora hora = horas.get(y);
                         Grupo grupo = hora.getGrupo();
-                        if(grupo.getId_depar() == id_depar){
-                            String texto = grupo.getCod_materia()+" GT: "+grupo.getId_grupo();
+                        if(obtenerIdDepartamento(grupo.getId_Agrup(), agrups) == id_depar){
+                            String texto = obtenerNombrePropietario(grupo.getId_Agrup(),materias)+" GT: "+grupo.getId_grupo();
                             table.setValueAt(texto, y, x+1);
                         }else
                             table.setValueAt("", y, x+1);
@@ -141,7 +143,8 @@ public abstract class ManejadorAulas {
         return table;
     }
     
-    public static DefaultTableModel getHorarioEnAula_Carrera(ArrayList<Aula> aulas, String aula, DefaultTableModel table, ArrayList<Materia> materias){
+    public static DefaultTableModel getHorarioEnAula_Carrera(ArrayList<Aula> aulas, String aula, DefaultTableModel table, ArrayList ids_agrups, ArrayList<Materia> materias){
+        
         for(int i=0; i<aulas.size(); i++){
             if(aulas.get(i).getNombre().equals(aula)){
                 ArrayList<Dia> dias = aulas.get(i).getDias();
@@ -149,9 +152,9 @@ public abstract class ManejadorAulas {
                     ArrayList<Hora> horas = dias.get(x).getHoras();
                     for(int y=0; y<horas.size(); y++){
                         Grupo grupo = horas.get(y).getGrupo();
-                        for(int z=0; z<materias.size(); z++){
-                            if(materias.get(z).getCodigo().equals(grupo.getCod_materia()) && materias.get(z).getDepartamento() == grupo.getId_depar()){
-                                table.setValueAt(grupo.getCod_materia()+" GT: "+grupo.getId_grupo(), y, x+1);
+                        for(int z=0; z<ids_agrups.size(); z++){
+                            if((int)ids_agrups.get(z) == grupo.getId_Agrup()){
+                                table.setValueAt(obtenerNombrePropietario(grupo.getId_Agrup(),materias)+" GT: "+grupo.getId_grupo(), y, x+1);
                                 break;
                             }
                             else
@@ -162,7 +165,6 @@ public abstract class ManejadorAulas {
                 break;
             }
         }
-        
         return table;
     }
     

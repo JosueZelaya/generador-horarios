@@ -16,8 +16,8 @@ import java.util.ArrayList;
 public class Facultad implements Serializable{
     
     private ArrayList<Aula> aulas;
-    private ArrayList<Agrupacion> agrupaciones;
-    private ArrayList<Departamento> departamentos;
+    public final ArrayList<Agrupacion> agrupaciones;
+    public final ArrayList<Departamento> departamentos;
     private ArrayList<Materia> materias;
 
     public Facultad(ArrayList<Agrupacion> agrupaciones, ArrayList<Departamento> departamentos) {
@@ -48,28 +48,6 @@ public class Facultad implements Serializable{
      */
     public void setAulas(ArrayList<Aula> aulas) {
         this.aulas = aulas;
-    }
-    
-    public ArrayList<Agrupacion> getAgrupaciones() {
-        return agrupaciones;
-    }
-
-    public void setAgrupaciones(ArrayList<Agrupacion> agrupaciones) {
-        this.agrupaciones = agrupaciones;
-    }
-
-    /**
-     * @return the departamentos
-     */
-    public ArrayList<Departamento> getDepartamentos() {
-        return departamentos;
-    }
-
-    /**
-     * @param departamentos the departamentos to set
-     */
-    public void setDepartamentos(ArrayList<Departamento> departamentos) {
-        this.departamentos = departamentos;
     }
 
     public ArrayList<Materia> getMaterias() {

@@ -52,19 +52,13 @@ public abstract class ManejadorDepartamentos {
         return nombre_departamentos;
     }
     
-    public static String getNombreDepartamento(int idDepartamento){
+    public static String getNombreDepartamento(int idDepartamento, ArrayList<Departamento> depars){
         String nombreDepartamento="";
-        Conexion conexion = new Conexion();        
-        ResultSet resultadoConsulta;
-        try {
-            conexion.conectar();
-            resultadoConsulta = conexion.consulta("SELECT nombre_depar FROM departamentos WHERE id_depar='"+idDepartamento+"'");
-            while(resultadoConsulta.next()){               
-                nombreDepartamento=resultadoConsulta.getString("nombre_depar");
+        for(Departamento depar : depars){
+            if(depar.getId() == idDepartamento){
+                nombreDepartamento = depar.getNombre();
+                break;
             }
-            conexion.cierraConexion();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
         }
         return nombreDepartamento;
     }

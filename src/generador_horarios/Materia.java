@@ -7,7 +7,6 @@
 package generador_horarios;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  *
@@ -22,20 +21,25 @@ public class Materia implements Serializable{
     private int departamento;
     private String codigoCarrera;
     private int planEstudio;
+    private final int idAgrupacion;
     private boolean incompleta;
-    
-    public Materia(){
-        codigo = "";
-        nombre = "";
-        ciclo = 0;
-        unidadesValorativas=0;
-        codigoCarrera = "";
-        planEstudio = 0;
-        departamento=0;
-        incompleta = false; //Cambiará a true si no se puede asignar o se asigna parcialmente.
+
+    public Materia(String codigo, String nombre, int ciclo, int unidadesValorativas, int id_depar, String codigoCarrera, int planEstudio, int idAgrupacion, boolean incompleta) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.ciclo = ciclo;
+        this.unidadesValorativas = unidadesValorativas;
+        this.departamento = id_depar;
+        this.codigoCarrera = codigoCarrera;
+        this.planEstudio = planEstudio;
+        this.idAgrupacion = idAgrupacion;
+        this.incompleta = incompleta;
     }
     
-
+    public int getIdAgrupacion() {
+        return idAgrupacion;
+    }
+    
     /**
      * @return the codigo
      */
@@ -91,7 +95,7 @@ public class Materia implements Serializable{
     public void setUnidadesValorativas(int unidadesValorativas) {
         this.unidadesValorativas = unidadesValorativas;
     }
-
+    
     /**
      * @return the departamento
      */

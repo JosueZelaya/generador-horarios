@@ -7,6 +7,8 @@
 package generador_horarios;
 
 import static generador_horarios.Procesador.getNumeroAleatorio;
+import static generador_horarios.ManejadorAgrupaciones.obtenerIdDepartamento;
+import static generador_horarios.ManejadorAgrupaciones.obtenerNombrePropietario;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -176,7 +178,7 @@ public abstract class ManejadorHoras {
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
-            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas, m);
+            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
             if(horasDisponibles != null)
                 break;
         }
@@ -200,32 +202,25 @@ public abstract class ManejadorHoras {
      * @param materia = materia a la que pertenece el grupo que se quiere asignar
      * @param horas = horas del dia en la que se quiere hacer la asignacion
      * @param todas_mats = array con todas las materias de la facultad
+     * @param todas_agrups = todas las agrupaciones en sistema
      * @return ultima hora en la que hay una materia del mismo nivel
      */
-    public static int getUltimaHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats){
+    public static int getUltimaHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats, ArrayList<Agrupacion> todas_agrups){
         int horaNivel = -1;
         
         for(int x=0; x<horas.size(); x++){
-            if(!horas.get(x).estaDisponible() && horas.get(x).getGrupo().getId_depar() == materia.getDepartamento()){
+            if(!horas.get(x).estaDisponible() && obtenerIdDepartamento(horas.get(x).getGrupo().getId_Agrup(),todas_agrups) == materia.getDepartamento()){
                 Grupo grupoHora = horas.get(x).getGrupo();
                 //Se obtiene la materia a la que pertenece el grupoHora
-                ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupoHora.getCod_materia(), grupoHora.getId_depar(), todas_mats);
+                ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupoHora.getId_Agrup(), todas_mats);
                 for(int j=0; j<materias.size(); j++){
                     Materia materiaHora = materias.get(j);
                     if(materiaHora.getCodigoCarrera().equals(materia.getCodigoCarrera()) && materiaHora.getCiclo() == materia.getCiclo()){
-                        if(materia.getCodigo().equals(grupoHora.getCod_materia()) && grupoHora.getId_grupo() != grupo.getId_grupo()){
-                            horaNivel = x; //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
-                            break;
-                        }
-                        if(!materia.getCodigo().equals(grupoHora.getCod_materia())){
-                            horaNivel = x; //Devolver la ultima hora con materia del nivel en el supuesto que no hay horas vacias
-                            break;
-                        }
+                        horaNivel = x;
                     }
                 }
             }
         }
-        
         return horaNivel;
     }
     
@@ -248,11 +243,11 @@ public abstract class ManejadorHoras {
                 Hora hora = dia.getHoras().get(h-1);
                 if(!hora.estaDisponible()){
                     Grupo grupo = hora.getGrupo();
-                    ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupo.getCod_materia(), grupo.getId_depar(), todas_mats);
+                    ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupo.getId_Agrup(), todas_mats);
                     for(int j=0; j<materias.size(); j++){
                         if(materias.get(j).getCodigoCarrera().equals(materia.getCodigoCarrera()) && materias.get(j).getCiclo() == materia.getCiclo()){
                             chocan = true;
-                            System.out.println("Esta materia: "+materia.getCodigo()+" choca con: "+grupo.getCod_materia()+" GT "+grupo.getId_grupo()+" en hora: "+h+" del dia "+nombre_dia);
+                            System.out.println("Esta materia: "+materia.getCodigo()+" choca con: "+obtenerNombrePropietario(grupo.getId_Agrup(),todas_mats)+" GT "+grupo.getId_grupo()+" en hora: "+h+" del dia "+nombre_dia);
                             break;
                         }
                     }
@@ -263,7 +258,6 @@ public abstract class ManejadorHoras {
             if(chocan)
                 break;
         }
-        
         return chocan;
     }
     

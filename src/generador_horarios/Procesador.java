@@ -14,6 +14,8 @@ import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
 import static generador_horarios.ManejadorHoras.buscarHorasParaNivel;
 import static generador_horarios.ManejadorAulas.obtenerAulasPorCapacidad;
 import static generador_horarios.ManejadorHoras.buscarHorasParaNivelConChoque;
+import static generador_horarios.ManejadorAgrupaciones.obtenerNombrePropietario;
+import static generador_horarios.ManejadorAgrupaciones.obtenerIdDepartamento;
 import java.util.ArrayList;
 
 /**
@@ -86,7 +88,7 @@ public class Procesador {
             hora.setDisponible(false);
             grupo.setHorasAsignadas(grupo.getHorasAsignadas()+1);
          }
-         System.out.println("Grupo asignado; "+grupo.getCod_materia()+" GT "+grupo.getId_grupo());
+         //System.out.println("Grupo asignado; "+grupo.getCod_materia()+" GT "+grupo.getId_grupo());
      }
     
      /*
@@ -110,14 +112,14 @@ public class Procesador {
             if(aulaCumpleCriterioDeCapacidad(capacidad)){   //Las aulas deben quedar con una holgura de 10              
                 ArrayList<Dia> dias;
                 dias = aula.getDias();
-                System.out.println("Se probara en aula "+aula.getNombre());
+                //System.out.println("Se probara en aula "+aula.getNombre());
                 if(asignarDiasConsiderandoChoques(dias)){ // se trata de asignar el grupo en el aula elegida comprobando si existen choques
-                    System.out.println("Se asigno en aula "+aula.getNombre()+" sin choques");
+                    //System.out.println("Se asigno en aula "+aula.getNombre()+" sin choques");
                     sePudoAsignar=true;
                    break; 
                 }
                 else if(asignarDiasSinConsiderarChoques(dias)){ // se asignan las horas que no se pudieron asignar por choques, ya no se consideran choques
-                    System.out.println("Se asigno en aula "+aula.getNombre()+" con choques");
+                    //System.out.println("Se asigno en aula "+aula.getNombre()+" con choques");
                     sePudoAsignar = true;
                     break;
                 }
@@ -139,7 +141,7 @@ public class Procesador {
                    }
                    if(i==aulas.size()-1){
                        grupo.setIncompleto(true);
-                       throw new Exception("¡Ya no hay aulas disponibles para el grupo "+grupo.getId_grupo()+" Materia: "+grupo.getCod_materia()+" Departamento: "+grupo.getId_depar());
+                       throw new Exception("¡Ya no hay aulas disponibles para el grupo "+grupo.getId_grupo()+" Materia: "+obtenerNombrePropietario(grupo.getId_Agrup(),materias)+" Departamento: "+obtenerIdDepartamento(grupo.getId_Agrup(),agrupaciones));
                    }
                }           
             }        
@@ -159,7 +161,7 @@ public class Procesador {
            //Se debe elegir un día diferente para cada clase
             diaElegido = elegirDiaDiferente(dias, diasUsados); //Elegimos un día entre todos que sea diferente de los días que ya hemos elegido
             if(diaElegido != null){
-                System.out.println("Se probara sin choques en dia "+diaElegido.getNombre());
+                //System.out.println("Se probara sin choques en dia "+diaElegido.getNombre());
                 ArrayList<Hora> horas;       
                 horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día
                 
@@ -207,7 +209,7 @@ public class Procesador {
         int num_alumnos = agrupacion.getNum_alumnos()+holguraAula;
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        int horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias);
+        int horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias, agrupaciones);
         if(horaNivel != -1 && (horaNivel+numHorasContinuas)<hasta)
             horasDisponibles = buscarHorasParaNivel(numHorasContinuas, horaNivel+1, horaNivel+1+numHorasContinuas, nombreDia, materia, obtenerAulasPorCapacidad(aulas,num_alumnos), aulas, materias);
         else
@@ -222,7 +224,7 @@ public class Procesador {
         ArrayList<Hora> horasDisponibles;
         int num_alumnos = agrupacion.getNum_alumnos()+holguraAula;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        int horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias);
+        int horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias, agrupaciones);
         if(horaNivel != -1 && (horaNivel+numHorasContinuas)<hasta)
             horasDisponibles = buscarHorasParaNivelConChoque(numHorasContinuas, horaNivel+1, horaNivel+1+numHorasContinuas, nombreDia, obtenerAulasPorCapacidad(aulas,num_alumnos));
         else
@@ -253,7 +255,7 @@ public class Procesador {
         this.facultad = facultad;
         aulas = facultad.getAulas();        //Se obtienen las aulas de la facultad en las cuales se podría asignar materias
         materias = facultad.getMaterias();  //Se obtienen todas las materias de la facultad
-        agrupaciones = facultad.getAgrupaciones();  //Se obtienen todas las agrupaciones de materias que existen
+        agrupaciones = facultad.agrupaciones;  //Se obtienen todas las agrupaciones de materias que existen
     }
     
 }

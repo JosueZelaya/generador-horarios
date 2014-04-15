@@ -14,50 +14,38 @@ import java.io.Serializable;
  */
 public class Grupo implements Serializable{
     
-    private String cod_materia;
-    private int id_depar;
+    private int id_agrup;
     private int id_grupo;
     private int horasAsignadas;
     private boolean incompleto;
     
     public Grupo(){
         incompleto=false;
-        this.cod_materia = "";
-        this.id_depar = 0;
+        this.id_agrup = 0;
         this.id_grupo = 0;
         this.horasAsignadas = 0;
     }
     
-    public Grupo(String codigo, int id_depar, int id_grupo){
+    public Grupo(int codigo, int id_depar, int id_grupo){
         incompleto=false;
-        this.cod_materia = codigo;
-        this.id_depar = id_depar;
+        this.id_agrup = codigo;
         this.id_grupo = id_grupo;
         this.horasAsignadas = 0;
     }
 
     public Grupo(Agrupacion agrupacion){
         incompleto = false;
-        this.cod_materia = agrupacion.getPropietario();
-        this.id_depar = agrupacion.getDepartamento();
+        this.id_agrup = agrupacion.getId();
         this.id_grupo = agrupacion.getNumGruposAsignados()+1;
         this.horasAsignadas = 0;
     }
     
-    public String getCod_materia() {
-        return cod_materia;
+    public int getId_Agrup() {
+        return id_agrup;
     }
 
-    public void setCod_materia(String cod_materia) {
-        this.cod_materia = cod_materia;
-    }
-
-    public int getId_depar() {
-        return id_depar;
-    }
-
-    public void setId_depar(int id_depar) {
-        this.id_depar = id_depar;
+    public void setId_Agrup(int id_agrup) {
+        this.id_agrup = id_agrup;
     }
 
     public int getId_grupo() {
