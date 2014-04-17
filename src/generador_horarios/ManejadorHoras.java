@@ -216,7 +216,14 @@ public abstract class ManejadorHoras {
                 for(int j=0; j<materias.size(); j++){
                     Materia materiaHora = materias.get(j);
                     if(materiaHora.getCodigoCarrera().equals(materia.getCodigoCarrera()) && materiaHora.getCiclo() == materia.getCiclo()){
-                        horaNivel = x;
+                        if(materiaHora.getCodigo().equals(materia.getCodigo()) && grupoHora.getId_grupo() != grupo.getId_grupo()){
+                            horaNivel = x;
+                            break;
+                        }
+                        else if(!materiaHora.getCodigo().equals(materia.getCodigo())){
+                            horaNivel = x;
+                            break;
+                        }
                     }
                 }
             }

@@ -83,7 +83,6 @@ public abstract class ManejadorAulas {
         int aula = getNumeroAleatorio(desde, hasta);
         return aulas.get(aula);
     }
-    
 
     public static ArrayList<Aula> obtenerAulasPorCapacidad(ArrayList<Aula> aulas, int num_alumnos){
         ArrayList<Aula> aulasSelec = new ArrayList();
@@ -116,7 +115,6 @@ public abstract class ManejadorAulas {
                 break;
             }
         }
-        
         return table;
     }
     

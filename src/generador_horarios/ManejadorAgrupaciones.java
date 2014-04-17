@@ -45,10 +45,10 @@ public abstract class ManejadorAgrupaciones {
         return null;
     }
     
-    public static Agrupacion getAgrupacion(Materia materia,ArrayList<Agrupacion> agrupacion){
-        for(int i = 0;i<agrupacion.size();i++){
-            if(agrupacion.get(i).getId() == materia.getIdAgrupacion()){
-                return agrupacion.get(i);
+    public static Agrupacion getAgrupacion(Materia materia,ArrayList<Agrupacion> agrupaciones){
+        for(int i = 0;i<agrupaciones.size();i++){
+            if(agrupaciones.get(i).getId() == materia.getIdAgrupacion()){
+                return agrupaciones.get(i);
             }
         }
         return null;
