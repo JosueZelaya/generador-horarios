@@ -70,7 +70,7 @@ public abstract class ManejadorMaterias {
         return materiasCarrera;
     }
     
-    /** Devuelve la Materia a la que pertenece el grupo
+    /** Devuelve todas las materias para las que es común el grupo
      * 
      * 
      * @param cod_materia
@@ -78,7 +78,7 @@ public abstract class ManejadorMaterias {
      * @param todas_mats
      * @return 
      */
-    public static ArrayList<Materia> getMateriaDeGrupo(String cod_materia, int id_depar, ArrayList<Materia> todas_mats){
+    public static ArrayList<Materia> getMateriasDeGrupo(String cod_materia, int id_depar, ArrayList<Materia> todas_mats){
         ArrayList <Materia> materias = new ArrayList();
         for(Materia m : todas_mats){
             if(m.getCodigo().equals(cod_materia) && m.getDepartamento() == id_depar)

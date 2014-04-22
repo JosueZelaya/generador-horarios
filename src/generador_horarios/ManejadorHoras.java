@@ -145,7 +145,7 @@ public abstract class ManejadorHoras {
      */
     public static ArrayList<Hora> buscarHorasParaNivel(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = null;
-        for(int x=0; x<aulasConCapa.size(); x++){
+        for(int x=0; x<aulasConCapa.size(); x++){   //Se busca solo dentro de las aulas que cuentan con la capacidad de albergar al grupo
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
             horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas, m);
             if(horasDisponibles != null)
@@ -179,8 +179,8 @@ public abstract class ManejadorHoras {
         for(int x=0; x<horas.size(); x++){
             if(!horas.get(x).estaDisponible() && horas.get(x).getGrupo().getId_depar() == materia.getDepartamento()){
                 Grupo grupoHora = horas.get(x).getGrupo();
-                //Se obtiene la materia a la que pertenece el grupoHora
-                ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupoHora.getCod_materia(), grupoHora.getId_depar(), todas_mats);
+                //Se obtienen todas las materias comunes para el grupoHora
+                ArrayList<Materia> materias = ManejadorMaterias.getMateriasDeGrupo(grupoHora.getCod_materia(), grupoHora.getId_depar(), todas_mats);
                 for(int j=0; j<materias.size(); j++){
                     Materia materiaHora = materias.get(j);
                     if(materiaHora.getCodigoCarrera().equals(materia.getCodigoCarrera()) && materiaHora.getCiclo() == materia.getCiclo()){
@@ -219,7 +219,7 @@ public abstract class ManejadorHoras {
                 Hora hora = dia.getHoras().get(h-1);
                 if(!hora.estaDisponible()){
                     Grupo grupo = hora.getGrupo();
-                    ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupo.getCod_materia(), grupo.getId_depar(), todas_mats);
+                    ArrayList<Materia> materias = ManejadorMaterias.getMateriasDeGrupo(grupo.getCod_materia(), grupo.getId_depar(), todas_mats); //Se obtienen todas las materias para las que es común el grupo
                     for(int j=0; j<materias.size(); j++){
                         if(materias.get(j).getCodigoCarrera().equals(materia.getCodigoCarrera()) && materias.get(j).getCiclo() == materia.getCiclo()){
                             chocan = true;
