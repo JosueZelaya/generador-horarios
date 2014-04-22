@@ -63,7 +63,7 @@ public class Procesador {
         else if(horasRequeridas-horasAsignadas==3)
             return 3;
         else
-             return 2;         
+            return 2;
      }
     
     /*
@@ -89,7 +89,6 @@ public class Procesador {
             hora.setDisponible(false);
             grupo.setHorasAsignadas(grupo.getHorasAsignadas()+1);
          }
-         //System.out.println("Grupo asignado; "+grupo.getCod_materia()+" GT "+grupo.getId_grupo());
      }
     
      /*
@@ -107,19 +106,10 @@ public class Procesador {
     public void asignarAulaPorCapacidad() throws Exception{                                
         int numAulas = aulas.size();                        //Se obtiene la cantidad de aulas con las que cuenta la facultad      
         boolean sePudoAsignar=false;                        //Informa si el grupo pudo ser asignado
-        ArrayList<Dia> dias = null;
-        for (int i = 0; i < numAulas; i++){                //Se recorren todas las aulas
-            Aula aula = aulas.get(i);           
-            int capacidad = aula.getCapacidad();
-            if(aulaCumpleCriterioDeCapacidad(capacidad)){   //Las aulas deben quedar con una holgura de 10              
-                dias = aula.getDias();
-                break;
-            }            
-        }
-        
-        if(asignarDiasConsiderandoChoques(dias)) // se trata de asignar el grupo en el aula elegida comprobando si existen choques
-           sePudoAsignar=true;
-        else if(agrupacion.getNum_grupos() > 1 && asignarDiasSinConsiderarChoques(dias)) // se asignan las horas que no se pudieron asignar por choques, ya no se consideran choques
+        System.out.println("A tratar con "+materia.getNombre()+" GT: "+grupo.getId_grupo());
+        if(asignarDiasConsiderandoChoques(aulasConCapacidad.get(0).getDias())) // se trata de asignar el grupo en el aula elegida comprobando si existen choques
+            sePudoAsignar=true;
+        else if(agrupacion.getNum_grupos() > 1 && asignarDiasSinConsiderarChoques(aulasConCapacidad.get(0).getDias())) // se asignan las horas que no se pudieron asignar por choques, ya no se consideran choques
             sePudoAsignar = true;
         
         if(!sePudoAsignar){ //Se asigna el día sábado si no se pudieron asignar las horas del grupo durante la semana       
@@ -140,7 +130,7 @@ public class Procesador {
                        grupo.setIncompleto(true);
                        throw new Exception("¡Ya no hay aulas disponibles para el grupo "+grupo.getId_grupo()+" Materia: "+obtenerNombrePropietario(grupo.getId_Agrup(),materias)+" Departamento: "+obtenerIdDepartamento(grupo.getId_Agrup(),agrupaciones));
                    }
-               }           
+               }
             }        
         }
     }
@@ -158,17 +148,18 @@ public class Procesador {
            //Se debe elegir un día diferente para cada clase
             diaElegido = elegirDiaDiferente(dias, diasUsados); //Elegimos un día entre todos que sea diferente de los días que ya hemos elegido
             if(diaElegido != null){
-                //System.out.println("Se probara sin choques en dia "+diaElegido.getNombre());
-                ArrayList<Hora> horas;       
-                horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día
+                System.out.println("Se probara sin choques en dia "+diaElegido.getNombre());
+                ArrayList<Hora> horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día
                 
-                if(horas.size() < hasta) //Si el dia tiene menos horas clase que las que se requieren por el limite
+                if(horas.size() < hasta && horas.size() < limite) //Si el dia tiene menos horas clase que las que se requieren por el limite
+                    hasta = horas.size();
+                else if(horas.size() < hasta && horas.size() > limite)
                     hasta = horas.size();
                 
                 asignarHorasConsiderandoChoques(horas, diaElegido.getNombre());
-                diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
+                diasUsados.add(diaElegido);    //Guardamos el día para no elegirlo de nuevo para esta materia                                                   
             }else
-                return false;           
+                return false;
        }
        return true;
     }
@@ -176,21 +167,23 @@ public class Procesador {
     //Asiganar dias sin considerar choques en ellos
     public boolean asignarDiasSinConsiderarChoques(ArrayList<Dia> dias){
        Dia diaElegido;
-       ArrayList<Dia> diasUsados = new ArrayList();       
+       ArrayList<Dia> diasUsados = new ArrayList();
        //Se debe elegir un día diferente para cada clase
        while(materia.getTotalHorasRequeridas() > grupo.getHorasAsignadas()){
             diaElegido = elegirDiaDiferente(dias, diasUsados); //Elegimos un día entre todos
             if(diaElegido != null){
-                ArrayList<Hora> horas;       
-                horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día
+                System.out.println("Se probara con choques en dia "+diaElegido.getNombre()+" para la materia: "+materia.getCodigo());
+                ArrayList<Hora> horas = diaElegido.getHoras();      //Obtenemos todas las horas en que pueden haber clases ese día
                 
-                if(horas.size() < hasta)
+                if(horas.size() < hasta && horas.size() < limite) //Si el dia tiene menos horas clase que las que se requieren por el limite
+                    hasta = horas.size();
+                else if(horas.size() < hasta && horas.size() > limite)
                     hasta = horas.size();
                 
                 asignarHorasSinConsiderarChoques(horas, diaElegido.getNombre());
-                diasUsados.add(diaElegido);    //Guardamos el día para no elegirno de nuevo para esta materia                                                   
+                diasUsados.add(diaElegido);    //Guardamos el día para no elegirlo de nuevo para esta materia                                                   
             }else
-                return false;           
+                return false;
        }
        return true;
     }
@@ -217,13 +210,13 @@ public class Procesador {
     public void asignarHorasSinConsiderarChoques(ArrayList<Hora> horas, String nombreDia){
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        int horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias, agrupaciones);
-        if(horaNivel != -1 && (horaNivel+numHorasContinuas)<hasta)
-            horasDisponibles = buscarHorasParaNivelConChoque(numHorasContinuas, horaNivel+1, horaNivel+1+numHorasContinuas, nombreDia, aulasConCapacidad);
-        else
-            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
-        
-        if(horasDisponibles != null)
+//        int horaNivel = getUltimaHoraDeNivel(grupo, materia, horas, materias, agrupaciones);
+//        if(horaNivel != -1 && (horaNivel+numHorasContinuas)<hasta)
+//            horasDisponibles = buscarHorasParaNivelConChoque(numHorasContinuas, horaNivel+1, horaNivel+1+numHorasContinuas, nombreDia, aulasConCapacidad);
+//        else
+//            horasDisponibles = buscarHorasDisponibles(horas, numHorasContinuas, desde, hasta);
+        horasDisponibles = buscarHorasParaNivelConChoque(numHorasContinuas, desde, hasta, nombreDia, aulasConCapacidad);
+        if(horasDisponibles != null && horasDisponibles.size() > 0)
             asignar(grupo, horasDisponibles);
     }
     
@@ -245,7 +238,7 @@ public class Procesador {
         }            
     }
     
-    public void setFacultad(Facultad facultad){
+    public void asignarDatos(Facultad facultad){
         this.facultad = facultad;
         aulas = facultad.getAulas();        //Se obtienen las aulas de la facultad en las cuales se podría asignar materias
         materias = facultad.getMaterias();  //Se obtienen todas las materias de la facultad

@@ -763,7 +763,7 @@ public class VentanaInicio extends javax.swing.JFrame{
         ArrayList<Materia> materias = facultad.getMaterias();
         
         Procesador procesador = new Procesador();
-        procesador.setFacultad(facultad);
+        procesador.asignarDatos(facultad);
         
         for (int i = 0; i < materias.size(); i++) {
             Agrupacion agrup = getAgrupacion(materias.get(i).getIdAgrupacion(),facultad.agrupaciones);
