@@ -109,15 +109,17 @@ public abstract class ManejadorHoras {
                         break;
                     }
                 }
-            }
+            } else
+                return null;
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
                 if(!chocaMateria(nombre_dia,horas.get(i).getIdHora(),aulas,materia,cantidadHoras,m)){
                     for (int j = i; j < i+cantidadHoras; j++) {
                         horasDisponibles.add(horas.get(j));
                     }
+                    System.out.println("ahi va un bloque para asignar");
+                    return horasDisponibles;
                 }
-                return horasDisponibles;
             }
         }
         return null;
@@ -177,9 +179,22 @@ public abstract class ManejadorHoras {
     public static ArrayList<Hora> buscarHorasParaNivel(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
+            System.out.println("A probar en aula "+aulasConCapa.get(x).getNombre());
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
             horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
             if(horasDisponibles != null)
+                break;
+        }
+        return horasDisponibles;
+    }
+    
+    public static ArrayList<Hora> buscarHorasUltimoRecurso(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
+        ArrayList<Hora> horasDisponibles = null;
+        for(int x=0; x<aulasConCapa.size(); x++){
+            System.out.println("A probar en aula "+aulasConCapa.get(x).getNombre());
+            Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
+            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
+            if(!horasDisponibles.isEmpty())
                 break;
         }
         return horasDisponibles;
@@ -200,35 +215,42 @@ public abstract class ManejadorHoras {
      *
      * @param grupo = grupo que se quiere asignar en dia elegido
      * @param materia = materia a la que pertenece el grupo que se quiere asignar
-     * @param horas = horas del dia en la que se quiere hacer la asignacion
      * @param todas_mats = array con todas las materias de la facultad
      * @param todas_agrups = todas las agrupaciones en sistema
+     * @param aulas
+     * @param nombreDia
      * @return ultima hora en la que hay una materia del mismo nivel
      */
-    public static int getUltimaHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Hora> horas, ArrayList<Materia> todas_mats, ArrayList<Agrupacion> todas_agrups){
-        int horaNivel = -1;
+    public static ArrayList getUltimaHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Materia> todas_mats, ArrayList<Agrupacion> todas_agrups, ArrayList<Aula> aulas, String nombreDia){
+        ArrayList horasNivel = new ArrayList();
         
-        for(int x=0; x<horas.size(); x++){
-            if(!horas.get(x).estaDisponible() && obtenerIdDepartamento(horas.get(x).getGrupo().getId_Agrup(),todas_agrups) == materia.getDepartamento()){
-                Grupo grupoHora = horas.get(x).getGrupo();
-                //Se obtiene la materia a la que pertenece el grupoHora
-                ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupoHora.getId_Agrup(), todas_mats);
-                for(int j=0; j<materias.size(); j++){
-                    Materia materiaHora = materias.get(j);
-                    if(materiaHora.getCodigoCarrera().equals(materia.getCodigoCarrera()) && materiaHora.getCiclo() == materia.getCiclo()){
-                        if(materiaHora.getCodigo().equals(materia.getCodigo()) && grupoHora.getId_grupo() != grupo.getId_grupo()){
-                            horaNivel = x;
-                            break;
-                        }
-                        else if(!materiaHora.getCodigo().equals(materia.getCodigo())){
-                            horaNivel = x;
-                            break;
+        for(Aula a : aulas){
+            int hora = -1;
+            ArrayList<Hora> horas = a.getDia(nombreDia).getHoras();
+            for(int x=0; x<horas.size(); x++){
+                if(!horas.get(x).estaDisponible() && obtenerIdDepartamento(horas.get(x).getGrupo().getId_Agrup(),todas_agrups) == materia.getDepartamento()){
+                    Grupo grupoHora = horas.get(x).getGrupo();
+                    //Se obtiene la materia a la que pertenece el grupoHora
+                    ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupoHora.getId_Agrup(), todas_mats);
+                    for(int j=0; j<materias.size(); j++){
+                        Materia materiaHora = materias.get(j);
+                        if(materiaHora.getCodigoCarrera().equals(materia.getCodigoCarrera()) && materiaHora.getCiclo() == materia.getCiclo()){
+                            if(materiaHora.getCodigo().equals(materia.getCodigo()) && grupoHora.getId_grupo() != grupo.getId_grupo()){
+                                hora = x;
+                                break;
+                            }
+                            else if(!materiaHora.getCodigo().equals(materia.getCodigo())){
+                                hora = x;
+                                break;
+                            }
                         }
                     }
                 }
             }
+            if(hora != -1)
+                horasNivel.add(hora);
         }
-        return horaNivel;
+        return horasNivel;
     }
     
     /** Metodo para comprobar si existe choques de materia de mismo nivel en un dia determinado y hora determinada
@@ -242,8 +264,6 @@ public abstract class ManejadorHoras {
      * @return true si hay choque, false si no hay choque
      */
     public static boolean chocaMateria(String nombre_dia, int id_hora, ArrayList<Aula> aulas, Materia materia, int num_horas, ArrayList<Materia> todas_mats){
-        boolean chocan = false;
-        
         for(int i=0; i<aulas.size(); i++){
             Dia dia = aulas.get(i).getDia(nombre_dia);
             for(int h=id_hora; h<id_hora+num_horas; h++){
@@ -253,19 +273,14 @@ public abstract class ManejadorHoras {
                     ArrayList<Materia> materias = ManejadorMaterias.getMateriaDeGrupo(grupo.getId_Agrup(), todas_mats);
                     for(int j=0; j<materias.size(); j++){
                         if(materias.get(j).getCodigoCarrera().equals(materia.getCodigoCarrera()) && materias.get(j).getCiclo() == materia.getCiclo()){
-                            chocan = true;
                             System.out.println("Esta materia: "+materia.getCodigo()+" choca con: "+obtenerNombrePropietario(grupo.getId_Agrup(),todas_mats)+" GT "+grupo.getId_grupo()+" en hora: "+h+" del dia "+nombre_dia);
-                            break;
+                            return true;
                         }
                     }
-                    if(chocan)
-                        break;
                 }
             }
-            if(chocan)
-                break;
         }
-        return chocan;
+        return false;
     }
     
     /** Metodo para generar nuevas horas clase
