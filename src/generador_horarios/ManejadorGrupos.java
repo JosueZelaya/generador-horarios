@@ -38,10 +38,7 @@ public abstract class ManejadorGrupos {
                 }
             }
         }      
-        Grupo grupo = new Grupo();
-        
-        return grupo;
-        
+        return null;        
     }
     
     public static DefaultTableModel obtenerHorarioDeGrupo(ArrayList<Materia> materias, ArrayList<Aula> aulas, String cod_materia, int id_depar, int id_grupo, DefaultTableModel table){

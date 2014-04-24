@@ -58,8 +58,9 @@ public abstract class ManejadorAgrupaciones {
         String propietario = "";
         for(Materia mat : materias){
             if(mat.getIdAgrupacion() == id_agrup){
-                propietario = mat.getNombre();
-                break;
+                  return mat.getNombre();
+//                propietario = mat.getNombre();
+//                break;
             }
         }
         return propietario;
