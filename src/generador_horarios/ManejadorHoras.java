@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
-
 /**
  *
  * @author alexander
@@ -90,8 +89,9 @@ public abstract class ManejadorHoras {
      * @param m = array de todas las materias que posee campus
      * @return las horas disponibles sin choque en las que se puede asignar el grupoHora; null si no hay ninguna
      */
-    public static ArrayList<Hora> buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas, ArrayList<Materia> m){
+    public static Object buscarHorasDisponibles(ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = new ArrayList();
+        Object resul = null;
         for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
             Boolean hayBloquesDisponibles=false;
             
@@ -118,11 +118,13 @@ public abstract class ManejadorHoras {
                         horasDisponibles.add(horas.get(j));
                     }
                     System.out.println("ahi va un bloque para asignar");
-                    return horasDisponibles;
-                }
+                    resul = horasDisponibles;
+                    return resul;
+                } else
+                    resul = "Choque";
             }
         }
-        return null;
+        return resul;
     }
     
     /**
@@ -176,13 +178,17 @@ public abstract class ManejadorHoras {
      * @param m = array de todas las materias del campus, se usa para comprobar choques
      * @return horas disponibles en las que se puede asignar el grupoHora
      */
-    public static ArrayList<Hora> buscarHorasParaNivel(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
+    public static ArrayList<Hora> buscarHoras(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
             System.out.println("A probar en aula "+aulasConCapa.get(x).getNombre());
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
-            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
-            if(horasDisponibles.isEmpty())
+            Object resul = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
+            if(resul != null && !((ArrayList<Hora>)resul).isEmpty()){
+                horasDisponibles = (ArrayList<Hora>)resul;
+                break;
+            }
+            else if(resul != null && resul.toString().equals("Choque"))
                 break;
         }
         return horasDisponibles;
@@ -191,16 +197,18 @@ public abstract class ManejadorHoras {
     public static ArrayList<Hora> buscarHorasUltimoRecurso(int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
-            System.out.println("A probar en aula "+aulasConCapa.get(x).getNombre());
+            System.out.println("A probar en aula "+aulasConCapa.get(x).getNombre()+" Desde: "+desde+" Hasta: "+hasta);
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
-            horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
-            if(!horasDisponibles.isEmpty())
+            Object resul = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
+            if(resul != null && !resul.toString().equals("Choque") && !((ArrayList<Hora>)resul).isEmpty()){
+                horasDisponibles = (ArrayList<Hora>)resul;
                 break;
+            }
         }
         return horasDisponibles;
     }
     
-    public static ArrayList<Hora> buscarHorasParaNivelConChoque(int cantidadHoras,int desde,int hasta,String nombre_dia,ArrayList<Aula> aulasConCapa){
+    public static ArrayList<Hora> buscarHorasConChoque(int cantidadHoras,int desde,int hasta,String nombre_dia,ArrayList<Aula> aulasConCapa){
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
