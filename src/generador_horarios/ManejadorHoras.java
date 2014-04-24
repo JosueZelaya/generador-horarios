@@ -94,7 +94,6 @@ public abstract class ManejadorHoras {
         Object resul = null;
         for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
             Boolean hayBloquesDisponibles=false;
-            
             //Si hay una hora disponible debe verificarse que su indice no sea tal que se desborde el array al preguntar por las siguientes
             if(horas.get(i).estaDisponible() && horas.get(i).getIdHora()<=(hasta+1)-cantidadHoras){            
                 hayBloquesDisponibles = true;
@@ -109,8 +108,7 @@ public abstract class ManejadorHoras {
                         break;
                     }
                 }
-            } else
-                return null;
+            }
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
                 if(!chocaMateria(nombre_dia,horas.get(i).getIdHora(),aulas,materia,cantidadHoras,m)){
@@ -184,12 +182,12 @@ public abstract class ManejadorHoras {
             System.out.println("A probar en aula "+aulasConCapa.get(x).getNombre());
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
             Object resul = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
-            if(resul != null && !((ArrayList<Hora>)resul).isEmpty()){
+            if(resul != null && resul.toString().equals("Choque"))
+                break;
+            else if(resul != null && !((ArrayList<Hora>)resul).isEmpty()){
                 horasDisponibles = (ArrayList<Hora>)resul;
                 break;
             }
-            else if(resul != null && resul.toString().equals("Choque"))
-                break;
         }
         return horasDisponibles;
     }
@@ -219,6 +217,20 @@ public abstract class ManejadorHoras {
         return horasDisponibles;
     }
     
+    public static boolean grupoPresente(int desde, int hasta, ArrayList<Hora> horas, Grupo grupo){
+        for(Hora hora : horas){
+            Grupo grupoHora = hora.getGrupo();
+            if(grupoHora.getId_Agrup() == grupo.getId_Agrup() && grupoHora.getId_grupo() == grupo.getId_grupo())
+                return true;
+        }
+        return false;
+    }
+    
+    public static boolean chocaGrupo(){
+        
+        return false;
+    }
+    
     /** Meotodo para relizar busquedas de una materia que pertenece al mismo nivel en el dia elegido
      *
      * @param grupo = grupo que se quiere asignar en dia elegido
@@ -229,9 +241,8 @@ public abstract class ManejadorHoras {
      * @param nombreDia
      * @return ultima hora en la que hay una materia del mismo nivel
      */
-    public static ArrayList getUltimaHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Materia> todas_mats, ArrayList<Agrupacion> todas_agrups, ArrayList<Aula> aulas, String nombreDia){
+    public static ArrayList getUltimasHoraDeNivel(Grupo grupo, Materia materia, ArrayList<Materia> todas_mats, ArrayList<Agrupacion> todas_agrups, ArrayList<Aula> aulas, String nombreDia){
         ArrayList horasNivel = new ArrayList();
-        
         for(Aula a : aulas){
             int hora = -1;
             ArrayList<Hora> horas = a.getDia(nombreDia).getHoras();

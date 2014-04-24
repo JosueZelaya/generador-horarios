@@ -186,7 +186,7 @@ public class VentanaInicio extends javax.swing.JFrame{
     
     private void mostrarInfoMateria(){
         Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, tabla_aula.getColumnName(columna), fila);            
-        String nombreMateria = ManejadorMaterias.getNombreMateria(obtenerNombrePropietario(grupo.getId_Agrup(),facultad.getMaterias()));
+        String nombreMateria = obtenerNombrePropietario(grupo.getId_Agrup(),facultad.getMaterias());
         String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(obtenerIdDepartamento(grupo.getId_Agrup(),facultad.agrupaciones),facultad.departamentos);
         lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
     }
