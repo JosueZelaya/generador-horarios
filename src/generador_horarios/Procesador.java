@@ -93,12 +93,12 @@ public class Procesador {
          }
      }
     
-    /** Intenta asignar una aula para la materia de acuerdo a su capacidad y al número de alumnos de esa materia
-     * Cada materia se divide en uno o más grupos, dependiendo de la cantidad de alumnos que cursan la materia.
+    /** Busca la mejor posicion para ubicar la materia segun choques, capacidad de aulas, numero de alumnos
+     *
      * 
      * @throws Exception = Si no encuentra aulas para asignar la materia
      */
-    public void asignarAulaPorCapacidad() throws Exception{                                
+    public void localizarBloqueOptimo() throws Exception{                                
         boolean sePudoAsignar=false;                        //Informa si el grupo pudo ser asignado
         System.out.println("A tratar con "+materia.getNombre()+" GT: "+grupo.getId_grupo());
         if(asignarDiasConsiderandoChoques(aulasConCapacidad.get(0).getDias())) // se trata de asignar el grupo en el aula elegida comprobando si existen choques
@@ -218,7 +218,7 @@ public class Procesador {
         return false;
     }
     
-    /**Metodo para asginar horas si no se pudo debajo de una materia del mismo nivel (se consideran choques)
+    /**Metodo para asginar horas si no se pudo continua a una materia del mismo nivel (se consideran choques)
      * 
      * @param nombreDia nombre del Dia en el que se quiere hacer la asignacion de horas
      */
@@ -233,7 +233,7 @@ public class Procesador {
     public void asignarHorasSinConsiderarChoques(String nombreDia){
         ArrayList<Hora> horasDisponibles;
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        horasDisponibles = buscarHorasConChoque(numHorasContinuas, desde, hasta, nombreDia, aulasConCapacidad);
+        horasDisponibles = buscarHorasConChoque(numHorasContinuas, desde, hasta, nombreDia, aulasConCapacidad,grupo);
         if(horasDisponibles != null)
             asignar(grupo, horasDisponibles);
     }
@@ -250,7 +250,7 @@ public class Procesador {
             grupo = new Grupo(agrupacion);   //El grupo con la información de la agrupación, este grupo es el que será asignado en un aula
             aulasConCapacidad = obtenerAulasPorCapacidad(aulas,agrupacion.getNum_alumnos()+holguraAula);
             establecerTurno();                  //Se establece el turno
-            asignarAulaPorCapacidad();  //Debe asignar la materia a un aula de la facultdad
+            localizarBloqueOptimo();  //Debe asignar la materia a un aula de la facultdad
         }else{
             throw new Exception("No se encuentra la información de la facultad");
         }            
