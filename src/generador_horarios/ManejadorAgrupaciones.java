@@ -9,6 +9,7 @@ package generador_horarios;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -30,7 +31,7 @@ public abstract class ManejadorAgrupaciones {
             con.cierraConexion();
         }
         catch(SQLException e){
-            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error en getAgrupaciones()", JOptionPane.ERROR_MESSAGE);
         }
         
         return agrupaciones;

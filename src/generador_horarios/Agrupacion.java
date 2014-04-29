@@ -67,7 +67,4 @@ public class Agrupacion implements Serializable{
     public void setNumGruposAsignados(int numGruposAsignados) {
         this.numGruposAsignados = numGruposAsignados;
     }
-    
-    
-    
 }
