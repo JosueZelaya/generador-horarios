@@ -749,7 +749,6 @@ public class VentanaInicio extends javax.swing.JFrame{
     }
     
     private void btn_generarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_generarActionPerformed
-        // TODO add your handling code here:
         cmb_aula_aula.setEnabled(false);
         cmb_depto_aula.setEnabled(false);
         cmb_carrera_aula.setEnabled(false);
