@@ -7,6 +7,9 @@
 package generador_horarios;
 
 import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import static generador_horarios.ManejadorAgrupaciones.obtenerIdAgrupacion;
+import static generador_horarios.ManejadorAgrupaciones.obtenerNombrePropietario;
 
 /**
  *
@@ -38,7 +41,30 @@ public abstract class ManejadorGrupos {
         Grupo grupo = new Grupo();
         
         return grupo;
-        
     }
     
+    public static DefaultTableModel obtenerHorarioDeGrupo(ArrayList<Materia> materias, ArrayList<Aula> aulas, String cod_materia, int id_depar, int id_grupo, DefaultTableModel table){
+        for(int i=0; i<aulas.size(); i++){
+            ArrayList<Dia> dias = aulas.get(i).getDias();
+            for(int x=0; x<dias.size(); x++){
+                ArrayList<Hora> horas = dias.get(x).getHoras();
+                for(int y=0; y<horas.size(); y++){
+                    Hora hora = horas.get(y);
+                    Grupo grupo = hora.getGrupo();
+                    if(obtenerIdAgrupacion(cod_materia,id_depar,materias) == grupo.getId_Agrup() && grupo.getId_grupo() == id_grupo){
+                        String texto = obtenerNombrePropietario(grupo.getId_Agrup(),materias)+" GT: "+grupo.getId_grupo();
+                        table.setValueAt(texto, y, x+1);
+                    }else
+                        table.setValueAt("", y, x+1);
+                }
+            }
+        }
+        return table;
+    }
+    
+    public static int obtenerNumGruposDocente(int id_docente, int id_agrup){
+        int num = 0;
+        
+        return num;
+    }
 }

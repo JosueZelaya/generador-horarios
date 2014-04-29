@@ -7,6 +7,13 @@
 package generador_horarios;
 
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
+import static generador_horarios.ManejadorAgrupaciones.getAgrupaciones;
+import static generador_horarios.ManejadorAgrupaciones.obtenerNombrePropietario;
+import static generador_horarios.ManejadorAgrupaciones.obtenerIdDepartamento;
+import static generador_horarios.ManejadorAgrupaciones.obtenerAgrupacionesDeCarrera;
+import static generador_horarios.ManejadorAsignacionesDocs.obtenerAsignacionesDeAgrup;
+import static generador_horarios.ManejadorAsignacionesDocs.obtenerTodasAsignacionesDocs;
+import static generador_horarios.ManejadorDepartamentos.getDepartamentos;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,13 +40,9 @@ public class VentanaInicio extends javax.swing.JFrame{
     String aulaSeleccionada;
     String departamentoSeleccionado;
     String carreraSeleccionada;
-    ArrayList<Materia> materias;
     int fila,columna; //representan la posición dentro del jTable
     String[][] datosTabla={};
     String[] cabeceraTabla={"Horas","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"};
-    String[] listadoAulas;
-    String[] listadoDepartamentos;
-    String[] listadoCarreras;
     
     /**
      * Creates new form VentanaInicio
@@ -55,7 +58,7 @@ public class VentanaInicio extends javax.swing.JFrame{
         columna =0;
         
         //Se crea el objeto campus
-        facultad = new Facultad(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
+        facultad = new Facultad(getAgrupaciones(),getDepartamentos(),obtenerTodasAsignacionesDocs());
         
         //Se llena la tabla de dias y horas
         modelo = new DefaultTableModel(datosTabla, cabeceraTabla){
@@ -70,32 +73,31 @@ public class VentanaInicio extends javax.swing.JFrame{
             modelo.addRow(datosTabla);
             modelo.setValueAt(hora.getInicio()+" - "+hora.getFin(), i, 0);
         }
-        //jTable1.setDefaultRenderer(Object.class, new MyRenderer());
-        tabla_horario.setModel(modelo);
+        tabla_depar.setModel(modelo);
+        tabla_aula.setModel(modelo);
         //Evento cuando se selecciona una fila
-        tabla_horario.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        tabla_aula.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 jtbl_filaValueChanged(e);
             }
         });
         //Evento cuando se selecciona una columna
-        tabla_horario.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        tabla_aula.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 jtbl_columnaValueChanged(e);
             }
         });
         
-        tabla_horario.setColumnSelectionAllowed(true);
+        tabla_aula.setColumnSelectionAllowed(true);
         
         //Se llena la lista de aulas
-        jlist_aulas.setModel(llenarAulas());
+        cmb_aula_aula.setModel(llenarAulas());
         
         aulaSeleccionada = null;
         departamentoSeleccionado = null;
         carreraSeleccionada = null;
-        materias = new ArrayList();
     }
     
     private DefaultComboBoxModel llenarAulas(){
@@ -119,23 +121,24 @@ public class VentanaInicio extends javax.swing.JFrame{
         cmb_dia.setModel(lista);
     }
     
-    private void llenarListaDepartamentos(){
-        //Se llena la lista de departamentos
+    private DefaultComboBoxModel llenarListaDepartamentos(){
+        DefaultComboBoxModel modelo_depars = new DefaultComboBoxModel();
         ArrayList<String> departamentos= ManejadorDepartamentos.getNombreDepartamentos();
-        jlist_departamentos.addItem(null);
+        modelo_depars.addElement(null);
         for (int i = 0; i < departamentos.size(); i++) {
-            jlist_departamentos.addItem(departamentos.get(i));
+            modelo_depars.addElement(departamentos.get(i));
         }
+        return modelo_depars;
     }
     
     private void llenarListaCarreras(String nombreDepartamento){
-        jlist_carreras.removeAllItems();
+        cmb_carrera_aula.removeAllItems();
         int idDepartamento = ManejadorDepartamentos.getIdDepartamento(nombreDepartamento);
         //Se llena la lista de carreras
         ArrayList<String> carreras= ManejadorCarreras.getNombreTodasCarrerasPorDepartamento(idDepartamento);
-        jlist_carreras.addItem(null);
+        cmb_carrera_aula.addItem(null);
         for (int i = 0; i < carreras.size(); i++) {
-            jlist_carreras.addItem(carreras.get(i));
+            cmb_carrera_aula.addItem(carreras.get(i));
         }
     }
     
@@ -145,6 +148,16 @@ public class VentanaInicio extends javax.swing.JFrame{
         for(int i=0; i<horas.size(); i++){
             cmb_hora_init.addItem(horas.get(i).getInicio());
         }
+    }
+    
+    private DefaultComboBoxModel listaMateriasDeDepartamento(int id_depar){
+        DefaultComboBoxModel modelo_mats = new DefaultComboBoxModel();
+        ArrayList<Materia> mats = ManejadorMaterias.obtenerMateriasDeDepartamento(facultad.getMaterias(), id_depar);
+        modelo_mats.addElement(null);
+        for (int i = 0; i < mats.size(); i++) {
+            modelo_mats.addElement(mats.get(i).getNombre());
+        }
+        return modelo_mats;
     }
     
     private void llenarTablaReservaciones(){
@@ -173,9 +186,9 @@ public class VentanaInicio extends javax.swing.JFrame{
     }
     
     private void mostrarInfoMateria(){
-        Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, tabla_horario.getColumnName(columna), fila);            
-        String nombreMateria = ManejadorMaterias.getNombreMateria(grupo.getCod_materia());
-        String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(grupo.getId_depar());
+        Grupo grupo = ManejadorGrupos.getGrupo(facultad.getAulas(), aulaSeleccionada, tabla_aula.getColumnName(columna), fila);            
+        String nombreMateria = obtenerNombrePropietario(grupo.getId_Agrup(),facultad.getMaterias());
+        String nombreDepartamento = ManejadorDepartamentos.getNombreDepartamento(obtenerIdDepartamento(grupo.getId_Agrup(),facultad.agrupaciones),facultad.departamentos);
         lbl_mensaje.setText("<html>Materia: "+nombreMateria+"<br/>Grupo: "+grupo.getId_grupo()+"<br/>Departamento: "+nombreDepartamento+"</html>");
     }
 
@@ -206,21 +219,32 @@ public class VentanaInicio extends javax.swing.JFrame{
         delReserv = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         table_reserv = new javax.swing.JTable();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        panel_pestanias = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         btn_generar = new javax.swing.JButton();
-        jlist_aulas = new javax.swing.JComboBox();
-        jlist_departamentos = new javax.swing.JComboBox();
-        jlist_carreras = new javax.swing.JComboBox();
-        btn_filtrar = new javax.swing.JButton();
+        cmb_aula_aula = new javax.swing.JComboBox();
+        cmb_depto_aula = new javax.swing.JComboBox();
+        cmb_carrera_aula = new javax.swing.JComboBox();
+        btn_filtrar_aula = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tabla_horario = new javax.swing.JTable();
+        tabla_aula = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         lbl_mensaje = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        cmb_depar_depar = new javax.swing.JComboBox();
+        cmb_materia_depar = new javax.swing.JComboBox();
+        cmb_grupo_depar = new javax.swing.JComboBox();
+        btn_filtrar_dep = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabla_depar = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jm_abrir = new javax.swing.JMenuItem();
@@ -440,6 +464,12 @@ public class VentanaInicio extends javax.swing.JFrame{
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Generador de Horarios");
 
+        panel_pestanias.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                panel_pestaniasStateChanged(evt);
+            }
+        });
+
         btn_generar.setText(" Generar Horario");
         btn_generar.setName(""); // NOI18N
         btn_generar.addActionListener(new java.awt.event.ActionListener() {
@@ -448,28 +478,28 @@ public class VentanaInicio extends javax.swing.JFrame{
             }
         });
 
-        jlist_aulas.setEnabled(false);
-        jlist_aulas.addActionListener(new java.awt.event.ActionListener() {
+        cmb_aula_aula.setEnabled(false);
+        cmb_aula_aula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jlist_aulasActionPerformed(evt);
             }
         });
 
-        jlist_departamentos.setEnabled(false);
-        jlist_departamentos.addActionListener(new java.awt.event.ActionListener() {
+        cmb_depto_aula.setEnabled(false);
+        cmb_depto_aula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jlist_departamentosActionPerformed(evt);
             }
         });
 
-        jlist_carreras.setEnabled(false);
+        cmb_carrera_aula.setEnabled(false);
 
-        btn_filtrar.setText("Filtrar");
-        btn_filtrar.setEnabled(false);
-        btn_filtrar.setName(""); // NOI18N
-        btn_filtrar.addActionListener(new java.awt.event.ActionListener() {
+        btn_filtrar_aula.setText("Filtrar");
+        btn_filtrar_aula.setEnabled(false);
+        btn_filtrar_aula.setName(""); // NOI18N
+        btn_filtrar_aula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_filtrarActionPerformed(evt);
+                btn_filtrar_aulaActionPerformed(evt);
             }
         });
 
@@ -488,18 +518,18 @@ public class VentanaInicio extends javax.swing.JFrame{
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlist_aulas, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmb_aula_aula, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlist_departamentos, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmb_depto_aula, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlist_carreras, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmb_carrera_aula, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_filtrar)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addComponent(btn_filtrar_aula)
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -507,17 +537,17 @@ public class VentanaInicio extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_generar)
-                    .addComponent(jlist_aulas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlist_departamentos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlist_carreras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_filtrar)
+                    .addComponent(cmb_aula_aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmb_depto_aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmb_carrera_aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_filtrar_aula)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        tabla_horario.setModel(new javax.swing.table.DefaultTableModel(
+        tabla_aula.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -528,8 +558,8 @@ public class VentanaInicio extends javax.swing.JFrame{
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tabla_horario.setRowHeight(27);
-        jScrollPane2.setViewportView(tabla_horario);
+        tabla_aula.setRowHeight(27);
+        jScrollPane2.setViewportView(tabla_aula);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Información"));
 
@@ -568,7 +598,98 @@ public class VentanaInicio extends javax.swing.JFrame{
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Por Aula", jPanel1);
+        panel_pestanias.addTab("Por Aula", jPanel1);
+
+        cmb_depar_depar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmb_depar_deparActionPerformed(evt);
+            }
+        });
+
+        btn_filtrar_dep.setText("FIltrar");
+
+        jLabel8.setText("Departamento");
+
+        jLabel9.setText("Materia");
+
+        jLabel10.setText("Grupo");
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmb_depar_depar, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmb_materia_depar, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmb_grupo_depar, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
+                .addComponent(btn_filtrar_dep)
+                .addContainerGap(47, Short.MAX_VALUE))
+        );
+
+        jPanel7Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cmb_depar_depar, cmb_grupo_depar, cmb_materia_depar});
+
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmb_depar_depar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmb_materia_depar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmb_grupo_depar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_filtrar_dep)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        tabla_depar.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tabla_depar.setColumnSelectionAllowed(true);
+        tabla_depar.setRowHeight(27);
+        jScrollPane1.setViewportView(tabla_depar);
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        panel_pestanias.addTab("Por Departamento", jPanel6);
 
         jMenu1.setText("Archivo");
 
@@ -607,78 +728,79 @@ public class VentanaInicio extends javax.swing.JFrame{
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(panel_pestanias)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(panel_pestanias)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jtbl_filaValueChanged(ListSelectionEvent e){
-        fila = tabla_horario.getSelectedRow()+1;
+        fila = tabla_aula.getSelectedRow()+1;
         mostrarInfoMateria();
     }
     
     private void jtbl_columnaValueChanged(ListSelectionEvent e){
-        columna = tabla_horario.getSelectedColumn();
+        columna = tabla_aula.getSelectedColumn();
         mostrarInfoMateria();
     }
     
     private void btn_generarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_generarActionPerformed
-        // TODO add your handling code here:
-        jlist_aulas.setEnabled(false);
-        jlist_departamentos.setEnabled(false);
-        jlist_carreras.setEnabled(false);
-        btn_filtrar.setEnabled(false);      
+        cmb_aula_aula.setEnabled(false);
+        cmb_depto_aula.setEnabled(false);
+        cmb_carrera_aula.setEnabled(false);
+        btn_filtrar_aula.setEnabled(false);      
         
-        boolean cicloPar = true;
+        boolean cicloPar = false;
         
         facultad.setMaterias(ManejadorMaterias.getTodasMaterias(cicloPar));
         //Marcar horas ocupadas
         ManejadorReservaciones.asignarReservaciones(facultad);
         
-        materias = facultad.getMaterias();
+        ArrayList<Materia> materias = facultad.getMaterias();
         
         Procesador procesador = new Procesador();
-        procesador.setFacultad(facultad);
+        procesador.asignarDatos(facultad);
         
         for (int i = 0; i < materias.size(); i++) {
-            Agrupacion agrup = getAgrupacion(materias.get(i).getCodigo(),materias.get(i).getDepartamento(),facultad.getAgrupaciones());
-            while(agrup.getNumGruposAsignados() < agrup.getNum_grupos()){
-                try {         
-                    procesador.procesarMateria(materias.get(i));
-                } catch (Exception ex) {
-                    //Se produce cuando ya no hay aulas disponibles
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Agrupacion agrup = getAgrupacion(materias.get(i).getIdAgrupacion(),facultad.agrupaciones);
+            if(agrup.getNum_grupos() == agrup.getNumGruposAsignados())
+                continue;
+            ArrayList<AsignacionDocente> asignaciones = obtenerAsignacionesDeAgrup(agrup.getId(),facultad.asignaciones_docs);
+            for(AsignacionDocente asignacion : asignaciones){
+                for(int j = 0; j < asignacion.getNum_grupos(); j++){
+                    try {         
+                        procesador.procesarMateria(materias.get(i),asignacion.getId_docente(),agrup);
+                    } catch (Exception ex) {
+                        //Se produce cuando ya no hay aulas disponibles
+                        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
                 }
-                agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
             }
         }
-        jlist_aulas.setEnabled(true);
+        cmb_aula_aula.setEnabled(true);
     }//GEN-LAST:event_btn_generarActionPerformed
 
-    private void btn_filtrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_filtrarActionPerformed
-        if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null && jlist_departamentos.getSelectedItem()==null){
-            //System.out.println("aula");
-            aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
-            tabla_horario.setModel(ManejadorAulas.getHorarioEnAula(facultad.getAulas(),aulaSeleccionada, modelo));
-        }else if(jlist_aulas.getSelectedItem()!=null && jlist_carreras.getSelectedItem()!=null){
-            //System.out.println("carrera");
-            aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
-            carreraSeleccionada = jlist_carreras.getSelectedItem().toString();
-            ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(materias, ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
-            tabla_horario.setModel(ManejadorAulas.getHorarioEnAula_Carrera(facultad.getAulas(), aulaSeleccionada, modelo, materiasCarrera));
-        }else if(jlist_aulas.getSelectedItem()!=null && jlist_departamentos.getSelectedItem()!=null && jlist_carreras.getSelectedItem()==null){
-            //System.out.println("departamento");
-            aulaSeleccionada = jlist_aulas.getSelectedItem().toString();
-            departamentoSeleccionado = jlist_departamentos.getSelectedItem().toString();
-            departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, facultad.getDepartamentos());
-            tabla_horario.setModel(ManejadorAulas.getHorarioEnAula_Depar(facultad.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado)));
+    private void btn_filtrar_aulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_filtrar_aulaActionPerformed
+        if(cmb_aula_aula.getSelectedItem()!=null && cmb_carrera_aula.getSelectedItem()==null && cmb_depto_aula.getSelectedItem()==null){
+            aulaSeleccionada = cmb_aula_aula.getSelectedItem().toString();
+            tabla_aula.setModel(ManejadorAulas.getHorarioEnAula(facultad.getAulas(),aulaSeleccionada, modelo, facultad.getMaterias()));
+        }else if(cmb_aula_aula.getSelectedItem()!=null && cmb_carrera_aula.getSelectedItem()!=null){
+            aulaSeleccionada = cmb_aula_aula.getSelectedItem().toString();
+            carreraSeleccionada = cmb_carrera_aula.getSelectedItem().toString();
+            ArrayList<Materia> materiasCarrera = ManejadorMaterias.getMateriasDeCarrera(facultad.getMaterias(), ManejadorCarreras.getCodigoCarrera(carreraSeleccionada));
+            tabla_aula.setModel(ManejadorAulas.getHorarioEnAula_Carrera(facultad.getAulas(), aulaSeleccionada, modelo, obtenerAgrupacionesDeCarrera(carreraSeleccionada), materiasCarrera));
+        }else if(cmb_aula_aula.getSelectedItem()!=null && cmb_depto_aula.getSelectedItem()!=null && cmb_carrera_aula.getSelectedItem()==null){
+            aulaSeleccionada = cmb_aula_aula.getSelectedItem().toString();
+            departamentoSeleccionado = cmb_depto_aula.getSelectedItem().toString();
+            departamentoSeleccionado = ""+ManejadorDepartamentos.getIdDepar(departamentoSeleccionado, facultad.departamentos);
+            tabla_aula.setModel(ManejadorAulas.getHorarioEnAula_Depar(facultad.getAulas(), aulaSeleccionada, modelo, Integer.parseInt(departamentoSeleccionado), facultad.agrupaciones, facultad.getMaterias()));
         }  
-    }//GEN-LAST:event_btn_filtrarActionPerformed
+    }//GEN-LAST:event_btn_filtrar_aulaActionPerformed
 
     private void jm_reservActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jm_reservActionPerformed
         dialog_reserv.pack();
@@ -715,26 +837,26 @@ public class VentanaInicio extends javax.swing.JFrame{
     }//GEN-LAST:event_cmb_diaActionPerformed
 
     private void jlist_aulasActionPerformed(java.awt.event.ActionEvent evt) {                                            
-        if(jlist_aulas.getSelectedItem()!=null){
-            llenarListaDepartamentos();
-            jlist_departamentos.setEnabled(true);
-            btn_filtrar.setEnabled(true);
+        if(cmb_aula_aula.getSelectedItem()!=null){
+            cmb_depto_aula.setModel(llenarListaDepartamentos());
+            cmb_depto_aula.setEnabled(true);
+            btn_filtrar_aula.setEnabled(true);
         }else{
-            jlist_departamentos.setSelectedItem(null);
-            jlist_carreras.setSelectedItem(null);
-            jlist_departamentos.setEnabled(false);
-            jlist_carreras.setEnabled(false);
-            btn_filtrar.setEnabled(false);
+            cmb_depto_aula.setSelectedItem(null);
+            cmb_carrera_aula.setSelectedItem(null);
+            cmb_depto_aula.setEnabled(false);
+            cmb_carrera_aula.setEnabled(false);
+            btn_filtrar_aula.setEnabled(false);
         }
     }                                           
 
     private void jlist_departamentosActionPerformed(java.awt.event.ActionEvent evt) {                                                    
-        if(jlist_departamentos.getSelectedItem()!=null){
-            llenarListaCarreras(jlist_departamentos.getSelectedItem().toString());
-            jlist_carreras.setEnabled(true);
+        if(cmb_depto_aula.getSelectedItem()!=null){
+            llenarListaCarreras(cmb_depto_aula.getSelectedItem().toString());
+            cmb_carrera_aula.setEnabled(true);
         }else{
-            jlist_carreras.setSelectedItem(null);
-            jlist_carreras.setEnabled(false);
+            cmb_carrera_aula.setSelectedItem(null);
+            cmb_carrera_aula.setEnabled(false);
         } 
     }                                                   
 
@@ -757,7 +879,7 @@ public class VentanaInicio extends javax.swing.JFrame{
                facultad = (Facultad) in.readObject();
                in.close();
                fileIn.close();
-               jlist_aulas.setEnabled(true);
+               cmb_aula_aula.setEnabled(true);
             }catch(IOException | ClassNotFoundException i)
             {
                JOptionPane.showMessageDialog(this, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -815,6 +937,28 @@ public class VentanaInicio extends javax.swing.JFrame{
         ManejadorReservaciones.eliminarReservacion(dia, hora, aula, facultad.getAulas());
         llenarTablaReservaciones();
     }//GEN-LAST:event_delReservActionPerformed
+
+    private void panel_pestaniasStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_panel_pestaniasStateChanged
+        if(panel_pestanias.getSelectedIndex() == 0){
+            
+        }
+        else if(panel_pestanias.getSelectedIndex() == 1){
+            cmb_depar_depar.setModel(llenarListaDepartamentos());
+            cmb_materia_depar.setEnabled(false);
+            cmb_grupo_depar.setEnabled(false);
+        }
+    }//GEN-LAST:event_panel_pestaniasStateChanged
+
+    private void cmb_depar_deparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmb_depar_deparActionPerformed
+        if(cmb_depar_depar.getSelectedItem() != null){
+            String depar = cmb_depar_depar.getSelectedItem().toString();
+            cmb_materia_depar.setModel(listaMateriasDeDepartamento(ManejadorDepartamentos.getIdDepar(depar, facultad.departamentos)));
+            cmb_materia_depar.setEnabled(true);
+        } else{
+            cmb_materia_depar.setEnabled(false);
+            cmb_grupo_depar.setEnabled(false);
+        }
+    }//GEN-LAST:event_cmb_depar_deparActionPerformed
     
     /**
      * @param args the command line arguments
@@ -857,22 +1001,32 @@ public class VentanaInicio extends javax.swing.JFrame{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addReserv;
-    private javax.swing.JButton btn_filtrar;
+    private javax.swing.JButton btn_filtrar_aula;
+    private javax.swing.JButton btn_filtrar_dep;
     private javax.swing.JButton btn_generar;
     private javax.swing.JButton cancel_reserv;
     private javax.swing.JComboBox cmb_aula;
+    private javax.swing.JComboBox cmb_aula_aula;
+    private javax.swing.JComboBox cmb_carrera_aula;
+    private javax.swing.JComboBox cmb_depar_depar;
+    private javax.swing.JComboBox cmb_depto_aula;
     private javax.swing.JComboBox cmb_dia;
+    private javax.swing.JComboBox cmb_grupo_depar;
     private javax.swing.JComboBox cmb_hora_init;
+    private javax.swing.JComboBox cmb_materia_depar;
     private javax.swing.JButton delReserv;
     private javax.swing.JDialog dialog_new_reserv;
     private javax.swing.JDialog dialog_reserv;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -881,19 +1035,20 @@ public class VentanaInicio extends javax.swing.JFrame{
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JComboBox jlist_aulas;
-    private javax.swing.JComboBox jlist_carreras;
-    private javax.swing.JComboBox jlist_departamentos;
     private javax.swing.JMenuItem jm_abrir;
     private javax.swing.JMenuItem jm_guardar;
     private javax.swing.JMenuItem jm_reserv;
     private javax.swing.JLabel lbl_mensaje;
     private javax.swing.JButton ok_reserv;
+    private javax.swing.JTabbedPane panel_pestanias;
     private javax.swing.JSpinner sp_num_horas;
-    private javax.swing.JTable tabla_horario;
+    private javax.swing.JTable tabla_aula;
+    private javax.swing.JTable tabla_depar;
     private javax.swing.JTable table_reserv;
     // End of variables declaration//GEN-END:variables
 

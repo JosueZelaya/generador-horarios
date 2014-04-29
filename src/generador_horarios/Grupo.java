@@ -14,50 +14,42 @@ import java.io.Serializable;
  */
 public class Grupo implements Serializable{
     
-    private String cod_materia;
-    private int id_depar;
+    private int id_agrup;
     private int id_grupo;
+    private int id_docente;
     private int horasAsignadas;
     private boolean incompleto;
     
     public Grupo(){
-        incompleto=false;
-        this.cod_materia = "";
-        this.id_depar = 0;
+        this.incompleto=false;
+        this.id_agrup = 0;
         this.id_grupo = 0;
+        this.id_docente = 0;
         this.horasAsignadas = 0;
     }
     
-    public Grupo(String codigo, int id_depar, int id_grupo){
-        incompleto=false;
-        this.cod_materia = codigo;
-        this.id_depar = id_depar;
+    public Grupo(int codigo, int id_grupo, int id_docente){
+        this.incompleto=false;
+        this.id_agrup = codigo;
         this.id_grupo = id_grupo;
+        this.id_docente = id_docente;
         this.horasAsignadas = 0;
     }
 
     public Grupo(Agrupacion agrupacion){
-        incompleto = false;
-        this.cod_materia = agrupacion.getPropietario();
-        this.id_depar = agrupacion.getDepartamento();
+        this.incompleto = false;
+        this.id_agrup = agrupacion.getId();
         this.id_grupo = agrupacion.getNumGruposAsignados()+1;
+        this.id_docente = 0;
         this.horasAsignadas = 0;
     }
     
-    public String getCod_materia() {
-        return cod_materia;
+    public int getId_Agrup() {
+        return id_agrup;
     }
 
-    public void setCod_materia(String cod_materia) {
-        this.cod_materia = cod_materia;
-    }
-
-    public int getId_depar() {
-        return id_depar;
-    }
-
-    public void setId_depar(int id_depar) {
-        this.id_depar = id_depar;
+    public void setId_Agrup(int id_agrup) {
+        this.id_agrup = id_agrup;
     }
 
     public int getId_grupo() {
@@ -94,6 +86,22 @@ public class Grupo implements Serializable{
      */
     public void setIncompleto(boolean incompleto) {
         this.incompleto = incompleto;
+    }
+
+    public int getId_agrup() {
+        return id_agrup;
+    }
+
+    public void setId_agrup(int id_agrup) {
+        this.id_agrup = id_agrup;
+    }
+
+    public int getId_docente() {
+        return id_docente;
+    }
+
+    public void setId_docente(int id_docente) {
+        this.id_docente = id_docente;
     }
     
 }

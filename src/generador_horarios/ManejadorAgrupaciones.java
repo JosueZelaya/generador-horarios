@@ -9,6 +9,7 @@ package generador_horarios;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -25,33 +26,81 @@ public abstract class ManejadorAgrupaciones {
             con.conectar();
             resultado = con.consulta("SELECT * FROM agrupacion");
             while(resultado.next()){
-                agrupaciones.add(new Agrupacion(resultado.getString("cod_materia"),resultado.getInt("id_depar"),resultado.getInt("num_grupos"),resultado.getInt("numero_alumnos")));
+                agrupaciones.add(new Agrupacion(resultado.getInt("id_agrupacion"),resultado.getInt("id_depar"),resultado.getInt("num_grupos"),resultado.getInt("num_alumnos")));
             }
             con.cierraConexion();
         }
         catch(SQLException e){
-            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error en getAgrupaciones()", JOptionPane.ERROR_MESSAGE);
         }
         
         return agrupaciones;
     }
     
-    public static Agrupacion getAgrupacion(String cod_materia, int id_depar, ArrayList<Agrupacion> a){
+    public static Agrupacion getAgrupacion(int id, ArrayList<Agrupacion> a){
         for(int i = 0;i<a.size();i++){
-            if(a.get(i).getPropietario().equals(cod_materia) && a.get(i).getDepartamento() == id_depar){
+            if(a.get(i).getId() == id){
                 return a.get(i);
             }
         }
         return null;
     }
     
-    public static Agrupacion getAgrupacion(Materia materia,ArrayList<Agrupacion> agrupacion){
-        for(int i = 0;i<agrupacion.size();i++){
-            if(agrupacion.get(i).getPropietario().equals(materia.getCodigo()) && agrupacion.get(i).getDepartamento() == materia.getDepartamento()){
-                return agrupacion.get(i);
+    public static Agrupacion getAgrupacion(Materia materia,ArrayList<Agrupacion> agrupaciones){
+        for(int i = 0;i<agrupaciones.size();i++){
+            if(agrupaciones.get(i).getId() == materia.getIdAgrupacion()){
+                return agrupaciones.get(i);
             }
         }
         return null;
     }
     
+    public static String obtenerNombrePropietario(int id_agrup,ArrayList<Materia> materias){
+        String propietario = "";
+        for(Materia mat : materias){
+            if(mat.getIdAgrupacion() == id_agrup){
+                propietario = mat.getNombre();
+                break;
+            }
+        }
+        return propietario;
+    }
+    
+    public static int obtenerIdDepartamento(int id_agrup,ArrayList<Agrupacion> agrups){
+        int id_depar=0;
+        for(Agrupacion a : agrups){
+            if(a.getId() == id_agrup){
+                id_depar = a.getDepartamento();
+                break;
+            }
+        }
+        return id_depar;
+    }
+    
+    public static ArrayList obtenerAgrupacionesDeCarrera(String carrera){
+        Conexion con;
+        ResultSet result;
+        ArrayList ids = new ArrayList();
+        try{
+            con = new Conexion();
+            result = con.consulta("SELECT cm.id_agrupacion FROM carreras_materias as cm JOIN carreras as c ON cm.carreras_id_carrera = c.id_carrera WHERE c.nombre_carrera = '"+carrera+"'");
+            while(result.next()){
+                ids.add(result.getInt("id_agrupacion"));
+            }
+        } catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        }
+        return ids;
+    }
+    
+    public static int obtenerIdAgrupacion(String cod_mat, int id_depar, ArrayList<Materia> materias){
+        int id_agrup = 0;
+        for(Materia m : materias){
+            if(m.getCodigo().equals(cod_mat) && m.getDepartamento() == id_depar){
+                id_agrup = m.getIdAgrupacion();
+                break;
+            }
+        }
+        return id_agrup;
+    }
 }

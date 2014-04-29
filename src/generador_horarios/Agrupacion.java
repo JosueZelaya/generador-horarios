@@ -14,26 +14,26 @@ import java.io.Serializable;
  */
 public class Agrupacion implements Serializable{
     
-    private String propietario;
+    private int id;
     private int departamento;
     private int num_grupos;
     private int num_alumnos;
     private int numGruposAsignados;
     
-    public Agrupacion(String propietario,int departamento,int num_grupos, int num_alumnos){
-        this.propietario = propietario;
+    public Agrupacion(int id,int departamento,int num_grupos, int num_alumnos){
+        this.id = id;
         this.departamento = departamento;
         this.num_grupos = num_grupos;
         this.num_alumnos = num_alumnos;
         this.numGruposAsignados = 0;
     }
 
-    public String getPropietario() {
-        return propietario;
+    public int getId() {
+        return id;
     }
 
-    public void setPropietario(String propietario) {
-        this.propietario = propietario;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getDepartamento() {
@@ -67,7 +67,4 @@ public class Agrupacion implements Serializable{
     public void setNumGruposAsignados(int numGruposAsignados) {
         this.numGruposAsignados = numGruposAsignados;
     }
-    
-    
-    
 }
