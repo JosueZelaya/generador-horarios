@@ -223,6 +223,14 @@ public abstract class ManejadorHoras {
         return horasDisponibles;
     }
     
+    /**
+     * Para ver si ya se asignó el grupo en un día
+     * @param desde
+     * @param hasta
+     * @param horas
+     * @param grupo
+     * @return 
+     */
     public static boolean grupoPresente(int desde, int hasta, ArrayList<Hora> horas, Grupo grupo){
         for(Hora hora : horas){
             if(!hora.estaDisponible()){
@@ -247,15 +255,6 @@ public abstract class ManejadorHoras {
                     }
                 }
             }
-        }
-        return false;
-    }
-    
-    public static boolean grupoPresente(int desde, int hasta, ArrayList<Hora> horas, Grupo grupo){
-        for(Hora hora : horas){
-            Grupo grupoHora = hora.getGrupo();
-            if(grupoHora.getId_Agrup() == grupo.getId_Agrup() && grupoHora.getId_grupo() == grupo.getId_grupo())
-                return true;
         }
         return false;
     }
