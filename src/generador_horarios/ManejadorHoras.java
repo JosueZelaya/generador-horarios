@@ -251,6 +251,11 @@ public abstract class ManejadorHoras {
         return false;
     }
     
+    public static boolean chocaGrupoDocente(Grupo grupo, int desde, int hasta, ArrayList<Aula> aulas, String nombre_dia){
+        
+        return false;
+    }
+    
     /** Meotodo para relizar busquedas de una materia que pertenece al mismo nivel en el dia elegido
      *
      * @param grupo = grupo que se quiere asignar en dia elegido
