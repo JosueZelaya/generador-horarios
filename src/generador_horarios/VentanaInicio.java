@@ -7,9 +7,13 @@
 package generador_horarios;
 
 import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
+import static generador_horarios.ManejadorAgrupaciones.getAgrupaciones;
 import static generador_horarios.ManejadorAgrupaciones.obtenerNombrePropietario;
 import static generador_horarios.ManejadorAgrupaciones.obtenerIdDepartamento;
 import static generador_horarios.ManejadorAgrupaciones.obtenerAgrupacionesDeCarrera;
+import static generador_horarios.ManejadorAsignacionesDocs.obtenerAsignacionesDeAgrup;
+import static generador_horarios.ManejadorAsignacionesDocs.obtenerTodasAsignacionesDocs;
+import static generador_horarios.ManejadorDepartamentos.getDepartamentos;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -39,9 +43,6 @@ public class VentanaInicio extends javax.swing.JFrame{
     int fila,columna; //representan la posición dentro del jTable
     String[][] datosTabla={};
     String[] cabeceraTabla={"Horas","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"};
-    String[] listadoAulas;
-    String[] listadoDepartamentos;
-    String[] listadoCarreras;
     
     /**
      * Creates new form VentanaInicio
@@ -57,7 +58,7 @@ public class VentanaInicio extends javax.swing.JFrame{
         columna =0;
         
         //Se crea el objeto campus
-        facultad = new Facultad(ManejadorAgrupaciones.getAgrupaciones(),ManejadorDepartamentos.getDepartamentos());
+        facultad = new Facultad(getAgrupaciones(),getDepartamentos(),obtenerTodasAsignacionesDocs());
         
         //Se llena la tabla de dias y horas
         modelo = new DefaultTableModel(datosTabla, cabeceraTabla){
@@ -767,14 +768,19 @@ public class VentanaInicio extends javax.swing.JFrame{
         
         for (int i = 0; i < materias.size(); i++) {
             Agrupacion agrup = getAgrupacion(materias.get(i).getIdAgrupacion(),facultad.agrupaciones);
-            while(agrup.getNumGruposAsignados() < agrup.getNum_grupos()){
-                try {         
-                    procesador.procesarMateria(materias.get(i));
-                } catch (Exception ex) {
-                    //Se produce cuando ya no hay aulas disponibles
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ArrayList<AsignacionDocente> asignaciones = obtenerAsignacionesDeAgrup(agrup.getId(),facultad.asignaciones_docs);
+            System.out.println(asignaciones.size());
+            for(AsignacionDocente asignacion : asignaciones){
+                System.out.println(asignacion.getNum_grupos());
+                for(int j = 0; j < asignacion.getNum_grupos(); j++){
+                    try {         
+                        procesador.procesarMateria(materias.get(i),asignacion.getId_docente());
+                    } catch (Exception ex) {
+                        //Se produce cuando ya no hay aulas disponibles
+                        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
                 }
-                agrup.setNumGruposAsignados(agrup.getNumGruposAsignados()+1);
             }
         }
         cmb_aula_aula.setEnabled(true);

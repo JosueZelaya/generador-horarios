@@ -241,19 +241,20 @@ public class Procesador {
     /** Realiza el procesamiento necesario para generar el horario de una materia.
      * 
      * @param materia = La materia que se quiere asignar
+     * @param id_docente = identificador del docente que impartira el grupo a asignar horario
      * @throws Exception = Cuando ya no hay aulas para asignarla
      */
-    public void procesarMateria(Materia materia) throws Exception{
+    public void procesarMateria(Materia materia, int id_docente) throws Exception{
         if(facultad!=null){
             this.materia = materia;             //La materia que se debe procesar
             this.agrupacion = getAgrupacion(materia, agrupaciones); //Se busca dentro de todas las agrupaciones, cuál es la que pertenece a la materia que se quiere asignar
             grupo = new Grupo(agrupacion);   //El grupo con la información de la agrupación, este grupo es el que será asignado en un aula
+            grupo.setId_docente(id_docente);
             aulasConCapacidad = obtenerAulasPorCapacidad(aulas,agrupacion.getNum_alumnos()+holguraAula);
             establecerTurno();                  //Se establece el turno
             localizarBloqueOptimo();  //Debe asignar la materia a un aula de la facultdad
-        }else{
-            throw new Exception("No se encuentra la información de la facultad");
-        }            
+        }else
+            throw new Exception("No se encuentra la información de la facultad");           
     }
     
     public void asignarDatos(Facultad facultad){
