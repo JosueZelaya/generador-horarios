@@ -17,10 +17,11 @@ public class Facultad implements Serializable{
     
     private ArrayList<Aula> aulas;
     public final ArrayList<Agrupacion> agrupaciones;
+    public final ArrayList<AsignacionDocente> asignaciones_docs;
     public final ArrayList<Departamento> departamentos;
     private ArrayList<Materia> materias;
 
-    public Facultad(ArrayList<Agrupacion> agrupaciones, ArrayList<Departamento> departamentos) {
+    public Facultad(ArrayList<Agrupacion> agrupaciones, ArrayList<Departamento> departamentos, ArrayList<AsignacionDocente> asignaciones_docs) {
         this.aulas = new ArrayList();        
         aulas = ManejadorAulas.getTodasAulas();
         for (int i = 0; i < aulas.size(); i++) {
@@ -34,6 +35,7 @@ public class Facultad implements Serializable{
         
         this.agrupaciones = agrupaciones;
         this.departamentos = departamentos;
+        this.asignaciones_docs = asignaciones_docs;
     }
 
     /**

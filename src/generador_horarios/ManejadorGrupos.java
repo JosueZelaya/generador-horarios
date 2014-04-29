@@ -60,4 +60,9 @@ public abstract class ManejadorGrupos {
         return table;
     }
     
+    public static int obtenerNumGruposDocente(int id_docente, int id_agrup){
+        int num = 0;
+        
+        return num;
+    }
 }
