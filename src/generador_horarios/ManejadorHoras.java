@@ -251,8 +251,19 @@ public abstract class ManejadorHoras {
         return false;
     }
     
-    public static boolean chocaGrupoDocente(Grupo grupo, int desde, int hasta, ArrayList<Aula> aulas, String nombre_dia){
-        
+    public static boolean chocaGrupoDocente(int id_docente, int desde, int hasta, ArrayList<Aula> aulas, String nombre_dia){
+        for(int i=0; i<aulas.size(); i++){
+            Dia dia = aulas.get(i).getDia(nombre_dia);
+            for(int h=desde; h<hasta; h++){
+                Hora hora = dia.getHoras().get(h-1);
+                if(!hora.estaDisponible()){
+                    Grupo grupoHora = hora.getGrupo();
+                    if(grupoHora.getId_docente() == id_docente){
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
     
