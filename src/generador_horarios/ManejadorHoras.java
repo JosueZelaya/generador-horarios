@@ -110,7 +110,7 @@ public abstract class ManejadorHoras {
                 }
             }
             //Si hay horas consecutivas disponibles las agrego al array
-            if(hayBloquesDisponibles){
+            if(hayBloquesDisponibles){    
                 if(!chocaMateria(nombre_dia,horas.get(i).getIdHora(),aulas,materia,cantidadHoras,m)){
                     for (int j = i; j < i+cantidadHoras; j++) {
                         horasDisponibles.add(horas.get(j));
@@ -158,7 +158,9 @@ public abstract class ManejadorHoras {
             }
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
-                if(!chocaGrupo(nombre_dia,horas.get(i).getIdHora(),horas.get(i).getIdHora()+cantidadHoras,aulasConCapa,grupo)){
+                boolean grupoChocaConElMismo = chocaGrupo(nombre_dia,horas.get(i).getIdHora(),horas.get(i).getIdHora()+cantidadHoras,aulasConCapa,grupo);
+                boolean chocaDocente = chocaGrupoDocente(grupo, desde, hasta, aulasConCapa, nombre_dia);
+                if(!grupoChocaConElMismo && !chocaDocente){
                     for (int j = i; j < i+cantidadHoras; j++) {
                         horasDisponibles.add(horas.get(j));
                     }
@@ -260,8 +262,20 @@ public abstract class ManejadorHoras {
     }
     
     public static boolean chocaGrupoDocente(Grupo grupo, int desde, int hasta, ArrayList<Aula> aulas, String nombre_dia){
-        
-        return false;
+        for(int i=0; i<aulas.size(); i++){
+            Dia dia = aulas.get(i).getDia(nombre_dia);
+            for(int h=desde; h<hasta; h++){
+                Hora hora = dia.getHoras().get(h-1);
+                if(!hora.estaDisponible()){
+                    Grupo grupoHora = hora.getGrupo();
+                    if(grupo.getId_docente()==grupoHora.getId_docente()){
+                        System.out.println("El docente: "+grupo.getId_docente()+" atiende ya el grupo: "+grupoHora.getId_grupo()+" a la misma hora");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;        
     }
     
     /** Meotodo para relizar busquedas de una materia que pertenece al mismo nivel en el dia elegido
