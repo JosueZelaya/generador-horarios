@@ -109,7 +109,7 @@ public class Procesador {
             Dia dia = aulasConCapacidad.get(0).getDia("Sabado");
             desde = dia.getHoras().get(0).getIdHora()-1;                       ///Todo el dia disponible
             hasta = dia.getHoras().get(dia.getHoras().size()-1).getIdHora();   ///para las materias que lleguen a el
-            ArrayList<Hora> horasDisponibles = buscarHoras(materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta, "Sabado", materia, aulasConCapacidad, aulas, materias); //elige las primeras horas disponibles que encuentre ese día
+            ArrayList<Hora> horasDisponibles = buscarHoras(grupo.getId_docente(),materia.getTotalHorasRequeridas()-grupo.getHorasAsignadas(), desde, hasta, "Sabado", materia, aulasConCapacidad, aulas, materias); //elige las primeras horas disponibles que encuentre ese día
             if(horasDisponibles != null)               //Si hay horas disponibles
                 asignar(grupo, horasDisponibles);        //Asignamos la materia
             else{
@@ -185,7 +185,7 @@ public class Procesador {
         ArrayList horasNivel = getUltimasHoraDeNivel(grupo, materia, materias, agrupaciones, aulasConCapacidad, nombreDia);
         for(Object hora : horasNivel){
             if(((int)hora+numHorasContinuas)<hasta){
-                horasDisponibles = buscarHoras(numHorasContinuas, (int)hora+1, (int)hora+1+numHorasContinuas, nombreDia, materia, aulasConCapacidad, aulas, materias);
+                horasDisponibles = buscarHoras(grupo.getId_docente(),numHorasContinuas, (int)hora+1, (int)hora+1+numHorasContinuas, nombreDia, materia, aulasConCapacidad, aulas, materias);
                 if(horasDisponibles != null && !horasDisponibles.isEmpty())
                     break;
             }
@@ -203,7 +203,7 @@ public class Procesador {
      */
     public void ultimoRecursoConsiderandoChoques(String nombreDia){
         int numHorasContinuas = calcularHorasContinuasRequeridas(materia, grupo);  //Calculamos el numero de horas continuas para la clase
-        ArrayList<Hora> horasDisponibles = buscarHorasUltimoRecurso(numHorasContinuas, desde, hasta, nombreDia, materia, aulasConCapacidad, aulas, materias); //elige las primeras horas disponibles que encuentre ese día
+        ArrayList<Hora> horasDisponibles = buscarHorasUltimoRecurso(grupo.getId_docente(),numHorasContinuas, desde, hasta, nombreDia, materia, aulasConCapacidad, aulas, materias); //elige las primeras horas disponibles que encuentre ese día
         if(horasDisponibles != null && !horasDisponibles.isEmpty())
             asignar(grupo, horasDisponibles);
     }
