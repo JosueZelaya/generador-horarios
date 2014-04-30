@@ -259,7 +259,7 @@ public abstract class ManejadorHoras {
         return false;
     }
     
-    public static boolean chocaGrupo(){
+    public static boolean chocaGrupoDocente(Grupo grupo, int desde, int hasta, ArrayList<Aula> aulas, String nombre_dia){
         
         return false;
     }

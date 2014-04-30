@@ -751,7 +751,6 @@ public class VentanaInicio extends javax.swing.JFrame{
     }
     
     private void btn_generarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_generarActionPerformed
-        // TODO add your handling code here:
         cmb_aula_aula.setEnabled(false);
         cmb_depto_aula.setEnabled(false);
         cmb_carrera_aula.setEnabled(false);
@@ -770,13 +769,13 @@ public class VentanaInicio extends javax.swing.JFrame{
         
         for (int i = 0; i < materias.size(); i++) {
             Agrupacion agrup = getAgrupacion(materias.get(i).getIdAgrupacion(),facultad.agrupaciones);
+            if(agrup.getNum_grupos() == agrup.getNumGruposAsignados())
+                continue;
             ArrayList<AsignacionDocente> asignaciones = obtenerAsignacionesDeAgrup(agrup.getId(),facultad.asignaciones_docs);
-            System.out.println(asignaciones.size());
             for(AsignacionDocente asignacion : asignaciones){
-                System.out.println(asignacion.getNum_grupos());
                 for(int j = 0; j < asignacion.getNum_grupos(); j++){
                     try {         
-                        procesador.procesarMateria(materias.get(i),asignacion.getId_docente());
+                        procesador.procesarMateria(materias.get(i),asignacion.getId_docente(),agrup);
                     } catch (Exception ex) {
                         //Se produce cuando ya no hay aulas disponibles
                         JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

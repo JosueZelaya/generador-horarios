@@ -9,7 +9,6 @@ package generador_horarios;
 
 import static generador_horarios.ManejadorDias.elegirDiaDiferente;
 import static generador_horarios.ManejadorHoras.getUltimasHoraDeNivel;
-import static generador_horarios.ManejadorAgrupaciones.getAgrupacion;
 import static generador_horarios.ManejadorHoras.buscarHoras;
 import static generador_horarios.ManejadorAulas.obtenerAulasPorCapacidad;
 import static generador_horarios.ManejadorHoras.buscarHorasConChoque;
@@ -222,16 +221,17 @@ public class Procesador {
      * 
      * @param materia = La materia que se quiere asignar
      * @param id_docente = identificador del docente que impartira el grupo a asignar horario
-     * @throws Exception = Cuando ya no hay aulas para asignarla
+     * @param agrupacion = agrupacion a la que pertenece la materia a asignar
+     * @throws Exception = Si no existe la informacion necesario en el objeto Facultad
      */
-    public void procesarMateria(Materia materia, int id_docente) throws Exception{
+    public void procesarMateria(Materia materia, int id_docente, Agrupacion agrupacion) throws Exception{
         if(facultad!=null){
             this.materia = materia;             //La materia que se debe procesar
-            this.agrupacion = getAgrupacion(materia, agrupaciones); //Se busca dentro de todas las agrupaciones, cuál es la que pertenece a la materia que se quiere asignar
+            this.agrupacion = agrupacion; //Se busca dentro de todas las agrupaciones, cuál es la que pertenece a la materia que se quiere asignar
             grupo = new Grupo(agrupacion);   //El grupo con la información de la agrupación, este grupo es el que será asignado en un aula
-            grupo.setId_docente(id_docente);
+            grupo.setId_docente(id_docente); //Se le asigna al grupo a cual docente pertenecera para comprobaciones de choques
             aulasConCapacidad = obtenerAulasPorCapacidad(aulas,agrupacion.getNum_alumnos()+holguraAula);
-            establecerTurno();                  //Se establece el turno
+            establecerTurno();                 //Se establece el turno
             localizarBloqueOptimo();  //Debe asignar la materia a un aula de la facultdad
         }else
             throw new Exception("No se encuentra la información de la facultad");           

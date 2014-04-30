@@ -45,5 +45,4 @@ public class AsignacionDocente {
     public void setNum_grupos(int num_grupos) {
         this.num_grupos = num_grupos;
     }
-    
 }
