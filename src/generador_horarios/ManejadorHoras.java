@@ -79,6 +79,7 @@ public abstract class ManejadorHoras {
     
     /**Devuelve las primeras horas disponibles consecutivas que encuentre
      * 
+     * @param idDocente
      * @param horas = horas del dia en que va a tratar de asignar
      * @param cantidadHoras = cuantas horas a asignar
      * @param desde = desde cual hora tratar de asignar
@@ -87,9 +88,10 @@ public abstract class ManejadorHoras {
      * @param materia = objeto materia que se esta tratando de asignar
      * @param aulas = todas las aulas de campus, se usan para verificar choques
      * @param m = array de todas las materias que posee campus
+     * @param ultimoRecurso
      * @return las horas disponibles sin choque en las que se puede asignar el grupoHora; null si no hay ninguna
      */
-    public static Object buscarHorasDisponibles(int idDocente,ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas, ArrayList<Materia> m){
+    public static Object buscarHorasDisponibles(int idDocente,ArrayList<Hora> horas,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulas, ArrayList<Materia> m, boolean ultimoRecurso){
         ArrayList<Hora> horasDisponibles = new ArrayList();
         Object resul = null;
         for (int i = desde; i < hasta; i++) {                   //Verifico si hay horas continuas disponibles en el intervalo requerido
@@ -112,7 +114,7 @@ public abstract class ManejadorHoras {
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
                 boolean chocaMateria = chocaMateria(nombre_dia,horas.get(i).getIdHora(),aulas,materia,cantidadHoras,m);
-                boolean chocaDocente = chocaGrupoDocente(idDocente, desde, hasta, aulas, nombre_dia);
+                boolean chocaDocente = chocaGrupoDocente(idDocente, horas.get(i).getIdHora(), horas.get(i).getIdHora()+cantidadHoras, aulas, nombre_dia);
                 if(!chocaMateria && !chocaDocente){
                     for (int j = i; j < i+cantidadHoras; j++) {
                         horasDisponibles.add(horas.get(j));
@@ -120,8 +122,11 @@ public abstract class ManejadorHoras {
                     System.out.println("ahi va un bloque para asignar");
                     resul = horasDisponibles;
                     return resul;
-                } else
+                } else{
                     resul = "Choque";
+                    if(!ultimoRecurso)
+                        return resul;
+                }
             }
         }
         return resul;
@@ -161,7 +166,7 @@ public abstract class ManejadorHoras {
             //Si hay horas consecutivas disponibles las agrego al array
             if(hayBloquesDisponibles){
                 boolean grupoChocaConElMismo = chocaGrupo(nombre_dia,horas.get(i).getIdHora(),horas.get(i).getIdHora()+cantidadHoras,aulasConCapa,grupo);
-                boolean chocaDocente = chocaGrupoDocente(grupo.getId_docente(), desde, hasta, aulasConCapa, nombre_dia);
+                boolean chocaDocente = chocaGrupoDocente(grupo.getId_docente(), horas.get(i).getIdHora(),horas.get(i).getIdHora()+cantidadHoras, aulasConCapa, nombre_dia);
                 if(!grupoChocaConElMismo && !chocaDocente){
                     for (int j = i; j < i+cantidadHoras; j++) {
                         horasDisponibles.add(horas.get(j));
@@ -184,14 +189,15 @@ public abstract class ManejadorHoras {
      * @param aulasConCapa = array de aulas que tienen capacidad para asignar al grupoHora de la materia
      * @param aulas = array de todas las aulas que tiene el campus, se usa para verificar si hay choques
      * @param m = array de todas las materias del campus, se usa para comprobar choques
+     * @param grupo
      * @return horas disponibles en las que se puede asignar el grupoHora
      */
-    public static ArrayList<Hora> buscarHoras(int idDocente,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
+    public static ArrayList<Hora> buscarHoras(int idDocente,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m, Grupo grupo){
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
             System.out.println("A probar en aula "+aulasConCapa.get(x).getNombre());
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
-            Object resul = buscarHorasDisponibles(idDocente,dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
+            Object resul = buscarHorasDisponibles(idDocente,dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m,false);
             if(resul != null && resul.toString().equals("Choque"))
                 break;
             else if(resul != null && !((ArrayList<Hora>)resul).isEmpty()){
@@ -202,13 +208,13 @@ public abstract class ManejadorHoras {
         return horasDisponibles;
     }
     
-    public static ArrayList<Hora> buscarHorasUltimoRecurso(int idDocente,int cantidadHoras,int desde,int hasta,String nombre_dia,Materia materia,ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
+    public static ArrayList<Hora> buscarHorasUltimoRecurso(int idDocente, int cantidadHoras, int desde, int hasta, String nombre_dia, Materia materia, Grupo grupo, ArrayList<Aula> aulasConCapa, ArrayList<Aula> aulas, ArrayList<Materia> m){
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
             System.out.println("A probar en aula "+aulasConCapa.get(x).getNombre()+" Desde: "+desde+" Hasta: "+hasta);
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
-            Object resul = buscarHorasDisponibles(idDocente,dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m);
-            if(resul != null && !resul.toString().equals("Choque") && !((ArrayList<Hora>)resul).isEmpty()){
+            Object resul = buscarHorasDisponibles(idDocente,dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,materia,aulas,m,true);
+            if(resul != null && !resul.toString().equals("Choque")){
                 horasDisponibles = (ArrayList<Hora>)resul;
                 break;
             }
@@ -220,8 +226,11 @@ public abstract class ManejadorHoras {
         ArrayList<Hora> horasDisponibles = null;
         for(int x=0; x<aulasConCapa.size(); x++){
             Dia dia = aulasConCapa.get(x).getDia(nombre_dia);
-            if(!grupoPresente(desde,hasta,dia.getHoras(),grupo))
+            if(!grupoPresente(desde,hasta,nombre_dia,grupo,aulasConCapa))
                 horasDisponibles = buscarHorasDisponibles(dia.getHoras(),cantidadHoras,desde,hasta,nombre_dia,aulasConCapa,grupo);
+            else
+                break;
+            
             if(horasDisponibles != null)
                 break;
         }
@@ -232,16 +241,21 @@ public abstract class ManejadorHoras {
      * Para ver si ya se asignó el grupo en un día
      * @param desde
      * @param hasta
-     * @param horas
+     * @param nombre_dia
      * @param grupo
+     * @param aulas
      * @return 
      */
-    public static boolean grupoPresente(int desde, int hasta, ArrayList<Hora> horas, Grupo grupo){
-        for(Hora hora : horas){
-            if(!hora.estaDisponible()){
-                Grupo grupoHora = hora.getGrupo();
-                if(grupoHora.getId_Agrup() == grupo.getId_Agrup() && grupoHora.getId_grupo() == grupo.getId_grupo())
-                    return true;
+    public static boolean grupoPresente(int desde, int hasta, String nombre_dia, Grupo grupo, ArrayList<Aula> aulas){
+        for(Aula aula : aulas){
+            Dia dia = aula.getDia(nombre_dia);
+            for(int i=desde; i<hasta; i++){
+                Hora hora = dia.getHoras().get(i);
+                if(!hora.estaDisponible()){
+                    Grupo grupoHora = hora.getGrupo();
+                    if(grupoHora.getId_Agrup() == grupo.getId_Agrup() && grupoHora.getId_grupo() == grupo.getId_grupo())
+                        return true;
+                }
             }
         }
         return false;
@@ -272,13 +286,13 @@ public abstract class ManejadorHoras {
                 if(!hora.estaDisponible()){
                     Grupo grupoHora = hora.getGrupo();
                     if(idDocente==grupoHora.getId_docente()){
-                        System.out.println("El docente: "+idDocente+" atiende ya el grupo: "+grupoHora.getId_grupo()+" a la misma hora");
+                        System.out.println("El docente: "+idDocente+" atiende ya el grupo: "+grupoHora.getId_grupo()+" a la hora: "+hora.getIdHora());
                         return true;
                     }
                 }
             }
         }
-        return false;        
+        return false;
     }
     
     /** Meotodo para relizar busquedas de una materia que pertenece al mismo nivel en el dia elegido

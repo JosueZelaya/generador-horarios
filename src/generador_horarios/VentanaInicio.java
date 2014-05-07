@@ -763,12 +763,12 @@ public class VentanaInicio extends javax.swing.JFrame{
         ManejadorReservaciones.asignarReservaciones(facultad);
         
         ArrayList<Materia> materias = facultad.getMaterias();
-        
+
         Procesador procesador = new Procesador();
         procesador.asignarDatos(facultad);
         
         for (int i = 0; i < materias.size(); i++) {
-            Agrupacion agrup = getAgrupacion(materias.get(i).getIdAgrupacion(),facultad.agrupaciones);
+            Agrupacion agrup = getAgrupacion(materias.get(i).getIdAgrupacion(),facultad.agrupaciones);            
             if(agrup.getNum_grupos() == agrup.getNumGruposAsignados())
                 continue;
             ArrayList<AsignacionDocente> asignaciones = obtenerAsignacionesDeAgrup(agrup.getId(),facultad.asignaciones_docs);
